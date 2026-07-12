@@ -1,0 +1,48 @@
+# Dependencies and package caches
+node_modules/
+.npm/
+
+# Local Codex/app state
+.codex/
+.agents/
+
+# Local publish/build output
+_publish-homepl/
+_drive_latest_cars/
+*.zip
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+Thumbs.db
+Desktop.ini
+
+# Local secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+ftp-upload.txt
+*.pass
+.ftp-*
+
+# Large/private source documents
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+
+# Research snapshots from external calculator/reference sites
+alauto.html
+alauto-index.js
+autogood-calculator.html
+autogood-calc-tax.js
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/

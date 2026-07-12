@@ -1,0 +1,7 @@
+{
+  "name": "atlant-auto-private",
+  "private": true,
+  "dependencies": {
+    "pdf-parse": "^2.4.5"
+  }
+}

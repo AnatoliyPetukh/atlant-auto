@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auction Post — подготовка объявлений</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AUCTION POST</p>
+        <h1>Из PDF — в готовое объявление</h1>
+        <p class="subtitle">Загрузите документ аукциона, проверьте данные и получите готовый текст объявления для Telegram.</p>
+      </div>
+      <span class="status"><i></i> Локальный прототип</span>
+    </header>
+
+    <section class="steps" aria-label="Этапы">
+      <span class="active">1. Загрузка</span>
+      <span>2. Проверка</span>
+      <span>3. Публикация</span>
+    </section>
+
+    <section class="upload-grid">
+      <div class="auction-picker">
+        <label for="auction">Аукцион / формат документа</label>
+        <select id="auction">
+          <option value="auto">Определить автоматически</option>
+          <option value="arval">ARVAL ItemPrint</option>
+          <option value="other">Другой аукцион</option>
+        </select>
+        <small id="auctionHelp">Сейчас настроен обработчик ARVAL. Новые форматы добавляются отдельно.</small>
+      </div>
+      <label class="drop-zone" id="pdfDrop">
+        <input id="pdfInput" type="file" accept="application/pdf,.pdf">
+        <span class="drop-icon">PDF</span>
+        <strong>Документ аукциона</strong>
+        <small>Нажмите или перетащите PDF сюда</small>
+        <span class="file-name" id="pdfName"></span>
+      </label>
+    </section>
+
+    <div class="notice" id="notice" hidden></div>
+
+    <section class="workspace" id="workspace" hidden>
+      <div class="card form-card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ПРОВЕРКА ДАННЫХ</p>
+            <h2>Карточка автомобиля</h2>
+          </div>
+          <span class="confidence" id="confidence">Распознано</span>
+        </div>
+
+        <div class="fields">
+          <label class="wide">Название автомобиля
+            <input id="vehicle" autocomplete="off">
+          </label>
+          <label>Год
+            <input id="year" inputmode="numeric">
+          </label>
+          <label>Первая регистрация
+            <input id="registrationDate">
+          </label>
+          <label>Пробег
+            <input id="mileage">
+          </label>
+          <label>Топливо
+            <input id="fuel">
+          </label>
+          <label>Мощность
+            <input id="power">
+          </label>
+          <label>Коробка
+            <input id="gearbox">
+          </label>
+          <label>Привод
+            <input id="drive">
+          </label>
+          <label>Цвет
+            <input id="color">
+          </label>
+          <label>VIN
+            <input id="vin">
+          </label>
+          <label>Ключи
+            <input id="keys">
+          </label>
+          <label class="required">Дата аукциона
+            <input id="auctionDate" type="date">
+          </label>
+          <label class="required">Цена / ориентир
+            <input id="price" placeholder="Например, €18 500">
+          </label>
+          <label class="wide">Комплектация
+            <textarea id="equipment" rows="4"></textarea>
+          </label>
+          <label class="wide">История обслуживания
+            <textarea id="maintenance" rows="4"></textarea>
+          </label>
+        </div>
+      </div>
+
+      <aside class="card preview-card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ПРЕДПРОСМОТР</p>
+            <h2>Пост для Telegram</h2>
+          </div>
+        </div>
+        <pre id="postPreview"></pre>
+        <button class="primary" id="copyButton">Скопировать текст</button>
+        <button class="telegram" id="telegramButton" disabled>Улучшить через AI</button>
+        <button class="secondary" id="downloadButton">Скачать карточку JSON</button>
+        <p class="hint">Скопируйте готовый текст и вставьте его в Telegram. Фотографии прикрепляйте вручную в самом Telegram.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
