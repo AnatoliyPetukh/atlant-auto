@@ -2,6 +2,7 @@
   "name": "atlant-auto-private",
   "private": true,
   "scripts": {
+    "generate:seo": "node tools/generate-seo-pages.mjs && node tools/generate-car-pages.mjs",
     "test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./tools/run-tests.ps1"
   },
   "dependencies": {

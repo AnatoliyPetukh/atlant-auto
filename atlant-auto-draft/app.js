@@ -20,7 +20,7 @@ function renderCars() {
     return `
       <article class="car-card">
         <div class="car-media">
-          <img src="${fromPage(car.mainImage)}" alt="${format.title(car)}" loading="lazy">
+          <img src="${fromPage(car.mainImage)}" alt="${format.title(car)}" width="1280" height="960" loading="lazy">
           <span class="badge ${car.status === "sold" ? "sold" : ""}">${format.labels.status[car.status]}</span>
         </div>
         <div class="car-body">
