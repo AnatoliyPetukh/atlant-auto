@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор растаможки в Беларусь - Atlant Auto</title>
+  <meta name="description" content="Ориентировочный калькулятор растаможки легкового автомобиля для физических лиц в Беларуси.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="Atlant Auto">
+      <span class="brand-mark">AA</span>
+      <span>
+        <strong>Atlant Auto</strong>
+        <small>Warszawa</small>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Главная навигация">
+      <a href="./index.html#cars">Авто</a>
+      <a href="./index.html#process">Как купить</a>
+      <a href="./customs-calculator.html" aria-current="page">Калькулятор</a>
+      <a href="./index.html#faq">FAQ</a>
+      <a href="./index.html#contacts">Контакты</a>
+    </nav>
+    <a class="top-action" href="https://t.me/atlantautopl">Telegram</a>
+  </header>
+
+  <main>
+    <section class="calc-page-hero">
+      <div>
+        <p class="eyebrow">Беларусь / физические лица</p>
+        <h1>Калькулятор растаможки автомобиля</h1>
+        <p class="lead">Ориентировочный расчёт таможенного платежа по стоимости, месяцу выпуска и объёму двигателя. Гибриды и электромобили отправляем на индивидуальную проверку.</p>
+      </div>
+    </section>
+
+    <section class="section calc-section">
+      <div class="calc-layout">
+        <form class="calc-form" id="customsCalculatorForm">
+          <label>Стоимость автомобиля
+            <input name="price" type="number" min="1" step="0.01" value="10000" required>
+          </label>
+          <label>Валюта
+            <select name="currency">
+              <option value="EUR" selected>EUR</option>
+              <option value="PLN">PLN</option>
+            </select>
+          </label>
+          <label>Месяц выпуска
+            <select name="releaseMonth">
+              <option value="1">Январь</option>
+              <option value="2">Февраль</option>
+              <option value="3">Март</option>
+              <option value="4">Апрель</option>
+              <option value="5">Май</option>
+              <option value="6">Июнь</option>
+              <option value="7" selected>Июль</option>
+              <option value="8">Август</option>
+              <option value="9">Сентябрь</option>
+              <option value="10">Октябрь</option>
+              <option value="11">Ноябрь</option>
+              <option value="12">Декабрь</option>
+            </select>
+          </label>
+          <label>Год выпуска
+            <input name="releaseYear" type="number" min="1990" max="2026" value="2022" required>
+          </label>
+          <label>Объём двигателя, см3
+            <input name="volumeCc" type="number" min="1" step="1" value="2000" required>
+          </label>
+          <label>Тип двигателя
+            <select name="engineType">
+              <option value="petrol" selected>Бензин</option>
+              <option value="diesel">Дизель</option>
+              <option value="hybrid">Гибрид</option>
+              <option value="electric">Электромобиль</option>
+            </select>
+          </label>
+          <fieldset class="calc-fieldset calc-mode">
+            <legend>Режим растаможки</legend>
+            <label><input type="radio" name="clearanceMode" value="standard" checked> Стандартная</label>
+            <label><input type="radio" name="clearanceMode" value="benefit50"> Льготная 50%</label>
+          </fieldset>
+          <label class="calc-check">
+            <input name="includeFullBudget" type="checkbox"> Показать полный бюджет под ключ
+          </label>
+          <button class="small-button calc-advanced-toggle" id="advancedToggle" type="button" aria-expanded="false">Дополнительные параметры</button>
+          <div class="calc-advanced" id="advancedPanel" hidden>
+            <label>Комиссия аукциона, EUR<input name="auctionFee" type="number" min="0" step="0.01"></label>
+            <label>Доставка до Варшавы, EUR<input name="deliveryToWarsaw" type="number" min="0" step="0.01"></label>
+            <label>Доставка в Беларусь, EUR<input name="deliveryToBelarus" type="number" min="0" step="0.01"></label>
+            <label>Утилизационный сбор, EUR<input name="recyclingFee" type="number" min="0" step="0.01"></label>
+            <label>Таможенный сбор, EUR<input name="customsFee" type="number" min="0" step="0.01"></label>
+            <label>Услуги декларанта, EUR<input name="declarant" type="number" min="0" step="0.01"></label>
+            <label>Склад временного хранения, EUR<input name="temporaryStorage" type="number" min="0" step="0.01"></label>
+            <label>Оформление ЭПТС, EUR<input name="epts" type="number" min="0" step="0.01"></label>
+            <label>Другие расходы, EUR<input name="other" type="number" min="0" step="0.01"></label>
+          </div>
+          <button class="button primary" type="submit">Рассчитать</button>
+        </form>
+        <aside class="calc-result" id="customsCalculatorResult" aria-live="polite"></aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacts">
+    <div>
+      <a class="brand footer-brand" href="./index.html">
+        <span class="brand-mark">AA</span>
+        <span><strong>Atlant Auto</strong><small>Atlant Capital Sp. z o.o.</small></span>
+      </a>
+      <p>Автомобили из Европы под ключ. Офис и площадка в Варшаве.</p>
+    </div>
+    <address>
+      <a href="tel:+48515392420">+48 515 392 420</a>
+      <a href="mailto:autoatlantcapital@gmail.com">autoatlantcapital@gmail.com</a>
+      <a href="https://t.me/atlantautopl">Telegram</a>
+      <span>Wielkiego Debu 6, 03-262 Warszawa</span>
+    </address>
+  </footer>
+
+  <script type="module" src="./js/customs-calculator-page.mjs"></script>
+</body>
+</html>

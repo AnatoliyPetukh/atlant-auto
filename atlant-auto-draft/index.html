@@ -7,6 +7,9 @@
   <meta name="description" content="Подбор, выкуп и доставка автомобилей из Европы в Польшу. Аукционы, дилеры, проверка истории, документы и регистрация под ключ.">
   <link rel="preconnect" href="https://optim.tildacdn.net">
   <link rel="preconnect" href="https://thb.tildacdn.net">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -21,7 +24,7 @@
     <nav class="nav" aria-label="Главная навигация">
       <a href="#cars">Авто</a>
       <a href="#process">Как купить</a>
-      <a href="#calculator">Калькулятор</a>
+      <a href="./customs-calculator.html">Калькулятор</a>
       <a href="#proof">Отзывы</a>
       <a href="#faq">FAQ</a>
       <a href="#contacts">Контакты</a>
@@ -146,55 +149,6 @@
       </div>
     </section>
 
-    <section class="section calc-section" id="calculator">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Расчет</p>
-          <h2>Калькулятор растаможки в Беларусь</h2>
-        </div>
-        <p class="calc-caption">Ориентировочный расчет для авто из Европы. Финальные суммы уточняем по документам автомобиля, курсу и условиям доставки.</p>
-      </div>
-      <div class="calc-layout">
-        <form class="calc-form" id="customsCalc">
-          <label>Возраст авто
-            <select id="calcAge">
-              <option value="under3">Менее 3 лет</option>
-              <option value="3to5" selected>От 3 до 5 лет</option>
-              <option value="over5">Более 5 лет</option>
-            </select>
-          </label>
-          <label>Стоимость авто, EUR
-            <input id="calcPrice" type="number" min="1" value="10000">
-          </label>
-          <fieldset class="calc-fieldset">
-            <legend>Тип двигателя</legend>
-            <label><input type="radio" name="calcEngine" value="fuel" checked> Топливо / PHEV</label>
-            <label><input type="radio" name="calcEngine" value="electric"> Электро</label>
-            <label><input type="radio" name="calcEngine" value="erev"> Гибрид EREV</label>
-          </fieldset>
-          <fieldset class="calc-fieldset">
-            <legend>Оформление</legend>
-            <label><input type="radio" name="calcOwner" value="person" checked> Физ. лицо</label>
-            <label><input type="radio" name="calcOwner" value="entity"> Юр. лицо</label>
-          </fieldset>
-          <label id="calcVolumeWrap">Объем, см3
-            <input id="calcVolume" type="number" min="1" value="2000">
-          </label>
-          <label>Доставка до Минска, EUR
-            <input id="calcDelivery" type="number" min="0" value="1500">
-          </label>
-          <label>Курс EUR/BYN
-            <input id="calcRate" type="number" min="0.1" step="0.01" value="3.56">
-          </label>
-          <label class="calc-check" id="calcDiscountWrap">
-            <input id="calcDiscount" type="checkbox" checked> Льгота 50% для физлица
-          </label>
-          <button class="button primary" type="submit">Рассчитать</button>
-        </form>
-        <aside class="calc-result" id="calcResult" aria-live="polite"></aside>
-      </div>
-    </section>
-
     <section class="section request" id="request">
       <div>
         <p class="eyebrow">Заявка</p>
@@ -228,11 +182,8 @@
     </address>
   </footer>
 
-  <dialog class="car-dialog" id="carDialog">
-    <button class="dialog-close" id="dialogClose" aria-label="Закрыть">x</button>
-    <div id="dialogContent"></div>
-  </dialog>
-
+  <script src="./data/cars.js"></script>
+  <script src="./js/car-formatters.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

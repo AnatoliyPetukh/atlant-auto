@@ -1,42 +1,54 @@
 param(
   [string]$HostName = "serwer2454127.home.pl",
-  [string]$DefaultUser = "serwer2454127"
+  [string]$DefaultUser = "serwer2454127",
+  [switch]$PrepareOnly
 )
 
 $ErrorActionPreference = "Stop"
-$base = Join-Path $PSScriptRoot "_publish-homepl"
+$siteSource = Join-Path $PSScriptRoot "atlant-auto-draft"
+$auctionSource = Join-Path $PSScriptRoot "_publish-homepl\auction-post"
 $stage = Join-Path $env:TEMP "atlant-homepl-publish"
 $scriptPath = Join-Path $stage "ftp-upload.txt"
 
-if (!(Test-Path -LiteralPath $base)) {
-  throw "Publish folder not found: $base"
+if (!(Test-Path -LiteralPath $siteSource)) {
+  throw "Site folder not found: $siteSource"
+}
+if (!(Test-Path -LiteralPath $auctionSource)) {
+  throw "Auction Post folder not found: $auctionSource"
 }
 
 if (Test-Path -LiteralPath $stage) {
+  $resolvedStage = [IO.Path]::GetFullPath($stage)
+  $resolvedTemp = [IO.Path]::GetFullPath($env:TEMP)
+  if (!$resolvedStage.StartsWith($resolvedTemp, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Refusing to clear a staging folder outside TEMP: $resolvedStage"
+  }
   Remove-Item -LiteralPath $stage -Recurse -Force
 }
 New-Item -ItemType Directory -Path $stage | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $stage "root") | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $stage "root\assets") | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $stage "root\assets\cars") | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $stage "auction-post") | Out-Null
 
-Copy-Item -LiteralPath (Join-Path $base "root\index.html") -Destination (Join-Path $stage "root\index.html") -Force
-Copy-Item -LiteralPath (Join-Path $base "root\styles.css") -Destination (Join-Path $stage "root\styles.css") -Force
-Copy-Item -LiteralPath (Join-Path $base "root\app.js") -Destination (Join-Path $stage "root\app.js") -Force
-if (Test-Path -LiteralPath (Join-Path $base "root\assets\cars")) {
-  Copy-Item -Path (Join-Path $base "root\assets\cars\*") -Destination (Join-Path $stage "root\assets\cars") -Force
+foreach ($file in @("index.html", "styles.css", "app.js", "customs-calculator.html")) {
+  Copy-Item -LiteralPath (Join-Path $siteSource $file) -Destination (Join-Path $stage "root\$file") -Force
 }
-Copy-Item -LiteralPath (Join-Path $base "auction-post\index.html") -Destination (Join-Path $stage "auction-post\index.html") -Force
-Copy-Item -LiteralPath (Join-Path $base "auction-post\styles.css") -Destination (Join-Path $stage "auction-post\styles.css") -Force
-Copy-Item -LiteralPath (Join-Path $base "auction-post\app.js") -Destination (Join-Path $stage "auction-post\app.js") -Force
-Copy-Item -LiteralPath (Join-Path $base "auction-post\parse-auction.php") -Destination (Join-Path $stage "auction-post\parse-auction.php") -Force
+foreach ($directory in @("assets", "cars", "data", "js")) {
+  Copy-Item -LiteralPath (Join-Path $siteSource $directory) -Destination (Join-Path $stage "root") -Recurse -Force
+}
+Get-ChildItem -LiteralPath (Join-Path $stage "root\js") -Filter "*.test.mjs" -File |
+  Remove-Item -Force
+Copy-Item -Path (Join-Path $auctionSource "*") -Destination (Join-Path $stage "auction-post") -Force
 
 Write-Host ""
 Write-Host "This will publish:"
 Write-Host "  Atlant Auto -> https://$HostName/"
 Write-Host "  Auction Post -> https://$HostName/auction-post/"
 Write-Host ""
+
+if ($PrepareOnly) {
+  Write-Host "Prepared production files in: $stage"
+  return
+}
 
 $user = $env:HOMEPL_FTP_LOGIN
 if ([string]::IsNullOrWhiteSpace($user)) {
@@ -58,33 +70,46 @@ if ([string]::IsNullOrWhiteSpace($password)) {
   }
 }
 
-$commands = @(
+$commands = [Collections.Generic.List[string]]::new()
+$commands.AddRange([string[]]@(
   "open $HostName",
   "user $user",
   $password,
   "binary",
-  "prompt",
-  "mkdir auction-post",
-  "cd auction-post",
-  ("lcd " + (Join-Path $stage "auction-post")),
-  "put index.html index.html",
-  "put styles.css styles.css",
-  "put app.js app.js",
-  "put parse-auction.php parse-auction.php",
-  "cd /",
-  ("lcd " + (Join-Path $stage "root")),
-  "put index.html index.html",
-  "put styles.css styles.css",
-  "put app.js app.js",
-  "mkdir assets",
-  "cd assets",
-  "mkdir cars",
-  "cd cars",
-  ("lcd " + (Join-Path $stage "root\assets\cars")),
-  "mput *",
-  "cd /",
-  "bye"
-)
+  "prompt"
+))
+
+function Add-TreeUploadCommands {
+  param(
+    [Collections.Generic.List[string]]$CommandList,
+    [string]$LocalRoot,
+    [string]$RemoteRoot
+  )
+
+  $directories = @((Get-Item -LiteralPath $LocalRoot)) +
+    @(Get-ChildItem -LiteralPath $LocalRoot -Directory -Recurse | Sort-Object FullName)
+
+  foreach ($directory in $directories) {
+    $relative = $directory.FullName.Substring($LocalRoot.Length).TrimStart("\")
+    $remote = (@($RemoteRoot, ($relative -replace "\\", "/")) |
+      Where-Object { ![string]::IsNullOrWhiteSpace($_) }) -join "/"
+
+    $CommandList.Add("cd /")
+    foreach ($segment in ($remote -split "/" | Where-Object { $_ })) {
+      $CommandList.Add("mkdir $segment")
+      $CommandList.Add("cd $segment")
+    }
+    $CommandList.Add("lcd $($directory.FullName)")
+    foreach ($file in (Get-ChildItem -LiteralPath $directory.FullName -File | Sort-Object Name)) {
+      $CommandList.Add("put $($file.Name) $($file.Name)")
+    }
+  }
+}
+
+Add-TreeUploadCommands -CommandList $commands -LocalRoot (Join-Path $stage "root") -RemoteRoot ""
+Add-TreeUploadCommands -CommandList $commands -LocalRoot (Join-Path $stage "auction-post") -RemoteRoot "auction-post"
+$commands.Add("cd /")
+$commands.Add("bye")
 
 try {
   Set-Content -LiteralPath $scriptPath -Value $commands -Encoding ASCII

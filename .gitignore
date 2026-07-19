@@ -12,6 +12,7 @@ _drive_latest_cars/
 *.zip
 
 # Temporary files
+tmp/
 *.tmp
 *.temp
 *.log
@@ -35,6 +36,7 @@ ftp-upload.txt
 *.docx
 *.xls
 *.xlsx
+!atlant-auto-draft/assets/cars/**/*.pdf
 
 # Research snapshots from external calculator/reference sites
 alauto.html

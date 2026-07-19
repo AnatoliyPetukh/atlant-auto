@@ -1,6 +1,9 @@
 {
   "name": "atlant-auto-private",
   "private": true,
+  "scripts": {
+    "test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./tools/run-tests.ps1"
+  },
   "dependencies": {
     "pdf-parse": "^2.4.5"
   }
