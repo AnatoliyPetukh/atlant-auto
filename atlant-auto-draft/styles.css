@@ -385,6 +385,11 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
+
+.reviews-widget {
+  min-height: 180px;
+  overflow: hidden;
+}
 blockquote {
   margin: 0;
   padding: 26px;
