@@ -97,6 +97,7 @@ const common = {
   "vehicle.body.compactVan": entry("Компактвэн", "Minivan kompaktowy", "Compact MPV"),
   "vehicle.body.crossover": entry("Кроссовер", "Crossover", "Crossover"),
   "vehicle.body.fastbackCrossover": entry("Фастбэк-кроссовер", "Crossover typu fastback", "Fastback crossover"),
+  "vehicle.body.sedan": entry("Седан", "Sedan", "Saloon"),
   "vehicle.section.about": entry("Об автомобиле", "O samochodzie", "About the vehicle"),
   "vehicle.section.specifications": entry("Основные характеристики", "Najważniejsze dane", "Key specifications"),
   "vehicle.section.engine": entry("Двигатель и трансмиссия", "Silnik i skrzynia biegów", "Engine and transmission"),

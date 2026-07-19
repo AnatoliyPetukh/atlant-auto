@@ -405,5 +405,87 @@ window.ATLANT_CARS = [
         size: "0,1 МБ"
       }
     ]
+  },
+  {
+    id: "mercedes-benz-cla-180-amg-line-2023-w1k5j8eb2pn369456",
+    slug: "mercedes-benz-cla-180-amg-line-2023",
+    status: "for-sale",
+    brand: "Mercedes-Benz",
+    model: "CLA 180",
+    version: "AMG Line DCT",
+    productionDate: "2023",
+    firstRegistrationDate: "2023-05-05",
+    mileageKm: 181376,
+    fuelType: "petrol",
+    engineCapacityCc: 1332,
+    powerKw: 101,
+    powerHp: 136,
+    transmission: "automatic",
+    driveType: "Передний",
+    bodyType: "Седан",
+    color: "Серый металлик",
+    doors: 4,
+    seats: 5,
+    vin: "W1K5J8EB2PN369456",
+    registrationNumber: "S655ZR",
+    registrationCountry: "Нидерланды",
+    vehicleSource: "Лизинг",
+    keysCount: null,
+    emissionStandard: "Euro 6d-TEMP",
+    co2GKm: 146,
+    motDate: "2027-05-05",
+    price: 16280,
+    currency: "EUR",
+    description: {
+      ru: "Mercedes-Benz CLA 180 AMG Line 2023 года сочетает выразительный дизайн четырёхдверного купе, спортивные детали AMG и комфорт для ежедневных поездок. Бензиновый турбодвигатель 1.33 мощностью 136 л.с. работает с автоматической коробкой DCT. В комплектацию входят панорамная сдвижная крыша, MULTIBEAM LED, навигация, камера заднего вида, передние и задние парктроники, контроль слепых зон, бесключевой доступ и 19-дюймовые AMG-диски. Подробная история обслуживания подтверждена отчётом: последнее обслуживание Mercedes-Benz выполнено на пробеге 162 284 км. Автомобиль находится в наличии в Варшаве.",
+      pl: "Mercedes-Benz CLA 180 AMG Line z 2023 roku łączy efektowną sylwetkę czterodrzwiowego coupé, sportowe dodatki AMG i komfort na co dzień. Benzynowy silnik turbo 1.33 o mocy 136 KM współpracuje z automatyczną skrzynią DCT. Wyposażenie obejmuje panoramiczny dach przesuwny, reflektory MULTIBEAM LED, nawigację, kamerę cofania, czujniki parkowania z przodu i z tyłu, asystenta martwego pola, dostęp bezkluczykowy oraz 19-calowe felgi AMG. Raport potwierdza szczegółową historię serwisową, a ostatni serwis Mercedes-Benz wykonano przy przebiegu 162 284 km. Samochód jest dostępny od ręki w Warszawie.",
+      en: "The 2023 Mercedes-Benz CLA 180 AMG Line combines a distinctive four-door coupé profile, sporty AMG details and everyday comfort. Its 136 hp 1.33-litre turbo petrol engine is paired with a DCT automatic transmission. Equipment includes a panoramic sliding roof, MULTIBEAM LED headlights, navigation, a reversing camera, front and rear parking sensors, blind-spot assistance, keyless entry and 19-inch AMG wheels. The report provides a detailed service record, with the latest Mercedes-Benz service completed at 162,284 km. The car is in stock in Warsaw."
+    },
+    mainImage: "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_7_2026-07-19_23-47-58.jpg",
+    images: [
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_7_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_1_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_3_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_6_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_4_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_2_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_8_2026-07-19_23-47-58.jpg",
+      "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_5_2026-07-19_23-47-58.jpg"
+    ],
+    equipment: {
+      comfort: ["Автоматический климат-контроль", "Электростеклоподъёмники спереди и сзади", "Круиз-контроль", "Бесключевой доступ", "Датчик дождя", "Автозатемнение салонного зеркала", "Панорамная сдвижная крыша"],
+      safety: ["ABS", "ESP", "Контроль давления в шинах", "Система контроля слепых зон", "Передние, боковые и коленные подушки безопасности"],
+      multimedia: ["Навигация", "Bluetooth", "Цифровая приборная панель", "Центральный мультимедийный дисплей", "Аудиосистема"],
+      driverAssistance: ["Передние и задние парктроники", "Камера заднего вида", "Усилитель руля Servotronic"],
+      interior: ["Пятиместный салон", "Кожаный руль", "Передний центральный подлокотник", "Декоративные элементы AMG Line"],
+      exterior: ["MULTIBEAM LED", "Легкосплавные диски AMG R19", "Пакет Night", "Серый металлик"]
+    },
+    serviceHistory: [
+      { date: "2023-09-28", mileageKm: 28832, work: "Сервис Mercedes-Benz A и замена передней щётки стеклоочистителя." },
+      { date: "2024-04-15", mileageKm: 59335, work: "Сервис Mercedes-Benz B, замена передней щётки стеклоочистителя и обслуживание панорамной крыши." },
+      { date: "2024-08-23", mileageKm: 78428, work: "Замена охлаждающей жидкости и антифриза." },
+      { date: "2024-09-16", mileageKm: 82257, work: "Сервис Mercedes-Benz A, замена воздушного фильтра, свечей зажигания и передней щётки стеклоочистителя." },
+      { date: "2025-02-10", mileageKm: 106914, work: "Сервис Mercedes-Benz B, замена передних тормозных колодок и тормозной жидкости; работы с колёсами." },
+      { date: "2025-04-08", mileageKm: 116003, work: "Замена регулятора давления." },
+      { date: "2025-07-14", mileageKm: 131926, work: "Сервис Mercedes-Benz A, обслуживание панорамной крыши и автоматической коробки передач." },
+      { date: "2026-01-05", mileageKm: 162284, work: "Сервис Mercedes-Benz B, замена задних тормозных колодок, воздушного фильтра, свечей зажигания и охлаждающей жидкости; работы с колёсами." }
+    ],
+    condition: {
+      "Пробег": "181 376 км",
+      "Местонахождение": "В наличии в Варшаве",
+      "Налоговый статус": "Автомобиль с НДС (BTW)",
+      "Страна регистрации": "Нидерланды",
+      "Источник": "Лизинг",
+      "Техосмотр": "Действителен до 05.05.2027",
+      "Сервисная история": "Подтверждена отчётом Automotive Trade Center"
+    },
+    documents: [
+      {
+        title: "Отчёт Automotive Trade Center",
+        file: "../assets/cars/mercedes-benz-cla-180-amg-line-2023/automotive-trade-center-report.pdf",
+        type: "application/pdf",
+        size: "0,3 МБ"
+      }
+    ]
   }
 ];

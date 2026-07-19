@@ -54,6 +54,18 @@ export const carLocalizationMessages = {
   "vehicle.feature.automaticHighBeam": entry("Автоматический дальний свет", "Automatyczne światła drogowe", "Automatic high beam"),
   "vehicle.feature.mixedSeatTrim": entry("Комбинированная отделка сидений", "Tapicerka materiałowo-skórzana", "Mixed cloth and leather seat trim"),
   "vehicle.feature.frontRearArmrests": entry("Передний и задний центральные подлокотники", "Przedni i tylny podłokietnik centralny", "Front and rear centre armrests"),
+  "vehicle.feature.autoDimmingMirror": entry("Автозатемнение салонного зеркала", "Automatycznie przyciemniane lusterko wewnętrzne", "Auto-dimming rear-view mirror"),
+  "vehicle.feature.panoramicSlidingRoof": entry("Панорамная сдвижная крыша", "Panoramiczny dach przesuwny", "Panoramic sliding roof"),
+  "vehicle.feature.blindSpotAssist": entry("Система контроля слепых зон", "Asystent martwego pola", "Blind-spot assist"),
+  "vehicle.feature.multipleAirbags": entry("Передние, боковые и коленные подушки безопасности", "Przednie, boczne i kolanowe poduszki powietrzne", "Front, side and knee airbags"),
+  "vehicle.feature.audioSystem": entry("Аудиосистема", "System audio", "Audio system"),
+  "vehicle.feature.servotronic": entry("Усилитель руля Servotronic", "Wspomaganie kierownicy Servotronic", "Servotronic power steering"),
+  "vehicle.feature.frontArmrest": entry("Передний центральный подлокотник", "Przedni podłokietnik centralny", "Front centre armrest"),
+  "vehicle.feature.amgInteriorTrim": entry("Декоративные элементы AMG Line", "Elementy wykończenia AMG Line", "AMG Line interior trim"),
+  "vehicle.feature.multibeamLed": entry("MULTIBEAM LED", "MULTIBEAM LED", "MULTIBEAM LED"),
+  "vehicle.feature.amgWheels19": entry("Легкосплавные диски AMG R19", "19-calowe felgi aluminiowe AMG", "19-inch AMG alloy wheels"),
+  "vehicle.feature.nightPackage": entry("Пакет Night", "Pakiet Night", "Night package"),
+  "vehicle.feature.metallicGrey": entry("Серый металлик", "Szary metalik", "Metallic grey"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -64,6 +76,7 @@ export const carLocalizationMessages = {
   "vehicle.document.inspectionReport": entry("Инспекционный отчёт", "Raport z inspekcji", "Inspection report"),
   "vehicle.document.bcaVehicleReport": entry("Отчёт BCA об автомобиле", "Raport pojazdu BCA", "BCA vehicle report"),
   "vehicle.document.bcaServiceHistory": entry("История обслуживания BCA", "Historia serwisowa BCA", "BCA service history"),
+  "vehicle.document.automotiveTradeCenterReport": entry("Отчёт Automotive Trade Center", "Raport Automotive Trade Center", "Automotive Trade Center report"),
   "vehicle.ford.service.unavailable": entry("Сервисная история отсутствует.", "Historia serwisowa nie jest dostępna.", "Service history is not available."),
   "vehicle.bmw216.service.2025": entry(
     "Проверка автомобиля, замена моторного масла, топливного фильтра, тормозной и охлаждающей жидкости.",
@@ -120,6 +133,46 @@ export const carLocalizationMessages = {
     "Przegląd okresowy, wymiana filtrów i płynu hamulcowego.",
     "Scheduled service with filter and brake-fluid replacement."
   ),
+  "vehicle.mercedesCla.service.20230928": entry(
+    "Сервис Mercedes-Benz A и замена передней щётки стеклоочистителя.",
+    "Serwis Mercedes-Benz A i wymiana przedniego pióra wycieraczki.",
+    "Mercedes-Benz Service A and front wiper-blade replacement."
+  ),
+  "vehicle.mercedesCla.service.20240415": entry(
+    "Сервис Mercedes-Benz B, замена передней щётки стеклоочистителя и обслуживание панорамной крыши.",
+    "Serwis Mercedes-Benz B, wymiana przedniego pióra wycieraczki i obsługa dachu panoramicznego.",
+    "Mercedes-Benz Service B, front wiper-blade replacement and panoramic-roof maintenance."
+  ),
+  "vehicle.mercedesCla.service.20240823": entry(
+    "Замена охлаждающей жидкости и антифриза.",
+    "Wymiana płynu chłodniczego.",
+    "Coolant and antifreeze replacement."
+  ),
+  "vehicle.mercedesCla.service.20240916": entry(
+    "Сервис Mercedes-Benz A, замена воздушного фильтра, свечей зажигания и передней щётки стеклоочистителя.",
+    "Serwis Mercedes-Benz A, wymiana filtra powietrza, świec zapłonowych i przedniego pióra wycieraczki.",
+    "Mercedes-Benz Service A with air-filter, spark-plug and front wiper-blade replacement."
+  ),
+  "vehicle.mercedesCla.service.20250210": entry(
+    "Сервис Mercedes-Benz B, замена передних тормозных колодок и тормозной жидкости; работы с колёсами.",
+    "Serwis Mercedes-Benz B, wymiana przednich klocków i płynu hamulcowego oraz prace przy kołach.",
+    "Mercedes-Benz Service B, front brake-pad and brake-fluid replacement, plus wheel work."
+  ),
+  "vehicle.mercedesCla.service.20250408": entry(
+    "Замена регулятора давления.",
+    "Wymiana regulatora ciśnienia.",
+    "Pressure regulator replacement."
+  ),
+  "vehicle.mercedesCla.service.20250714": entry(
+    "Сервис Mercedes-Benz A, обслуживание панорамной крыши и автоматической коробки передач.",
+    "Serwis Mercedes-Benz A oraz obsługa dachu panoramicznego i automatycznej skrzyni biegów.",
+    "Mercedes-Benz Service A, panoramic-roof maintenance and automatic-transmission service."
+  ),
+  "vehicle.mercedesCla.service.20260105": entry(
+    "Сервис Mercedes-Benz B, замена задних тормозных колодок, воздушного фильтра, свечей зажигания и охлаждающей жидкости; работы с колёсами.",
+    "Serwis Mercedes-Benz B, wymiana tylnych klocków hamulcowych, filtra powietrza, świec zapłonowych i płynu chłodniczego oraz prace przy kołach.",
+    "Mercedes-Benz Service B with rear brake-pad, air-filter, spark-plug and coolant replacement, plus wheel work."
+  ),
   "vehicle.condition.cosmeticClass": entry("Косметический класс", "Klasa kosmetyczna", "Cosmetic grade"),
   "vehicle.condition.general": entry("Состояние", "Stan", "Condition"),
   "vehicle.condition.odometer": entry("Одометр", "Drogomierz", "Odometer"),
@@ -138,6 +191,8 @@ export const carLocalizationMessages = {
   "vehicle.condition.registrationDocument": entry("Регистрационный документ", "Dokument rejestracyjny", "Registration document"),
   "vehicle.condition.technicalInspection": entry("Техосмотр", "Badanie techniczne", "Technical inspection"),
   "vehicle.condition.runningCondition": entry("Состояние на площадке", "Stan na placu", "Condition at the facility"),
+  "vehicle.condition.taxStatus": entry("Налоговый статус", "Status podatkowy", "Tax status"),
+  "vehicle.condition.serviceHistory": entry("Сервисная история", "Historia serwisowa", "Service history"),
   "vehicle.ford.condition.general": entry(
     "На кузове и колёсах присутствуют отдельные косметические следы эксплуатации. Подробности указаны в инспекционном отчёте.",
     "Na nadwoziu i kołach widoczne są pojedyncze ślady użytkowania. Szczegóły znajdują się w raporcie z inspekcji.",
@@ -187,6 +242,11 @@ export const carLocalizationMessages = {
   ,"vehicle.peugeot408.condition.vehicleSource": entry("Лизинг", "Leasing", "Lease")
   ,"vehicle.peugeot408.condition.logBook": entry("Находится у продавца", "U sprzedawcy", "Held by the vendor")
   ,"vehicle.peugeot408.condition.running": entry("Автомобиль заводится и передвигается", "Samochód uruchamia się i porusza o własnych siłach", "The vehicle starts and moves under its own power")
+  ,"vehicle.mercedesCla.condition.taxStatus": entry("Автомобиль с НДС (BTW)", "Samochód z VAT (BTW)", "VAT-qualifying vehicle (BTW)")
+  ,"vehicle.mercedesCla.condition.registrationCountry": entry("Нидерланды", "Holandia", "Netherlands")
+  ,"vehicle.mercedesCla.condition.vehicleSource": entry("Лизинг", "Leasing", "Lease")
+  ,"vehicle.mercedesCla.condition.technicalInspection": entry("Действителен до 05.05.2027", "Ważne do 05.05.2027", "Valid until 5 May 2027")
+  ,"vehicle.mercedesCla.condition.serviceHistory": entry("Подтверждена отчётом Automotive Trade Center", "Potwierdzona raportem Automotive Trade Center", "Confirmed by the Automotive Trade Center report")
   ,"vehicle.country.netherlands": entry("Нидерланды", "Holandia", "Netherlands")
   ,"vehicle.country.belgium": entry("Бельгия", "Belgia", "Belgium")
   ,"vehicle.country.italy": entry("Италия", "Włochy", "Italy")
@@ -248,6 +308,18 @@ const rawFeaturePairs = [
   ,["Автоматический дальний свет", "vehicle.feature.automaticHighBeam"]
   ,["Комбинированная отделка сидений", "vehicle.feature.mixedSeatTrim"]
   ,["Передний и задний центральные подлокотники", "vehicle.feature.frontRearArmrests"]
+  ,["Автозатемнение салонного зеркала", "vehicle.feature.autoDimmingMirror"]
+  ,["Панорамная сдвижная крыша", "vehicle.feature.panoramicSlidingRoof"]
+  ,["Система контроля слепых зон", "vehicle.feature.blindSpotAssist"]
+  ,["Передние, боковые и коленные подушки безопасности", "vehicle.feature.multipleAirbags"]
+  ,["Аудиосистема", "vehicle.feature.audioSystem"]
+  ,["Усилитель руля Servotronic", "vehicle.feature.servotronic"]
+  ,["Передний центральный подлокотник", "vehicle.feature.frontArmrest"]
+  ,["Декоративные элементы AMG Line", "vehicle.feature.amgInteriorTrim"]
+  ,["MULTIBEAM LED", "vehicle.feature.multibeamLed"]
+  ,["Легкосплавные диски AMG R19", "vehicle.feature.amgWheels19"]
+  ,["Пакет Night", "vehicle.feature.nightPackage"]
+  ,["Серый металлик", "vehicle.feature.metallicGrey"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
@@ -344,5 +416,31 @@ export const localizedCarDetails = {
       ["vehicle.condition.runningCondition", "vehicle.peugeot408.condition.running"]
     ],
     documentKeys: ["vehicle.document.bcaVehicleReport", "vehicle.document.bcaServiceHistory"]
+  },
+  "mercedes-benz-cla-180-amg-line-2023": {
+    bodyKey: "vehicle.body.sedan",
+    color: { ru: "Серый металлик", pl: "Szary metalik", en: "Metallic grey" },
+    registrationCountryKey: "vehicle.country.netherlands",
+    sourceKey: "vehicle.source.lease",
+    serviceKeys: [
+      "vehicle.mercedesCla.service.20230928",
+      "vehicle.mercedesCla.service.20240415",
+      "vehicle.mercedesCla.service.20240823",
+      "vehicle.mercedesCla.service.20240916",
+      "vehicle.mercedesCla.service.20250210",
+      "vehicle.mercedesCla.service.20250408",
+      "vehicle.mercedesCla.service.20250714",
+      "vehicle.mercedesCla.service.20260105"
+    ],
+    condition: [
+      ["vehicle.field.mileage", { ru: "181 376 км", pl: "181 376 km", en: "181,376 km" }],
+      ["vehicle.condition.location", "vehicle.location.warsawStock"],
+      ["vehicle.condition.taxStatus", "vehicle.mercedesCla.condition.taxStatus"],
+      ["vehicle.condition.registrationCountry", "vehicle.mercedesCla.condition.registrationCountry"],
+      ["vehicle.condition.vehicleSource", "vehicle.mercedesCla.condition.vehicleSource"],
+      ["vehicle.condition.technicalInspection", "vehicle.mercedesCla.condition.technicalInspection"],
+      ["vehicle.condition.serviceHistory", "vehicle.mercedesCla.condition.serviceHistory"]
+    ],
+    documentKeys: ["vehicle.document.automotiveTradeCenterReport"]
   }
 };
