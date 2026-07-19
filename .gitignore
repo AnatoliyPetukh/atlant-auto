@@ -9,6 +9,7 @@ node_modules/
 # Local publish/build output
 _publish-homepl/
 _drive_latest_cars/
+_backups/
 *.zip
 
 # Temporary files
