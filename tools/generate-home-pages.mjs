@@ -1,0 +1,72 @@
+import fs from "node:fs";
+import path from "node:path";
+import vm from "node:vm";
+import { fileURLToPath } from "node:url";
+import { t } from "./i18n-catalog.mjs";
+import { site } from "./seo-config.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atlant-auto-draft");
+const context = { window: {} };
+vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
+const cars = context.window.ATLANT_CARS;
+const routes = { ru: "/", pl: "/pl/", en: "/en/" };
+const catalogue = { ru: "/avtomobili/", pl: "/pl/samochody/", en: "/en/cars/" };
+const process = { ru: "/kak-my-rabotaem/", pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
+const calculator = { ru: "/customs-calculator.html", pl: "/pl/customs-calculator.html", en: "/en/customs-calculator.html" };
+const contact = { ru: "/kontakty/", pl: "/pl/kontakt/", en: "/en/contact/" };
+const privacy = { ru: "/privacy/", pl: "/pl/polityka-prywatnosci/", en: "/en/privacy/" };
+const carRoute = (locale, slug) => locale === "ru" ? `/cars/${slug}.html` : locale === "pl" ? `/pl/samochody/${slug}/` : `/en/cars/${slug}/`;
+const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
+const format = (value, locale) => new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB").format(value);
+const output = (locale) => locale === "ru" ? path.join(root, "index.html") : path.join(root, locale, "index.html");
+
+function carCards(locale) {
+  return cars.map((car) => {
+    const name = `${car.brand} ${car.model} ${car.version}`;
+    const basePrice = car.price == null ? t(locale, "common.priceOnRequest") : `${format(car.price, locale)} ${car.currency}`;
+    const price = car.priceExcludingVat ? `${basePrice} · ${t(locale, "common.priceExcludingVat")}` : basePrice;
+    const year = car.productionDate || car.firstRegistrationDate?.slice(0,4) || "";
+    const transmission = t(locale, `vehicle.transmission.${car.transmission}`);
+    const detailUrl = carRoute(locale, car.slug);
+    return `<article class="car-card" data-status="available"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
+      <div class="car-media"><img src="/${car.mainImage.replace(/^(\.\.\/)+/, "")}" alt="${esc(t(locale, "vehicle.gallery.mainAlt", { vehicle: name }))}" width="1280" height="960" loading="lazy"><span class="badge">${t(locale, "vehicle.status.forSale")}</span></div>
+      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price">${price}</span><span class="small-button">${t(locale, "action.viewVehicle")}</span></div></div>
+    </a></article>`;
+  }).join("");
+}
+
+function html(locale) {
+  const alternates = Object.entries(routes).map(([code, route]) => `<link rel="alternate" hreflang="${code}" href="${site.origin}${route}">`).concat(`<link rel="alternate" hreflang="x-default" href="${site.origin}/">`).join("\n  ");
+  const languageNav = Object.entries(routes).map(([code, route]) => `<a href="${route}" lang="${code}"${code === locale ? ' aria-current="page"' : ""}>${code.toUpperCase()}</a>`).join("");
+  const processSteps = [1,2,3,4].map((index) => `<li><span>0${index}</span><strong>${t(locale, `home.process.step${index}.title`)}</strong><p>${t(locale, `home.process.step${index}.text`)}</p></li>`).join("");
+  const faq = [1,2,3,4].map((index) => `<details${index === 1 ? " open" : ""}><summary>${t(locale, `home.faq.q${index}`)}</summary><p>${t(locale, `home.faq.a${index}`)}</p></details>`).join("");
+  return `<!doctype html>
+<html lang="${locale}">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${t(locale, "home.seo.title")}</title><meta name="description" content="${t(locale, "home.seo.description")}">
+  <link rel="canonical" href="${site.origin}${routes[locale]}">${alternates}
+  <meta property="og:type" content="website"><meta property="og:site_name" content="${site.name}"><meta property="og:title" content="${t(locale, "home.seo.title")}"><meta property="og:description" content="${t(locale, "home.seo.description")}"><meta property="og:url" content="${site.origin}${routes[locale]}">
+  <link rel="stylesheet" href="/styles.css?v=20260719-2">
+  <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":["Organization","AutoDealer"],name:site.name,legalName:site.legalName,url:site.origin,telephone:site.phone,email:site.email,address:{"@type":"PostalAddress",streetAddress:"Wielkiego Dębu 6",postalCode:"03-262",addressLocality:"Warszawa",addressCountry:"PL"}}).replaceAll("<","\\u003c")}</script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="${routes[locale]}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a><nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${catalogue[locale]}">${t(locale, "navigation.catalog")}</a><a href="${process[locale]}">${t(locale, "navigation.process")}</a><a href="${calculator[locale]}">${t(locale, "navigation.calculator")}</a><a href="${contact[locale]}">${t(locale, "navigation.contact")}</a></nav><div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav}</div></header>
+  <main>
+    <section class="hero"><div class="hero-bg" role="img" aria-label="${t(locale, "home.hero.imageAlt")}"></div><div class="hero-overlay"></div><div class="hero-content"><p class="eyebrow">${t(locale, "home.hero.eyebrow")}</p><h1>${t(locale, "home.hero.title")}</h1><p class="lead">${t(locale, "home.hero.subtitle")}</p><div class="hero-actions"><a class="button primary" href="#request">${t(locale, "home.hero.cta")}</a><a class="button ghost" href="#cars">${t(locale, "home.hero.secondaryCta")}</a></div><dl class="hero-stats"><div><dt>500+</dt><dd>${t(locale, "home.stats.delivered")}</dd></div><div><dt>${t(locale, "home.stats.experienceValue")}</dt><dd>${t(locale, "home.stats.experience")}</dd></div><div><dt>30%</dt><dd>${t(locale, "home.stats.savings")}</dd></div></dl></div></section>
+    <section class="section trust-band"><div><strong>${t(locale, "home.trust.companyTitle")}</strong><span>${t(locale, "home.trust.companyText")}</span></div><div><strong>${t(locale, "home.trust.checkTitle")}</strong><span>${t(locale, "home.trust.checkText")}</span></div><div><strong>${t(locale, "home.trust.supportTitle")}</strong><span>${t(locale, "home.trust.supportText")}</span></div></section>
+    <section class="section cars-section" id="cars"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.catalog.eyebrow")}</p><h2>${t(locale, "home.catalog.title")}</h2></div><div class="filters" aria-label="${t(locale, "home.catalog.filterLabel")}"><button class="filter active" data-filter="all">${t(locale, "home.catalog.filterAll")}</button><button class="filter" data-filter="available">${t(locale, "home.catalog.filterAvailable")}</button><button class="filter" data-filter="sold">${t(locale, "home.catalog.filterSold")}</button></div></div><div class="cars-grid" id="carsGrid">${carCards(locale)}</div><p class="empty-state" data-empty-state hidden>${t(locale, "empty.cars")}</p></section>
+    <section class="section split" id="process"><div><p class="eyebrow">${t(locale, "home.process.eyebrow")}</p><h2>${t(locale, "home.process.title")}</h2><p class="section-text">${t(locale, "home.process.intro")}</p></div><ol class="steps">${processSteps}</ol></section>
+    <section class="section audience"><article><p class="eyebrow">${t(locale, "home.audience.privateEyebrow")}</p><h3>${t(locale, "home.audience.privateTitle")}</h3><p>${t(locale, "home.audience.privateText")}</p></article><article><p class="eyebrow">${t(locale, "home.audience.businessEyebrow")}</p><h3>${t(locale, "home.audience.businessTitle")}</h3><p>${t(locale, "home.audience.businessText")}</p></article></section>
+    <section class="section proof" id="proof"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.reviews.eyebrow")}</p><h2>${t(locale, "home.reviews.title")}</h2></div><a class="text-link" href="https://search.google.com/local/reviews?placeid=ChIJoYSF3kXJHkcR2H5scCwjHDA">${t(locale, "home.reviews.google")}</a></div><div class="reviews"><blockquote>${t(locale, "home.reviews.first")}<cite>Evgenii Fedorovich</cite></blockquote><blockquote>${t(locale, "home.reviews.second")}<cite>Elmira Esk</cite></blockquote><blockquote>${t(locale, "home.reviews.third")}<cite>Dmitry Novik</cite></blockquote></div></section>
+    <section class="section split faq-section" id="faq"><div><p class="eyebrow">FAQ</p><h2>${t(locale, "home.faq.title")}</h2></div><div class="faq">${faq}</div></section>
+    <section class="section request" id="request"><div><p class="eyebrow">${t(locale, "home.form.eyebrow")}</p><h2>${t(locale, "home.form.title")}</h2><p class="section-text">${t(locale, "home.form.intro")}</p></div><form class="request-form" data-success="${t(locale, "notifications.requestSent")}"><label>${t(locale, "home.form.name")}<input name="name" autocomplete="name" placeholder="${t(locale, "home.form.namePlaceholder")}"></label><label>${t(locale, "home.form.contact")}<input name="contact" placeholder="${t(locale, "home.form.contactPlaceholder")}" required></label><label>${t(locale, "home.form.budget")}<input name="budget" placeholder="${t(locale, "home.form.budgetPlaceholder")}"></label><label class="wide">${t(locale, "home.form.message")}<textarea name="message" rows="4" placeholder="${t(locale, "home.form.messagePlaceholder")}"></textarea></label><button class="button primary" type="submit">${t(locale, "home.form.submit")}</button><p class="form-note" aria-live="polite"></p></form></section>
+  </main>
+  <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">Telegram</a><span>${site.address}</span><a href="${privacy[locale]}">${t(locale, "footer.privacy")}</a></address></footer>
+  <aside class="cookie-banner" data-cookie-banner hidden><div><strong>${t(locale, "cookie.banner.title")}</strong><p>${t(locale, "cookie.banner.description")}</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">${t(locale, "cookie.banner.acceptEssential")}</button><button class="button primary" type="button" data-cookie-choice="all">${t(locale, "cookie.banner.acceptAll")}</button></div></aside>
+  <script src="/app.js?v=20260719-2" defer></script><script src="/js/cookie-consent.js?v=20260719-2" defer></script>
+</body></html>`;
+}
+
+for (const locale of Object.keys(routes)) fs.writeFileSync(output(locale), html(locale), "utf8");
+console.log("Generated 3 localized home pages.");

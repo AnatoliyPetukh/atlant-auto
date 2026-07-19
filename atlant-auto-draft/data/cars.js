@@ -29,6 +29,11 @@ window.ATLANT_CARS = [
     motDate: "2026-01-07",
     price: 15500,
     currency: "EUR",
+    description: {
+      ru: "Ford Focus Wagon ST-Line X Business — практичный и динамичный универсал для ежедневных поездок и дальних маршрутов. Бензиновый двигатель 1.0 EcoBoost мощностью 125 л.с. сочетается с механической коробкой передач. Просторный багажник, навигация, климат-контроль, подогрев передних сидений, камера заднего вида и парковочные датчики делают автомобиль удобным для семьи и работы.",
+      pl: "Ford Focus Wagon ST-Line X Business to praktyczne i dynamiczne kombi do codziennej jazdy oraz dalszych podróży. Benzynowy silnik 1.0 EcoBoost o mocy 125 KM współpracuje z manualną skrzynią biegów. Pojemny bagażnik, nawigacja, klimatyzacja, podgrzewane przednie fotele, kamera cofania i czujniki parkowania zwiększają wygodę w użytkowaniu rodzinnym i służbowym.",
+      en: "The Ford Focus Wagon ST-Line X Business is a practical and responsive estate for everyday use and longer journeys. Its 125 hp 1.0 EcoBoost petrol engine is paired with a manual transmission. A spacious luggage area, navigation, climate control, heated front seats, a reversing camera and parking sensors make it a versatile family or business car."
+    },
     mainImage: "../assets/cars/ford-focus-wagon-2022/photo_32_2026-07-12_11-47-53.jpg",
     images: [
       "../assets/cars/ford-focus-wagon-2022/photo_32_2026-07-12_11-47-53.jpg",
@@ -96,7 +101,8 @@ window.ATLANT_CARS = [
     currency: "EUR",
     description: {
       ru: "BMW 216d Gran Tourer — практичный семиместный автомобиль для семьи, который сочетает просторный трансформируемый салон с комфортом BMW. Экономичный дизельный двигатель мощностью 116 л.с. работает в паре с автоматической коробкой передач и хорошо подходит для города и дальних поездок. Панорамная крыша, LED-фары, навигация, камера заднего вида, климат-контроль, подогрев спортивных кожаных сидений и бесключевой доступ делают каждую поездку удобнее.",
-      pl: "BMW 216d Gran Tourer to praktyczny, siedmioosobowy samochód rodzinny, który łączy przestronne i elastyczne wnętrze z komfortem marki BMW. Oszczędny silnik Diesla o mocy 116 KM współpracuje z automatyczną skrzynią biegów i dobrze sprawdzi się zarówno w mieście, jak i podczas dalszych podróży. Panoramiczny dach, reflektory LED, nawigacja, kamera cofania, klimatyzacja automatyczna, podgrzewane sportowe fotele skórzane oraz system bezkluczykowego dostępu zwiększają komfort każdej podróży."
+      pl: "BMW 216d Gran Tourer to praktyczny, siedmioosobowy samochód rodzinny, który łączy przestronne i elastyczne wnętrze z komfortem marki BMW. Oszczędny silnik Diesla o mocy 116 KM współpracuje z automatyczną skrzynią biegów i dobrze sprawdzi się zarówno w mieście, jak i podczas dalszych podróży. Panoramiczny dach, reflektory LED, nawigacja, kamera cofania, klimatyzacja automatyczna, podgrzewane sportowe fotele skórzane oraz system bezkluczykowego dostępu zwiększają komfort każdej podróży.",
+      en: "The BMW 216d Gran Tourer is a practical seven-seat family car that combines a spacious, flexible cabin with BMW comfort. Its economical 116 hp diesel engine is paired with an automatic transmission and works well in the city and on longer journeys. A panoramic roof, LED headlights, navigation, a reversing camera, automatic climate control, heated sports leather seats and keyless access improve everyday comfort."
     },
     mainImage: "../assets/cars/bmw-216d-gran-tourer-2022/photo_1_2026-07-19_12-19-43.jpg",
     images: [
@@ -178,7 +184,8 @@ window.ATLANT_CARS = [
     currency: "EUR",
     description: {
       ru: "BMW X1 sDrive16d — практичный компактный кроссовер для города, семьи и дальних поездок. Экономичный дизельный двигатель мощностью 116 л.с. работает в паре с автоматической коробкой передач, а высокая посадка и удобные размеры помогают уверенно чувствовать себя в ежедневной эксплуатации. Просторный пятиместный салон, навигация, климат-контроль, парктроники и электропривод багажника делают автомобиль комфортным и функциональным.",
-      pl: "BMW X1 sDrive16d to praktyczny kompaktowy SUV, który dobrze sprawdzi się w mieście, podczas rodzinnych wyjazdów i na dłuższych trasach. Oszczędny silnik Diesla o mocy 116 KM współpracuje z automatyczną skrzynią biegów, a podwyższona pozycja za kierownicą i wygodne wymiary ułatwiają codzienną jazdę. Przestronne pięcioosobowe wnętrze, nawigacja, klimatyzacja, czujniki parkowania oraz elektrycznie sterowana klapa bagażnika zwiększają komfort i funkcjonalność."
+      pl: "BMW X1 sDrive16d to praktyczny kompaktowy SUV, który dobrze sprawdzi się w mieście, podczas rodzinnych wyjazdów i na dłuższych trasach. Oszczędny silnik Diesla o mocy 116 KM współpracuje z automatyczną skrzynią biegów, a podwyższona pozycja za kierownicą i wygodne wymiary ułatwiają codzienną jazdę. Przestronne pięcioosobowe wnętrze, nawigacja, klimatyzacja, czujniki parkowania oraz elektrycznie sterowana klapa bagażnika zwiększają komfort i funkcjonalność.",
+      en: "The BMW X1 sDrive16d is a practical compact crossover for city driving, family trips and longer journeys. Its economical 116 hp diesel engine is paired with an automatic transmission, while the raised driving position and manageable dimensions make everyday driving easier. A spacious five-seat cabin, navigation, climate control, parking sensors and an electrically operated tailgate add comfort and versatility."
     },
     mainImage: "../assets/cars/bmw-x1-sdrive16d-2021/photo_6_2026-07-19_12-41-08.jpg",
     images: [
@@ -228,6 +235,174 @@ window.ATLANT_CARS = [
         file: "../assets/cars/bmw-x1-sdrive16d-2021/vehicle-information.pdf",
         type: "application/pdf",
         size: "1,5 МБ"
+      }
+    ]
+  },
+  {
+    id: "peugeot-308-sw-allure-2023-warsaw-stock",
+    slug: "peugeot-308-sw-allure-2023",
+    status: "for-sale",
+    brand: "Peugeot",
+    model: "308 SW",
+    version: "Allure 1.5 BlueHDi 130 EAT8",
+    productionDate: "2023",
+    firstRegistrationDate: "2023-01-20",
+    mileageKm: 187618,
+    fuelType: "diesel",
+    engineCapacityCc: 1499,
+    powerKw: null,
+    powerHp: 131,
+    transmission: "automatic",
+    driveType: "Передний",
+    bodyType: "Универсал",
+    color: "Красный Rosso Elixir",
+    doors: 5,
+    seats: 5,
+    vin: "VR3FCYHZTNY637553",
+    registrationNumber: "GM014PK",
+    registrationCountry: "Италия",
+    vehicleSource: "Лизинг",
+    keysCount: 2,
+    emissionStandard: "Euro 5a",
+    co2GKm: null,
+    price: 9900,
+    priceExcludingVat: true,
+    currency: "EUR",
+    description: {
+      ru: "Peugeot 308 SW Allure 2023 года — современный и практичный универсал для города, семьи и дальних поездок. Дизельный двигатель 1.5 BlueHDi мощностью 131 л.с. работает в паре с восьмиступенчатой автоматической коробкой EAT8. Комплектация включает двухзонный климат-контроль, навигацию, камеру заднего вида, LED-фары, бесключевой доступ и 17-дюймовые легкосплавные диски. Пробег 187 618 км подтверждён отчётом BCA. Автомобиль находится в наличии в Варшаве.",
+      pl: "Peugeot 308 SW Allure z 2023 roku to nowoczesne i praktyczne kombi do miasta, dla rodziny i na dłuższe trasy. Silnik Diesla 1.5 BlueHDi o mocy 131 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Wyposażenie obejmuje dwustrefową klimatyzację automatyczną, nawigację, kamerę cofania, reflektory LED, dostęp bezkluczykowy i 17-calowe felgi aluminiowe. Przebieg 187 618 km potwierdza raport BCA. Samochód jest dostępny od ręki w Warszawie.",
+      en: "The 2023 Peugeot 308 SW Allure is a modern and practical estate for city use, family travel and longer journeys. Its 131 hp 1.5 BlueHDi diesel engine is paired with an eight-speed EAT8 automatic transmission. Equipment includes dual-zone climate control, navigation, a reversing camera, LED headlights, keyless entry and 17-inch alloy wheels. The BCA report confirms 187,618 km. The car is in stock in Warsaw."
+    },
+    mainImage: "../assets/cars/peugeot-308-sw-allure-2023/photo_2_2026-07-19_19-21-51.jpg",
+    images: [
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_2_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_4_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_6_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_7_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_8_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_10_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_11_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_13_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_14_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_16_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_17_2026-07-19_19-21-51.jpg",
+      "../assets/cars/peugeot-308-sw-allure-2023/photo_18_2026-07-19_19-21-51.jpg"
+    ],
+    equipment: {
+      comfort: ["Автоматический климат-контроль", "Электростеклоподъёмники спереди и сзади", "Бесключевой доступ", "Круиз-контроль", "Многофункциональный руль", "Электрорегулировка зеркал"],
+      safety: ["ABS", "ESP"],
+      multimedia: ["Навигация", "Центральный мультимедийный дисплей", "USB-разъём"],
+      driverAssistance: ["Задние парктроники", "Камера заднего вида"],
+      interior: ["Пятиместный салон", "Чёрная отделка сидений", "Кожаный руль"],
+      exterior: ["LED-фары", "Легкосплавные диски R17", "Тонированные стёкла"]
+    },
+    serviceHistory: [],
+    condition: {
+      "Пробег": "187 618 км",
+      "Местонахождение": "В наличии в Варшаве",
+      "Пробег подтверждён": "Да, отчёт BCA",
+      "Ключи": "2",
+      "Страна регистрации": "Италия",
+      "Источник": "Лизинг",
+      "Регистрационный документ": "У продавца",
+      "Оценка внешних повреждений": "932, валюта не указана"
+    },
+    documents: [
+      {
+        title: "Отчёт BCA об автомобиле",
+        file: "../assets/cars/peugeot-308-sw-allure-2023/bca-vehicle-report.pdf",
+        type: "application/pdf",
+        size: "7,1 МБ"
+      }
+    ]
+  },
+  {
+    id: "peugeot-408-allure-2023-vr3fphnstpy586262",
+    slug: "peugeot-408-allure-2023",
+    status: "for-sale",
+    brand: "Peugeot",
+    model: "408",
+    version: "Allure 1.2 PureTech 130 EAT8",
+    productionDate: "2023",
+    firstRegistrationDate: "2023-07-09",
+    mileageKm: 145193,
+    fuelType: "petrol",
+    engineCapacityCc: 1199,
+    powerKw: 96,
+    powerHp: 130,
+    transmission: "automatic",
+    driveType: "Передний",
+    bodyType: "Фастбэк-кроссовер",
+    color: "Серый металлик",
+    doors: 5,
+    seats: 5,
+    vin: "VR3FPHNSTPY586262",
+    registrationNumber: "GQ544DA",
+    registrationCountry: "Франция",
+    vehicleSource: "Лизинг",
+    keysCount: 1,
+    emissionStandard: "Euro 6D",
+    co2GKm: 136,
+    price: 12900,
+    priceExcludingVat: true,
+    currency: "EUR",
+    description: {
+      ru: "Peugeot 408 Allure 2023 года — выразительный и просторный фастбэк-кроссовер для города и дальних поездок. Бензиновый двигатель 1.2 PureTech мощностью 130 л.с. работает в паре с восьмиступенчатой автоматической коробкой EAT8. В оснащение входят цифровая приборная панель, навигация, двухзонный климат-контроль, камера заднего вида и современные системы помощи водителю. Сервисная история подтверждена документами: комплект ремня ГРМ с роликами заменён на пробеге 107 604 км, последнее обслуживание выполнено на 125 488 км. Автомобиль находится в наличии в Варшаве.",
+      pl: "Peugeot 408 Allure z 2023 roku to efektowny i przestronny crossover typu fastback, odpowiedni do miasta i na dłuższe trasy. Benzynowy silnik 1.2 PureTech o mocy 130 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Wyposażenie obejmuje cyfrowy zestaw wskaźników, nawigację, dwustrefową klimatyzację automatyczną, kamerę cofania i nowoczesne systemy wsparcia kierowcy. Historia serwisowa jest udokumentowana: zestaw paska rozrządu z rolkami wymieniono przy 107 604 km, a ostatni przegląd wykonano przy 125 488 km. Samochód jest dostępny od ręki w Warszawie.",
+      en: "The 2023 Peugeot 408 Allure is a distinctive and spacious fastback crossover for city driving and longer journeys. Its 130 hp 1.2 PureTech petrol engine is paired with an eight-speed EAT8 automatic transmission. Equipment includes a digital instrument cluster, navigation, dual-zone climate control, a reversing camera and modern driver-assistance systems. The documented service history records a timing-belt kit and roller replacement at 107,604 km, with the latest service completed at 125,488 km. The car is in stock in Warsaw."
+    },
+    mainImage: "../assets/cars/peugeot-408-allure-2023/photo_2_2026-07-19_12-37-38.jpg",
+    images: [
+      "../assets/cars/peugeot-408-allure-2023/photo_2_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_1_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_7_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_6_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_5_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_4_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_3_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_10_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_9_2026-07-19_12-37-38.jpg",
+      "../assets/cars/peugeot-408-allure-2023/photo_8_2026-07-19_12-37-38.jpg"
+    ],
+    equipment: {
+      comfort: ["Двухзонный климат-контроль", "Электростеклоподъёмники спереди и сзади", "Круиз-контроль", "Датчик света", "Датчик дождя", "Многофункциональный руль", "Электрический стояночный тормоз"],
+      safety: ["ABS", "ESP", "Контроль давления в шинах", "Система экстренного торможения", "Система удержания в полосе", "Крепления ISOFIX"],
+      multimedia: ["Навигация", "Bluetooth", "Цифровая приборная панель", "Центральный мультимедийный дисплей", "Бортовой компьютер"],
+      driverAssistance: ["Передние и задние парктроники", "Камера заднего вида", "Автоматический дальний свет"],
+      interior: ["Пятиместный салон", "Комбинированная отделка сидений", "Кожаный руль", "Передний и задний центральные подлокотники"],
+      exterior: ["LED-фары", "Дневные ходовые огни", "Легкосплавные диски", "Тонированные стёкла"]
+    },
+    serviceHistory: [
+      { date: "2024-01-04", mileageKm: 21991, work: "Плановое обслуживание и замена фильтров." },
+      { date: "2024-05-13", mileageKm: 42265, work: "Плановое обслуживание, замена фильтров и свечей зажигания." },
+      { date: "2024-10-04", mileageKm: 64492, work: "Плановое техническое обслуживание." },
+      { date: "2025-02-18", mileageKm: 85779, work: "Плановое обслуживание, замена фильтров и свечей зажигания." },
+      { date: "2025-06-27", mileageKm: 105344, work: "Плановое обслуживание, замена фильтров, щётки стеклоочистителя и приводного ремня." },
+      { date: "2025-07-03", mileageKm: 107604, work: "Замена комплекта ремня ГРМ с роликами; выполнены сопутствующие электрические работы." },
+      { date: "2025-12-01", mileageKm: 125488, work: "Плановое обслуживание, замена фильтров и тормозной жидкости." }
+    ],
+    condition: {
+      "Пробег": "145 193 км",
+      "Местонахождение": "В наличии в Варшаве",
+      "Пробег подтверждён": "Да, отчёт BCA",
+      "Ключи": "1",
+      "Страна регистрации": "Франция",
+      "Источник": "Лизинг",
+      "Регистрационный документ": "У продавца",
+      "Состояние на площадке": "Автомобиль заводится и передвигается"
+    },
+    documents: [
+      {
+        title: "Отчёт BCA об автомобиле",
+        file: "../assets/cars/peugeot-408-allure-2023/bca-vehicle-report.pdf",
+        type: "application/pdf",
+        size: "2,7 МБ"
+      },
+      {
+        title: "История обслуживания BCA",
+        file: "../assets/cars/peugeot-408-allure-2023/bca-service-history.pdf",
+        type: "application/pdf",
+        size: "0,1 МБ"
       }
     ]
   }

@@ -1,62 +1,21 @@
-const cars = window.ATLANT_CARS || [];
-const format = window.CarFormat;
-const carsGrid = document.getElementById("carsGrid");
-const filters = document.querySelectorAll(".filter");
-let currentFilter = "all";
-
-function fromPage(path) {
-  return path.startsWith("../") ? path.slice(3) : path;
-}
-
-function compactLine(values) {
-  const visibleValues = values.filter(format.present);
-  return visibleValues.length ? `<div>${visibleValues.map((value) => `<span>${value}</span>`).join("")}</div>` : "";
-}
-
-function renderCars() {
-  const visibleCars = cars.filter((car) => currentFilter === "all" || car.status === currentFilter);
-  carsGrid.innerHTML = visibleCars.map((car) => {
-    const displayDate = format.catalogDate(car);
-    return `
-      <article class="car-card">
-        <div class="car-media">
-          <img src="${fromPage(car.mainImage)}" alt="${format.title(car)}" width="1280" height="960" loading="lazy">
-          <span class="badge ${car.status === "sold" ? "sold" : ""}">${format.labels.status[car.status]}</span>
-        </div>
-        <div class="car-body">
-          <h3>${format.title(car)}</h3>
-          <div class="compact-specs">
-            ${compactLine([
-              displayDate && displayDate.value,
-              format.labels.fuelType[car.fuelType],
-              format.labels.transmission[car.transmission]
-            ])}
-            ${compactLine([
-              format.mileage(car.mileageKm),
-              format.engine(car.engineCapacityCc)
-            ])}
-          </div>
-          <div class="price-row">
-            <span class="price">${format.price(car)}</span>
-            <a class="small-button" href="cars/${car.slug}.html">Подробнее</a>
-          </div>
-        </div>
-      </article>`;
-  }).join("");
-}
-
-filters.forEach((button) => {
+document.querySelectorAll("[data-filter]").forEach((button) => {
   button.addEventListener("click", () => {
-    filters.forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-    currentFilter = button.dataset.filter;
-    renderCars();
+    const filter = button.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach((item) => item.classList.toggle("active", item === button));
+    let visible = 0;
+    document.querySelectorAll(".car-card[data-status]").forEach((card) => {
+      const show = filter === "all" || card.dataset.status === filter;
+      card.hidden = !show;
+      if (show) visible += 1;
+    });
+    const empty = document.querySelector("[data-empty-state]");
+    if (empty) empty.hidden = visible > 0;
   });
 });
 
-document.getElementById("requestForm").addEventListener("submit", (event) => {
+document.querySelector(".request-form")?.addEventListener("submit", (event) => {
   event.preventDefault();
-  document.getElementById("formNote").textContent = "Черновик заявки готов. На следующем этапе подключим отправку в Telegram, email или CRM.";
+  if (!event.currentTarget.reportValidity()) return;
+  const note = event.currentTarget.querySelector(".form-note");
+  if (note) note.textContent = event.currentTarget.dataset.success || "";
 });
-
-renderCars();

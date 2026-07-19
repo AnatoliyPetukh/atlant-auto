@@ -8,16 +8,16 @@ export function calculateVehicleAge(releaseMonth, releaseYear, atDate = new Date
   const month = Number(releaseMonth);
   const year = Number(releaseYear);
   if (!Number.isInteger(month) || month < 1 || month > 12) {
-    throw new Error("Месяц выпуска должен быть от 1 до 12.");
+    throw new Error("calculator.error.releaseMonth");
   }
   if (!Number.isInteger(year) || year > atDate.getFullYear()) {
-    throw new Error("Год выпуска не может быть в будущем.");
+    throw new Error("calculator.error.releaseYear");
   }
 
   const releaseIndex = year * 12 + (month - 1);
   const currentIndex = atDate.getFullYear() * 12 + atDate.getMonth();
   if (releaseIndex > currentIndex) {
-    throw new Error("Дата выпуска не может быть в будущем.");
+    throw new Error("calculator.error.releaseDate");
   }
 
   const totalMonths = currentIndex - releaseIndex;
@@ -37,14 +37,14 @@ export function getAgeCategory(age) {
 export function selectRate(priceEur, volumeCc, ageCategory, rateTables = CUSTOMS_RATE_TABLES) {
   if (ageCategory === "under3") {
     const matches = rateTables.under3.filter((rate) => priceEur <= rate.maxPrice);
-    if (matches.length === 0) throw new Error("Не найдена ставка для стоимости автомобиля.");
+    if (matches.length === 0) throw new Error("calculator.error.priceRate");
     return { ...matches[0], table: "under3" };
   }
 
   const table = rateTables[ageCategory];
-  if (!table) throw new Error("Неизвестная возрастная категория.");
+  if (!table) throw new Error("calculator.error.ageCategory");
   const matches = table.filter((rate) => volumeCc <= rate.maxVolume);
-  if (matches.length === 0) throw new Error("Не найдена ставка для объема двигателя.");
+  if (matches.length === 0) throw new Error("calculator.error.capacityRate");
   return { ...matches[0], table: ageCategory };
 }
 
@@ -54,14 +54,14 @@ export function calculateCustomsDuty(priceEur, volumeCc, ageCategory, rate) {
     const volumePart = volumeCc * rate.minRatePerCc;
     return {
       value: roundMoney(Math.max(percentPart, volumePart)),
-      formula: `max(${rate.percent * 100}% от стоимости, ${rate.minRatePerCc} EUR/см3)`,
+      formula: `max(${rate.percent * 100}%, ${rate.minRatePerCc} EUR/cc)`,
       appliedRate: rate.label
     };
   }
 
   return {
     value: roundMoney(volumeCc * rate.ratePerCc),
-    formula: `${volumeCc} см3 × ${rate.ratePerCc} EUR/см3`,
+    formula: `${volumeCc} cc × ${rate.ratePerCc} EUR/cc`,
     appliedRate: rate.label
   };
 }
@@ -92,7 +92,7 @@ export function convertPriceToEur(price, currency, exchangeRates = CALCULATOR_CO
   const rate = exchangeRates[currency];
   if (currency === "EUR") return price;
   if (!rate || rate <= 0) {
-    throw new Error(`Для валюты ${currency} нужен ручной курс к EUR.`);
+    throw new Error(`calculator.error.exchangeRate.${currency}`);
   }
   return roundMoney(price * rate);
 }
@@ -101,7 +101,7 @@ export function normalizeOptionalCost(value) {
   if (value === null || value === undefined || value === "") return null;
   const number = Number(value);
   if (!Number.isFinite(number) || number < 0) {
-    throw new Error("Ручные суммы не могут быть отрицательными.");
+    throw new Error("calculator.error.negativeCost");
   }
   return roundMoney(number);
 }
@@ -115,14 +115,14 @@ export function calculateCustomsQuote(input, options = {}) {
   const price = Number(input.price);
   const volumeCc = Number(input.volumeCc);
 
-  if (!Number.isFinite(price) || price <= 0) throw new Error("Цена автомобиля должна быть больше нуля.");
-  if (!Number.isFinite(volumeCc) || volumeCc <= 0) throw new Error("Объем двигателя должен быть больше нуля.");
-  if (!["EUR", "PLN"].includes(input.currency)) throw new Error("Валюта должна быть EUR или PLN.");
+  if (!Number.isFinite(price) || price <= 0) throw new Error("calculator.error.price");
+  if (!Number.isFinite(volumeCc) || volumeCc <= 0) throw new Error("calculator.error.capacity");
+  if (!["EUR", "PLN"].includes(input.currency)) throw new Error("calculator.error.currency");
 
   if (!CALCULATOR_CONFIG.supportedFuelTypes.includes(input.engineType)) {
     return {
       status: "manual_required",
-      message: "Для выбранного типа двигателя требуется индивидуальный расчёт."
+      messageKey: "calculator.result.manualNote"
     };
   }
 
@@ -175,7 +175,6 @@ export function calculateCustomsQuote(input, options = {}) {
     companyFee,
     includeFullBudget: Boolean(input.includeFullBudget),
     customsTotal,
-    fullBudgetTotal,
-    disclaimer: "Расчёт носит ориентировочный характер и не является окончательным коммерческим предложением, налоговой, таможенной или юридической консультацией. Фактическая сумма зависит от документов и характеристик автомобиля, даты оформления, действующих ставок, валютного курса и права покупателя на льготу."
+    fullBudgetTotal
   };
 }

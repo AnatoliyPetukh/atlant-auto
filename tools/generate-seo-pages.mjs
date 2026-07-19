@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { equivalents, locales, pages, site } from "./seo-config.mjs";
+import { t } from "./i18n-catalog.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atlant-auto-draft");
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
@@ -36,7 +37,9 @@ function organizationSchema() {
 }
 
 function schema(page, locale) {
-  const [key, route, title, description, h1] = page;
+  const [key, route] = page;
+  const localeCode = locale.lang;
+  const h1 = t(localeCode, `page.${key}.h1`);
   const graph = [
     organizationSchema(),
     {
@@ -50,7 +53,7 @@ function schema(page, locale) {
     {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: locale.breadcrumb, item: absolute(locale.home) },
+        { "@type": "ListItem", position: 1, name: t(localeCode, "navigation.home"), item: absolute(locale.home) },
         { "@type": "ListItem", position: 2, name: h1, item: absolute(route) }
       ]
     }
@@ -64,11 +67,7 @@ function schema(page, locale) {
         name: question,
         acceptedAnswer: {
           "@type": "Answer",
-          text: locale.lang === "pl"
-            ? ["Tak. Zakres kontroli zależy od źródła oferty i dostępnych dokumentów.", "Cena obejmuje auto oraz uzgodnione opłaty, transport i formalności.", "Zakres dokumentów zależy od kraju, sprzedawcy i celu rejestracji."][index]
-            : locale.lang === "en"
-              ? ["Yes. The scope depends on the seller, listing source and available documents.", "It includes the vehicle and agreed fees, transport and formalities.", "The exact document set depends on the seller country and registration destination."][index]
-              : ["Да. Объём проверки зависит от продавца, площадки и доступных документов.", "Она включает автомобиль, согласованные комиссии, доставку и оформление.", "Точный комплект зависит от страны продавца и места регистрации."][index]
+          text: t(localeCode, ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"][index])
         }
       }))
     });
@@ -77,7 +76,8 @@ function schema(page, locale) {
 }
 
 function nav(locale) {
-  return locale.nav.map((label, index) => `<a href="${locale.routes[index]}">${label}</a>`).join("");
+  const keys = ["navigation.catalog", "navigation.process", "navigation.calculator", "navigation.about", "navigation.contact"];
+  return keys.map((key, index) => `<a href="${locale.routes[index]}">${t(locale.lang, key)}</a>`).join("");
 }
 
 function languageNav(current) {
@@ -88,16 +88,28 @@ function languageNav(current) {
 
 function pageHtml(page, localeCode) {
   const locale = locales[localeCode];
-  const [key, route, title, description, h1, intro, cards] = page;
+  const [key, route, , , , , cards] = page;
+  const title = t(localeCode, `page.${key}.title`);
+  const description = t(localeCode, `page.${key}.description`);
+  const h1 = t(localeCode, `page.${key}.h1`);
+  const intro = t(localeCode, `page.${key}.intro`);
+  const localizedCards = cards.map((_, index) => t(localeCode, `page.${key}.card.${index + 1}`));
   const isHome = key === "home";
   const contactAction = locale.routes[4];
   const catalogue = locale.routes[0];
-  const cardLinks = key === "cars" || key === "cases"
-    ? ["/cars/bmw-216d-gran-tourer-2022.html", "/cars/bmw-x1-sdrive16d-2021.html", "/cars/ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022.html"]
-    : null;
-  const cardsHtml = cards.map((card, index) => `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(intro)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${localeCode === "pl" ? "Zobacz samochód" : localeCode === "en" ? "View vehicle" : "Смотреть автомобиль"}</a>` : ""}</article>`).join("");
-  const faq = key === "faq" ? `<section class="content-section faq">${cards.map((q, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${localeCode === "pl" ? ["Tak. Zakres kontroli zależy od źródła i dostępnych dokumentów.", "Koszt obejmuje samochód oraz uzgodnione opłaty, transport i formalności.", "Zakres dokumentów zależy od kraju sprzedawcy i miejsca rejestracji."][index] : localeCode === "en" ? ["Yes. The scope depends on the source and available documents.", "The total includes the vehicle and agreed fees, transport and formalities.", "The document set depends on seller country and registration destination."][index] : ["Да. Объём проверки зависит от источника и доступных документов.", "Стоимость включает автомобиль, согласованные комиссии, доставку и оформление.", "Комплект документов зависит от страны продавца и места регистрации."][index]}</p></details>`).join("")}</section>` : "";
-  const calculatorNote = key === "calculator" ? `<p class="seo-callout">${localeCode === "ru" ? "Рабочий калькулятор растаможки для Беларуси доступен по ссылке ниже." : localeCode === "pl" ? "Kalkulator odprawy dla Białorusi jest dostępny poniżej." : "The Belarus customs calculator is available below."} <a class="text-link" href="/customs-calculator.html">${localeCode === "ru" ? "Открыть калькулятор" : localeCode === "pl" ? "Otwórz kalkulator" : "Open calculator"}</a></p>` : "";
+  const vehiclePrefix = localeCode === "ru" ? "/cars/" : localeCode === "pl" ? "/pl/samochody/" : "/en/cars/";
+  const vehicleSuffix = localeCode === "ru" ? ".html" : "/";
+  const linkedVehicleSlugs = key === "cars"
+    ? ["bmw-216d-gran-tourer-2022", "bmw-x1-sdrive16d-2021", "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022", "peugeot-308-sw-allure-2023"]
+    : key === "cases"
+      ? ["bmw-216d-gran-tourer-2022", "bmw-x1-sdrive16d-2021", "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022"]
+      : null;
+  const cardLinks = linkedVehicleSlugs?.map((slug) => `${vehiclePrefix}${slug}${vehicleSuffix}`) || null;
+  const cardsHtml = localizedCards.map((card, index) => `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(intro)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${t(localeCode, "topic.cards.viewVehicle")}</a>` : ""}</article>`).join("");
+  const faqAnswers = ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"];
+  const faq = key === "faq" ? `<section class="content-section faq">${localizedCards.map((q, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${t(localeCode, faqAnswers[index])}</p></details>`).join("")}</section>` : "";
+  const calculatorRoute = localeCode === "ru" ? "/customs-calculator.html" : `/${localeCode}/customs-calculator.html`;
+  const calculatorNote = key === "calculator" ? `<p class="seo-callout">${t(localeCode, "topic.calculator.note")} <a class="text-link" href="${calculatorRoute}">${t(localeCode, "topic.calculator.open")}</a></p>` : "";
   return `<!doctype html>
 <html lang="${locale.lang}">
 <head>
@@ -123,30 +135,35 @@ function pageHtml(page, localeCode) {
 <body class="content-page">
   <header class="topbar">
     <a class="brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
-    <nav class="nav" aria-label="Primary navigation">${nav(locale)}</nav>
-    <div class="language-nav" aria-label="Language">${languageNav(localeCode)}</div>
+    <nav class="nav" aria-label="${t(localeCode, "navigation.primary.label")}">${nav(locale)}</nav>
+    <div class="language-nav" aria-label="${t(localeCode, "language.selector.label")}">${languageNav(localeCode)}</div>
   </header>
   <main>
-    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${locale.home}">${locale.breadcrumb}</a><span aria-hidden="true">/</span><span>${esc(h1)}</span></nav>
+    <nav class="breadcrumbs" aria-label="${t(localeCode, "navigation.breadcrumb.label")}"><a href="${locale.home}">${t(localeCode, "navigation.home")}</a><span aria-hidden="true">/</span><span>${esc(h1)}</span></nav>
     <section class="content-hero${isHome ? " content-hero-home" : ""}">
-      <p class="eyebrow">${locale.eyebrow}</p>
+      <p class="eyebrow">${t(localeCode, "locale.eyebrow")}</p>
       <h1>${esc(h1)}</h1>
       <p class="lead">${esc(intro)}</p>
-      <div class="hero-actions"><a class="button primary" href="${contactAction}">${locale.cta}</a><a class="button ghost dark" href="${catalogue}">${locale.nav[0]}</a></div>
+      <div class="hero-actions"><a class="button primary" href="${contactAction}">${t(localeCode, "action.discussCar")}</a><a class="button ghost dark" href="${catalogue}">${t(localeCode, "navigation.catalog")}</a></div>
     </section>
     ${calculatorNote}
     <section class="content-section topic-grid">${cardsHtml}</section>
     ${faq}
     <section class="content-section seo-copy">
-      <h2>${localeCode === "pl" ? "Przejrzysty proces i sprawdzone dane" : localeCode === "en" ? "A transparent process based on available evidence" : "Прозрачный процесс и проверяемые данные"}</h2>
-      <p>${esc(intro)} ${localeCode === "pl" ? "Nie publikujemy fikcyjnych ocen ani obietnic. Zakres kontroli i kosztorys zależą od konkretnego pojazdu." : localeCode === "en" ? "We do not publish invented ratings or guarantees. The scope of checks and the estimate depend on the selected vehicle." : "Мы не публикуем выдуманные рейтинги и гарантии. Объём проверки и смета зависят от конкретного автомобиля."}</p>
-      <p><a class="text-link" href="${locale.routes[1]}">${locale.nav[1]}</a> · <a class="text-link" href="${locale.routes[3]}">${locale.nav[3]}</a> · <a class="text-link" href="${locale.routes[4]}">${locale.nav[4]}</a></p>
+      <h2>${t(localeCode, "topic.proof.heading")}</h2>
+      <p>${esc(intro)} ${t(localeCode, "topic.proof.disclaimer")}</p>
+      <p><a class="text-link" href="${locale.routes[1]}">${t(localeCode, "navigation.process")}</a> · <a class="text-link" href="${locale.routes[3]}">${t(localeCode, "navigation.about")}</a> · <a class="text-link" href="${locale.routes[4]}">${t(localeCode, "navigation.contact")}</a></p>
     </section>
   </main>
   <footer class="footer">
-    <div><a class="brand footer-brand" href="${locale.home}"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>${site.legalName}</small></span></a><p>${locale.footer}</p><p>NIP ${site.nip}</p></div>
-    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">Telegram</a><span>${site.address}</span><a href="${localeCode === "ru" ? "/privacy/" : localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${localeCode === "pl" ? "Polityka prywatności" : localeCode === "en" ? "Privacy policy" : "Политика конфиденциальности"}</a></address>
+    <div><a class="brand footer-brand" href="${locale.home}"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>${site.legalName}</small></span></a><p>${t(localeCode, "footer.tagline")}</p><p>NIP ${site.nip}</p></div>
+    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">${t(localeCode, "common.telegram")}</a><span>${site.address}</span><a href="${localeCode === "ru" ? "/privacy/" : localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
   </footer>
+  <aside class="cookie-banner" data-cookie-banner hidden>
+    <div><strong>${t(localeCode, "cookie.banner.title")}</strong><p>${t(localeCode, "cookie.banner.description")}</p></div>
+    <div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">${t(localeCode, "cookie.banner.acceptEssential")}</button><button class="button primary" type="button" data-cookie-choice="all">${t(localeCode, "cookie.banner.acceptAll")}</button></div>
+  </aside>
+  <script src="/js/cookie-consent.js" defer></script>
 </body>
 </html>`;
 }
@@ -154,7 +171,7 @@ function pageHtml(page, localeCode) {
 const generated = [];
 for (const [localeCode, localePages] of Object.entries(pages)) {
   for (const page of localePages) {
-    if (page[1] === "/") continue;
+    if (page[0] === "home") continue;
     const target = outputPath(page[1]);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, pageHtml(page, localeCode), "utf8");
@@ -162,13 +179,17 @@ for (const [localeCode, localePages] of Object.entries(pages)) {
   }
 }
 
+const vehicleRoutesFile = path.join(root, "vehicle-pages.json");
+const vehicleRoutes = fs.existsSync(vehicleRoutesFile) ? JSON.parse(fs.readFileSync(vehicleRoutesFile, "utf8")) : [];
 const sitemapRoutes = [
   "/",
+  "/pl/",
+  "/en/",
   ...generated,
   "/customs-calculator.html",
-  "/cars/ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022.html",
-  "/cars/bmw-216d-gran-tourer-2022.html",
-  "/cars/bmw-x1-sdrive16d-2021.html"
+  "/pl/customs-calculator.html",
+  "/en/customs-calculator.html",
+  ...vehicleRoutes
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

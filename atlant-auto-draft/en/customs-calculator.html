@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belarus vehicle customs calculator | Atlant Auto</title>
+  <meta name="description" content="Indicative customs-duty and full vehicle budget estimate for a private buyer in Belarus.">
+  <link rel="canonical" href="https://atlantauto.pl/en/customs-calculator.html">
+  <link rel="alternate" hreflang="ru" href="https://atlantauto.pl/customs-calculator.html">
+  <link rel="alternate" hreflang="pl" href="https://atlantauto.pl/pl/customs-calculator.html">
+  <link rel="alternate" hreflang="en" href="https://atlantauto.pl/en/customs-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://atlantauto.pl/customs-calculator.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Atlant Auto">
+  <meta property="og:title" content="Belarus vehicle customs calculator | Atlant Auto">
+  <meta property="og:description" content="Indicative customs-duty and full vehicle budget estimate for a private buyer in Belarus.">
+  <meta property="og:url" content="https://atlantauto.pl/en/customs-calculator.html">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/en/" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
+    <nav class="nav" aria-label="Primary navigation"><a href="/en/cars/">Cars</a><a href="/en/customs-calculator.html" aria-current="page">Calculator</a><a href="/en/contact/">Contact</a></nav>
+    <div class="language-nav" aria-label="Language"><a href="/customs-calculator.html" lang="ru">RU</a><a href="/pl/customs-calculator.html" lang="pl">PL</a><a href="/en/customs-calculator.html" lang="en" aria-current="page">EN</a></div>
+  </header>
+  <main>
+    <section class="calc-page-hero"><div><p class="eyebrow">Belarus · private buyers</p><h1>Vehicle customs calculator</h1><p class="lead">An indicative estimate based on price, production month and engine capacity. Hybrid and electric vehicles require an individual review.</p></div></section>
+    <section class="section calc-section"><div class="calc-layout">
+      <form class="calc-form" id="customsCalculatorForm">
+        <label>Vehicle price<input name="price" type="number" min="1" step="0.01" value="10000" required></label>
+        <label>Currency<select name="currency"><option value="EUR" selected>EUR</option><option value="PLN">PLN</option></select></label>
+        <label>Production month<select name="releaseMonth"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7" selected>July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></label>
+        <label>Production year<input name="releaseYear" type="number" min="1990" max="2026" value="2022" required></label>
+        <label>Engine capacity, cc<input name="volumeCc" type="number" min="1" step="1" value="2000" required></label>
+        <label>Powertrain<select name="engineType"><option value="petrol">Petrol</option><option value="diesel">Diesel</option><option value="hybrid">Hybrid</option><option value="electric">Electric</option></select></label>
+        <fieldset class="calc-fieldset calc-mode"><legend>Clearance mode</legend><label><input type="radio" name="clearanceMode" value="standard" checked> Standard</label><label><input type="radio" name="clearanceMode" value="benefit50"> 50% concession</label></fieldset>
+        <label class="calc-check"><input name="includeFullBudget" type="checkbox"> Show the full turnkey budget</label>
+        <button class="small-button calc-advanced-toggle" id="advancedToggle" type="button" aria-expanded="false">Additional parameters</button>
+        <div class="calc-advanced" id="advancedPanel" hidden>
+          <label>Auction fee, EUR<input name="auctionFee" type="number" min="0" step="0.01"></label><label>Delivery to Warsaw, EUR<input name="deliveryToWarsaw" type="number" min="0" step="0.01"></label><label>Delivery to Belarus, EUR<input name="deliveryToBelarus" type="number" min="0" step="0.01"></label><label>Recycling fee, EUR<input name="recyclingFee" type="number" min="0" step="0.01"></label><label>Customs fee, EUR<input name="customsFee" type="number" min="0" step="0.01"></label><label>Customs agent, EUR<input name="declarant" type="number" min="0" step="0.01"></label><label>Temporary storage, EUR<input name="temporaryStorage" type="number" min="0" step="0.01"></label><label>Electronic vehicle passport, EUR<input name="epts" type="number" min="0" step="0.01"></label><label>Other costs, EUR<input name="other" type="number" min="0" step="0.01"></label>
+        </div>
+        <button class="button primary" type="submit">Calculate</button>
+      </form>
+      <aside class="calc-result" id="customsCalculatorResult" aria-live="polite"></aside>
+    </div></section>
+  </main>
+  <footer class="footer"><div><strong>Atlant Auto</strong><p>Vehicle sourcing, checks, purchase and delivery from Europe.</p></div><address><a href="tel:+48515392420">+48 515 392 420</a><a href="mailto:autoatlantcapital@gmail.com">autoatlantcapital@gmail.com</a><span>Wielkiego Dębu 6, 03-262 Warszawa</span></address></footer>
+  <aside class="cookie-banner" data-cookie-banner hidden><div><strong>Cookies on Atlant Auto</strong><p>We use only essential cookies to remember language and privacy preferences. Analytics cookies will be enabled only after separate consent.</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">Essential only</button><button class="button primary" type="button" data-cookie-choice="all">Allow all</button></div></aside>
+  <script id="calculatorMessages" type="application/json">{"locale":"en","messages":{"calculator.cost.auctionFee":"Auction fee","calculator.cost.deliveryToWarsaw":"Delivery to Warsaw","calculator.cost.deliveryToBelarus":"Delivery to Belarus","calculator.cost.recyclingFee":"Recycling fee","calculator.cost.customsFee":"Customs fee","calculator.cost.declarant":"Customs agent","calculator.cost.temporaryStorage":"Temporary storage","calculator.cost.epts":"Electronic vehicle passport","calculator.cost.other":"Other costs","calculator.cost.companyFee":"ATLANT CAPITAL fee","calculator.result.notIncluded":"Not included","calculator.result.manualTitle":"Individual estimate","calculator.result.reviewRequired":"Review required","calculator.result.manualNote":"A rate is not applied automatically to hybrids or electric vehicles without confirming the configuration.","calculator.result.customsTotal":"Estimated customs-clearance cost","calculator.result.fullTotal":"Estimated turnkey vehicle cost","calculator.result.ageCategory":"Age category","calculator.result.vehiclePriceEur":"Vehicle price in EUR","calculator.result.appliedRate":"Applied rate","calculator.result.formula":"Formula","calculator.result.standardDuty":"Customs duty before concession","calculator.result.benefit":"Concession amount","calculator.result.finalDuty":"Customs duty after concession","calculator.result.benefitNote":"The concession applies only when eligibility is confirmed. The calculator does not verify the user's eligibility.","calculator.result.disclaimer":"This estimate is indicative and is not a final commercial offer or tax, customs or legal advice.","calculator.error.checkData":"Check the details","calculator.error.unavailable":"Unable to calculate","calculator.error.invalidInput":"Check the entered values and calculate again."}}</script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script type="module" src="/js/customs-calculator-page.mjs"></script>
+</body>
+</html>

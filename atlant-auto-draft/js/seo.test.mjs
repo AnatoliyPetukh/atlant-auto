@@ -61,7 +61,9 @@ test("localized pages have reciprocal hreflang sets and x-default", () => {
     for (const lang of ["ru", "pl", "en", "x-default"]) assert.ok(map[lang], `${route}: missing ${lang}`);
     for (const lang of ["ru", "pl", "en"]) {
       const targetRoute = new URL(map[lang]).pathname;
-      const targetFile = targetRoute === "/" ? path.join(root, "index.html") : path.join(root, targetRoute.slice(1), "index.html");
+      const targetFile = targetRoute === "/" ? path.join(root, "index.html")
+        : targetRoute.endsWith("/") ? path.join(root, targetRoute.slice(1), "index.html")
+        : path.join(root, targetRoute.slice(1));
       assert.ok(fs.existsSync(targetFile), `${route}: hreflang target ${targetRoute} is missing`);
       const targetHtml = read(targetFile);
       assert.match(targetHtml, new RegExp(`hreflang="${lang === "ru" ? (route.startsWith("/pl/") ? "pl" : route.startsWith("/en/") ? "en" : "ru") : lang}"|hreflang="(?:ru|pl|en)"`));
@@ -106,7 +108,9 @@ test("robots allows crawling and points to the canonical sitemap", () => {
 
 test("critical vehicle and catalogue content exists in static HTML", () => {
   const home = read(path.join(root, "index.html"));
-  assert.equal((home.match(/<article class="car-card">/g) || []).length, 3);
+  const vehicleRoutes = JSON.parse(read(path.join(root, "vehicle-pages.json")));
+  const vehicleCount = vehicleRoutes.filter((route) => route.startsWith("/cars/")).length;
+  assert.equal((home.match(/<article class="car-card"/g) || []).length, vehicleCount);
   for (const file of htmlFiles.filter((item) => path.dirname(item) === path.join(root, "cars"))) {
     const html = read(file);
     assert.match(html, /<section class="car-hero">/);

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator odprawy celnej samochodu na Białoruś | Atlant Auto</title>
+  <meta name="description" content="Orientacyjne obliczenie opłaty celnej i pełnego budżetu samochodu dla osoby fizycznej na Białorusi.">
+  <link rel="canonical" href="https://atlantauto.pl/pl/customs-calculator.html">
+  <link rel="alternate" hreflang="ru" href="https://atlantauto.pl/customs-calculator.html">
+  <link rel="alternate" hreflang="pl" href="https://atlantauto.pl/pl/customs-calculator.html">
+  <link rel="alternate" hreflang="en" href="https://atlantauto.pl/en/customs-calculator.html">
+  <link rel="alternate" hreflang="x-default" href="https://atlantauto.pl/customs-calculator.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Atlant Auto">
+  <meta property="og:title" content="Kalkulator odprawy celnej samochodu na Białoruś | Atlant Auto">
+  <meta property="og:description" content="Orientacyjne obliczenie opłaty celnej i pełnego budżetu samochodu dla osoby fizycznej na Białorusi.">
+  <meta property="og:url" content="https://atlantauto.pl/pl/customs-calculator.html">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/pl/" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
+    <nav class="nav" aria-label="Główna nawigacja"><a href="/pl/samochody/">Samochody</a><a href="/pl/customs-calculator.html" aria-current="page">Kalkulator</a><a href="/pl/kontakt/">Kontakt</a></nav>
+    <div class="language-nav" aria-label="Język"><a href="/customs-calculator.html" lang="ru">RU</a><a href="/pl/customs-calculator.html" lang="pl" aria-current="page">PL</a><a href="/en/customs-calculator.html" lang="en">EN</a></div>
+  </header>
+  <main>
+    <section class="calc-page-hero"><div><p class="eyebrow">Białoruś · osoby fizyczne</p><h1>Kalkulator odprawy celnej samochodu</h1><p class="lead">Orientacyjne obliczenie na podstawie ceny, miesiąca produkcji i pojemności silnika. Hybrydy i samochody elektryczne wymagają indywidualnej weryfikacji.</p></div></section>
+    <section class="section calc-section"><div class="calc-layout">
+      <form class="calc-form" id="customsCalculatorForm">
+        <label>Cena samochodu<input name="price" type="number" min="1" step="0.01" value="10000" required></label>
+        <label>Waluta<select name="currency"><option value="EUR" selected>EUR</option><option value="PLN">PLN</option></select></label>
+        <label>Miesiąc produkcji<select name="releaseMonth"><option value="1">Styczeń</option><option value="2">Luty</option><option value="3">Marzec</option><option value="4">Kwiecień</option><option value="5">Maj</option><option value="6">Czerwiec</option><option value="7" selected>Lipiec</option><option value="8">Sierpień</option><option value="9">Wrzesień</option><option value="10">Październik</option><option value="11">Listopad</option><option value="12">Grudzień</option></select></label>
+        <label>Rok produkcji<input name="releaseYear" type="number" min="1990" max="2026" value="2022" required></label>
+        <label>Pojemność silnika, cm³<input name="volumeCc" type="number" min="1" step="1" value="2000" required></label>
+        <label>Rodzaj napędu<select name="engineType"><option value="petrol">Benzyna</option><option value="diesel">Diesel</option><option value="hybrid">Hybryda</option><option value="electric">Samochód elektryczny</option></select></label>
+        <fieldset class="calc-fieldset calc-mode"><legend>Tryb odprawy</legend><label><input type="radio" name="clearanceMode" value="standard" checked> Standardowy</label><label><input type="radio" name="clearanceMode" value="benefit50"> Ulga 50%</label></fieldset>
+        <label class="calc-check"><input name="includeFullBudget" type="checkbox"> Pokaż pełny budżet pod klucz</label>
+        <button class="small-button calc-advanced-toggle" id="advancedToggle" type="button" aria-expanded="false">Dodatkowe parametry</button>
+        <div class="calc-advanced" id="advancedPanel" hidden>
+          <label>Prowizja aukcyjna, EUR<input name="auctionFee" type="number" min="0" step="0.01"></label><label>Transport do Warszawy, EUR<input name="deliveryToWarsaw" type="number" min="0" step="0.01"></label><label>Transport na Białoruś, EUR<input name="deliveryToBelarus" type="number" min="0" step="0.01"></label><label>Opłata recyklingowa, EUR<input name="recyclingFee" type="number" min="0" step="0.01"></label><label>Opłata celna, EUR<input name="customsFee" type="number" min="0" step="0.01"></label><label>Usługi agenta celnego, EUR<input name="declarant" type="number" min="0" step="0.01"></label><label>Magazyn czasowego składowania, EUR<input name="temporaryStorage" type="number" min="0" step="0.01"></label><label>Przygotowanie e-PTS, EUR<input name="epts" type="number" min="0" step="0.01"></label><label>Inne koszty, EUR<input name="other" type="number" min="0" step="0.01"></label>
+        </div>
+        <button class="button primary" type="submit">Oblicz</button>
+      </form>
+      <aside class="calc-result" id="customsCalculatorResult" aria-live="polite"></aside>
+    </div></section>
+  </main>
+  <footer class="footer"><div><strong>Atlant Auto</strong><p>Wyszukiwanie, weryfikacja, zakup i dostawa samochodów z Europy.</p></div><address><a href="tel:+48515392420">+48 515 392 420</a><a href="mailto:autoatlantcapital@gmail.com">autoatlantcapital@gmail.com</a><span>Wielkiego Dębu 6, 03-262 Warszawa</span></address></footer>
+  <aside class="cookie-banner" data-cookie-banner hidden><div><strong>Pliki cookie w Atlant Auto</strong><p>Używamy wyłącznie niezbędnych plików cookie do zapisywania ustawień języka i prywatności. Analityczne pliki cookie zostaną włączone dopiero po odrębnej zgodzie.</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">Tylko niezbędne</button><button class="button primary" type="button" data-cookie-choice="all">Zezwól na wszystkie</button></div></aside>
+  <script id="calculatorMessages" type="application/json">{"locale":"pl","messages":{"calculator.cost.auctionFee":"Prowizja aukcyjna","calculator.cost.deliveryToWarsaw":"Transport do Warszawy","calculator.cost.deliveryToBelarus":"Transport na Białoruś","calculator.cost.recyclingFee":"Opłata recyklingowa","calculator.cost.customsFee":"Opłata celna","calculator.cost.declarant":"Usługi agenta celnego","calculator.cost.temporaryStorage":"Magazyn czasowego składowania","calculator.cost.epts":"Przygotowanie e-PTS","calculator.cost.other":"Inne koszty","calculator.cost.companyFee":"Prowizja ATLANT CAPITAL","calculator.result.notIncluded":"Nie uwzględniono","calculator.result.manualTitle":"Wycena indywidualna","calculator.result.reviewRequired":"Wymagana weryfikacja","calculator.result.manualNote":"Dla hybryd i samochodów elektrycznych stawka nie jest stosowana automatycznie bez potwierdzenia konfiguracji.","calculator.result.customsTotal":"Orientacyjny koszt odprawy celnej","calculator.result.fullTotal":"Orientacyjny koszt samochodu pod klucz","calculator.result.ageCategory":"Kategoria wiekowa","calculator.result.vehiclePriceEur":"Cena samochodu w EUR","calculator.result.appliedRate":"Zastosowana stawka","calculator.result.formula":"Wzór","calculator.result.standardDuty":"Opłata celna bez ulgi","calculator.result.benefit":"Wartość ulgi","calculator.result.finalDuty":"Opłata celna po uldze","calculator.result.benefitNote":"Ulga ma zastosowanie wyłącznie po potwierdzeniu uprawnienia. Kalkulator nie weryfikuje prawa użytkownika do ulgi.","calculator.result.disclaimer":"Obliczenie ma charakter orientacyjny i nie stanowi ostatecznej oferty handlowej ani porady podatkowej, celnej lub prawnej.","calculator.error.checkData":"Sprawdź dane","calculator.error.unavailable":"Nie można wykonać obliczenia","calculator.error.invalidInput":"Sprawdź wprowadzone wartości i oblicz ponownie."}}</script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script type="module" src="/js/customs-calculator-page.mjs"></script>
+</body>
+</html>

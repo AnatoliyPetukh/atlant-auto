@@ -5,12 +5,15 @@ const form = document.getElementById("customsCalculatorForm");
 const result = document.getElementById("customsCalculatorResult");
 const advancedToggle = document.getElementById("advancedToggle");
 const advancedPanel = document.getElementById("advancedPanel");
+const configuration = JSON.parse(document.getElementById("calculatorMessages")?.textContent || "{}");
+const locale = configuration.locale || "ru";
+const messages = configuration.messages || {};
+const msg = (key) => messages[key] || key;
+const numberLocale = locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB";
 
 function money(value, currency = "EUR") {
-  if (value === null || value === undefined) return "Не включено в расчёт";
-  return new Intl.NumberFormat("ru-RU", {
-    maximumFractionDigits: value >= 100 ? 0 : 2
-  }).format(value) + " " + currency;
+  if (value === null || value === undefined) return msg("calculator.result.notIncluded");
+  return `${new Intl.NumberFormat(numberLocale, { maximumFractionDigits: value >= 100 ? 0 : 2 }).format(value)} ${currency}`;
 }
 
 function readNumber(formData, name) {
@@ -18,17 +21,15 @@ function readNumber(formData, name) {
   return value === "" || value === null ? null : Number(value);
 }
 
-function renderLine(label, value, currency = "EUR") {
-  return `<div class="calc-line"><span>${label}</span><strong>${money(value, currency)}</strong></div>`;
+function renderLine(labelKey, value, currency = "EUR") {
+  return `<div class="calc-line"><span>${msg(labelKey)}</span><strong>${money(value, currency)}</strong></div>`;
 }
 
 function renderSources() {
-  return CUSTOMS_RATE_SOURCES.map((source) => `
-    <li>
-      <a href="${source.sourceUrl}" target="_blank" rel="noopener">${source.sourceTitle}</a>
-      <span>${source.verificationStatus}, ${source.verifiedAt}</span>
-    </li>
-  `).join("");
+  return CUSTOMS_RATE_SOURCES.map((source) => {
+    const hostname = new URL(source.sourceUrl).hostname.replace(/^www\./, "");
+    return `<li><a href="${source.sourceUrl}" target="_blank" rel="noopener">${hostname}</a><span>${source.verifiedAt}</span></li>`;
+  }).join("");
 }
 
 function readQuoteInput() {
@@ -54,80 +55,69 @@ function readQuoteInput() {
   };
 }
 
-function renderManualRequired(message) {
-  result.innerHTML = `
-    <div class="calc-total">
-      <span>Индивидуальный расчёт</span>
-      <strong>Нужна проверка</strong>
-      <small>${message}</small>
-    </div>
-    <p class="calc-note">Для гибридов и электромобилей ставка не применяется автоматически без подтверждённой конфигурации.</p>
-  `;
+function renderManualRequired() {
+  result.innerHTML = `<div class="calc-total"><span>${msg("calculator.result.manualTitle")}</span><strong>${msg("calculator.result.reviewRequired")}</strong><small>${msg("calculator.result.manualNote")}</small></div>`;
+}
+
+function rateLabel(quote) {
+  if (quote.ageCategory === "under3") return `${quote.rate.percent * 100}% / min ${quote.rate.minRatePerCc} EUR/cc`;
+  return `${quote.rate.ratePerCc} EUR/cc`;
+}
+
+function formula(quote) {
+  if (quote.ageCategory === "under3") return `max(${quote.rate.percent * 100}%, ${quote.rate.minRatePerCc} EUR/cc)`;
+  return `${quote.rate.ratePerCc} EUR/cc × ${quote.rate.table === "from3to5" || quote.rate.table === "over5" ? form.elements.volumeCc.value : ""}`;
 }
 
 function renderQuote(quote) {
   const mainTotal = quote.includeFullBudget ? quote.fullBudgetTotal : quote.customsTotal;
   result.innerHTML = `
     <div class="calc-total">
-      <span>${quote.includeFullBudget ? "Ориентировочная стоимость автомобиля под ключ" : "Ориентировочная стоимость растаможки"}</span>
+      <span>${msg(quote.includeFullBudget ? "calculator.result.fullTotal" : "calculator.result.customsTotal")}</span>
       <strong>${money(mainTotal)}</strong>
-      <small>Возрастная категория: ${quote.ageCategory === "under3" ? "до 3 лет включительно" : quote.ageCategory === "from3to5" ? "более 3, но не более 5 лет" : "более 5 лет"}</small>
+      <small>${msg("calculator.result.ageCategory")}: ${msg(`calculator.age.${quote.ageCategory}`)}</small>
     </div>
     <div class="calc-lines">
-      ${renderLine("Стоимость автомобиля в EUR", quote.priceEur)}
-      <div class="calc-line"><span>Применённая ставка</span><strong>${quote.appliedRate}</strong></div>
-      <div class="calc-line"><span>Формула</span><strong>${quote.formula}</strong></div>
-      ${renderLine("Таможенный платёж без льготы", quote.standardDuty)}
-      ${renderLine("Размер льготы", quote.benefitAmount)}
-      ${renderLine("Таможенный платёж после льготы", quote.finalDuty)}
-      ${renderLine("Комиссия аукциона", quote.additionalCosts.auctionFee)}
-      ${renderLine("Доставка до Варшавы", quote.additionalCosts.deliveryToWarsaw)}
-      ${renderLine("Доставка в Беларусь", quote.additionalCosts.deliveryToBelarus)}
-      ${renderLine("Утилизационный сбор", quote.additionalCosts.recyclingFee)}
-      ${renderLine("Таможенный сбор", quote.additionalCosts.customsFee)}
-      ${renderLine("Услуги декларанта", quote.additionalCosts.declarant)}
-      ${renderLine("Склад временного хранения", quote.additionalCosts.temporaryStorage)}
-      ${renderLine("Оформление ЭПТС", quote.additionalCosts.epts)}
-      ${renderLine("Другие расходы", quote.additionalCosts.other)}
-      ${renderLine("Комиссия ATLANT CAPITAL", quote.companyFee)}
+      ${renderLine("calculator.result.vehiclePriceEur", quote.priceEur)}
+      <div class="calc-line"><span>${msg("calculator.result.appliedRate")}</span><strong>${rateLabel(quote)}</strong></div>
+      <div class="calc-line"><span>${msg("calculator.result.formula")}</span><strong>${formula(quote)}</strong></div>
+      ${renderLine("calculator.result.standardDuty", quote.standardDuty)}
+      ${renderLine("calculator.result.benefit", quote.benefitAmount)}
+      ${renderLine("calculator.result.finalDuty", quote.finalDuty)}
+      ${renderLine("calculator.cost.auctionFee", quote.additionalCosts.auctionFee)}
+      ${renderLine("calculator.cost.deliveryToWarsaw", quote.additionalCosts.deliveryToWarsaw)}
+      ${renderLine("calculator.cost.deliveryToBelarus", quote.additionalCosts.deliveryToBelarus)}
+      ${renderLine("calculator.cost.recyclingFee", quote.additionalCosts.recyclingFee)}
+      ${renderLine("calculator.cost.customsFee", quote.additionalCosts.customsFee)}
+      ${renderLine("calculator.cost.declarant", quote.additionalCosts.declarant)}
+      ${renderLine("calculator.cost.temporaryStorage", quote.additionalCosts.temporaryStorage)}
+      ${renderLine("calculator.cost.epts", quote.additionalCosts.epts)}
+      ${renderLine("calculator.cost.other", quote.additionalCosts.other)}
+      ${renderLine("calculator.cost.companyFee", quote.companyFee)}
     </div>
-    <p class="calc-note">Льгота применяется только при наличии подтверждённого права. Калькулятор не проверяет право пользователя на льготу.</p>
-    <p class="calc-note">${quote.disclaimer}</p>
-    <ul class="calc-sources">${renderSources()}</ul>
-  `;
+    <p class="calc-note">${msg("calculator.result.benefitNote")}</p>
+    <p class="calc-note">${msg("calculator.result.disclaimer")}</p>
+    <ul class="calc-sources">${renderSources()}</ul>`;
 }
 
 function calculate() {
   try {
     const quote = calculateCustomsQuote(readQuoteInput());
-    if (quote.status === "manual_required") {
-      renderManualRequired(quote.message);
-      return;
-    }
+    if (quote.status === "manual_required") return renderManualRequired();
     renderQuote(quote);
-  } catch (error) {
-    result.innerHTML = `
-      <div class="calc-total calc-total-warning">
-        <span>Проверьте данные</span>
-        <strong>Расчёт невозможен</strong>
-        <small>${error.message}</small>
-      </div>
-    `;
+  } catch {
+    result.innerHTML = `<div class="calc-total calc-total-warning"><span>${msg("calculator.error.checkData")}</span><strong>${msg("calculator.error.unavailable")}</strong><small>${msg("calculator.error.invalidInput")}</small></div>`;
   }
 }
 
-if (advancedToggle && advancedPanel) {
-  advancedToggle.addEventListener("click", () => {
-    const isOpen = advancedPanel.hasAttribute("hidden");
-    advancedPanel.toggleAttribute("hidden", !isOpen);
-    advancedToggle.setAttribute("aria-expanded", String(isOpen));
-  });
-}
+advancedToggle?.addEventListener("click", () => {
+  const isOpen = advancedPanel.hasAttribute("hidden");
+  advancedPanel.toggleAttribute("hidden", !isOpen);
+  advancedToggle.setAttribute("aria-expanded", String(isOpen));
+});
 
-if (form) {
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    calculate();
-  });
+form?.addEventListener("submit", (event) => {
+  event.preventDefault();
   calculate();
-}
+});
+if (form) calculate();
