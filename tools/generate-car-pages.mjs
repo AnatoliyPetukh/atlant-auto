@@ -69,7 +69,6 @@ function specs(car, locale) {
     ["vehicle.field.color", localized.color[locale]],
     ["vehicle.field.doors", car.doors],
     ["vehicle.field.seats", car.seats],
-    ["vehicle.field.vin", car.vin],
     ["vehicle.field.registrationNumber", car.registrationNumber],
     ["vehicle.field.registrationCountry", localized.registrationCountryKey ? t(locale, localized.registrationCountryKey) : car.registrationCountry],
     ["vehicle.field.keys", car.keysCount],
@@ -141,23 +140,12 @@ function schema(car, locale) {
     description: car.description[locale],
     image: car.images.map((image) => url(publicPath(image))),
     url: url(route),
-    ...(car.vin ? { vehicleIdentificationNumber: car.vin } : {}),
     mileageFromOdometer: { "@type": "QuantitativeValue", value: car.mileageKm, unitCode: "KMT" },
     fuelType: t(locale, `vehicle.fuel.${car.fuelType}`),
     vehicleTransmission: t(locale, `vehicle.transmission.${car.transmission}`),
     offers: {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
-      priceCurrency: car.currency,
-      ...(car.price == null ? {} : { price: car.price }),
-      ...(car.priceExcludingVat ? {
-        priceSpecification: {
-          "@type": "UnitPriceSpecification",
-          price: car.price,
-          priceCurrency: car.currency,
-          valueAddedTaxIncluded: false
-        }
-      } : {}),
       seller: { "@type": "AutoDealer", name: site.name, url: site.origin }
     },
     inLanguage: locale
@@ -205,7 +193,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${t(locale, "vehicle.status.forSale")}</p><h1>${esc(name)}</h1><p class="detail-price car-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
+      <div class="car-summary"><p class="eyebrow">${t(locale, "vehicle.status.forSale")}</p><h1>${esc(name)}</h1><p>${esc(description)}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
     </section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>
