@@ -148,8 +148,7 @@ function pageHtml(page, localeCode) {
     const cardText = key === "about" ? t(localeCode, `company.about.cardText${index + 1}`) : intro;
     return `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(cardText)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${t(localeCode, "topic.cards.viewVehicle")}</a>` : ""}</article>`;
   }).join("");
-  const faqAnswers = ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"];
-  const faq = key === "faq" ? `<section class="content-section faq">${localizedCards.map((q, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${t(localeCode, faqAnswers[index])}</p></details>`).join("")}</section>` : "";
+  const faq = key === "faq" ? `<section class="content-section faq">${Array.from({ length: 8 }, (_, index) => `<details${index === 0 ? " open" : ""}><summary>${t(localeCode, `home.faq.q${index + 1}`)}</summary><p>${t(localeCode, `home.faq.a${index + 1}`)}</p></details>`).join("")}</section>` : "";
   const about = key === "about" ? `<section class="content-section company-details" aria-labelledby="official-company-heading">
       <div class="official-panel">
         <div><p class="eyebrow">${t(localeCode, "company.official.heading")}</p><h2 id="official-company-heading">${site.legalName}</h2><p>${t(localeCode, "company.official.intro")}</p></div>
