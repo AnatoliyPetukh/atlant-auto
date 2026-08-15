@@ -53,7 +53,7 @@ function price(car, locale) {
   const formatted = new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB", {
     style: "currency", currency: car.currency, maximumFractionDigits: 0
   }).format(car.price);
-  return `${formatted} ${t(locale, "common.priceGross")}`;
+  return formatted;
 }
 
 function localizedValue(value, locale) {

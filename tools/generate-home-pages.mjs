@@ -32,7 +32,7 @@ function carCards(locale) {
   return cars.map((car) => {
     const name = `${car.brand} ${car.model} ${car.version}`;
     const basePrice = car.price == null ? t(locale, "common.priceOnRequest") : `${format(car.price, locale)} ${car.currency}`;
-    const price = car.price == null ? basePrice : `${basePrice} ${t(locale, "common.priceGross")}`;
+    const price = basePrice;
     const year = car.productionDate || car.firstRegistrationDate?.slice(0,4) || "";
     const transmission = t(locale, `vehicle.transmission.${car.transmission}`);
     const detailUrl = carRoute(locale, car.slug);

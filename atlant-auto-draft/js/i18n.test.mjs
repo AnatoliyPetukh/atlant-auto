@@ -93,7 +93,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /data-recipient="autoatlantcapital@gmail\.com"/, `${relative} lost the request email recipient`);
     assert.equal((html.match(/class="badge source arval-badge"/g) || []).length, 6, `${relative} must show the Arval logo for six current vehicles`);
     assert.doesNotMatch(html, /Aukcja Arval|Arval auction|Orientacyjna cena rynkowa|Indicative market price/, `${relative} exposes superseded badge or price text`);
-    assert.match(html, relative.startsWith("pl/") ? /PLN brutto/ : /PLN gross/, `${relative} must show gross vehicle prices`);
+    assert.doesNotMatch(html, /PLN (?:brutto|gross)/, `${relative} must show only the price and currency`);
     assert.match(html, /class="route-section" id="route"/, `${relative} lost the route map section`);
     assert.match(html, /Wielkiego Dębu 6, 03-262 Warszawa/, `${relative} lost the vehicle site address`);
     assert.match(html, /google\.com\/maps\?q=Wielkiego%20D%C4%99bu%206/, `${relative} lost the embedded route map`);
