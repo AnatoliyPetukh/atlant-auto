@@ -38,8 +38,24 @@ test("structured values do not contain display sentinels", () => {
   assert.equal(/"(?:null|undefined|NaN)"/.test(serialized), false);
 });
 
-test("on-site vehicles do not store VIN values", () => {
-  const onSiteCars = cars.filter((car) => car.availability === "on-site");
-  assert.equal(onSiteCars.length, 6);
-  for (const car of onSiteCars) assert.equal(Object.hasOwn(car, "vin"), false, car.slug);
+test("catalog vehicles do not store VIN values", () => {
+  for (const car of cars) assert.equal(Object.hasOwn(car, "vin"), false, car.slug);
+
+  const currentCars = cars.filter((car) => ["on-site", "in-transit"].includes(car.availability));
+  assert.equal(currentCars.length, 6);
+  assert.equal(currentCars.filter((car) => car.availability === "in-transit").length, 3);
+  for (const car of currentCars) {
+    assert.equal(car.auctionSource, "Arval", car.slug);
+  }
+});
+
+test("historic vehicles are marked as recently sold with transparent estimates", () => {
+  const soldCars = cars.filter((car) => car.status === "sold");
+  assert.equal(soldCars.length, 6);
+  for (const car of soldCars) {
+    assert.equal(car.availability, "sold", car.slug);
+    assert.equal(car.priceType, "market-estimate", car.slug);
+    assert.equal(car.currency, "PLN", car.slug);
+    assert.ok(car.price > 0, car.slug);
+  }
 });

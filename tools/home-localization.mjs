@@ -14,7 +14,7 @@ export const homeLocalizationMessages = {
   "home.stats.experience": entry("работы в Варшаве", "działalności w Warszawie", "operating in Warsaw"),
   "home.stats.savings": entry("экономии", "oszczędności", "potential saving"),
   "home.trust.companyTitle": entry("Официальная компания в Польше", "Legalnie działająca spółka w Polsce", "A registered company in Poland"),
-  "home.trust.companyText": entry("Atlant Capital Sp. z o.o., NIP 5243039677", "Atlant Capital Sp. z o.o., NIP 5243039677", "Atlant Capital Sp. z o.o., NIP 5243039677"),
+  "home.trust.companyText": entry("Atlant Capital Sp. z o.o., NIP 9512563774", "Atlant Capital Sp. z o.o., NIP 9512563774", "Atlant Capital Sp. z o.o., NIP 9512563774"),
   "home.trust.checkTitle": entry("Без покупки вслепую", "Bez kupowania w ciemno", "No buying blind"),
   "home.trust.checkText": entry("Фото, отчёты, история обслуживания и расчёт до сделки", "Zdjęcia, raporty, historia serwisowa i wycena przed zakupem", "Photos, reports, service history and a cost estimate before purchase"),
   "home.trust.supportTitle": entry("Полное сопровождение", "Kompleksowa obsługa", "End-to-end support"),

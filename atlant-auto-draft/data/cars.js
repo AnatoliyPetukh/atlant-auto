@@ -3,7 +3,8 @@ window.ATLANT_CARS = [
     id: "kia-sportage-gt-line-4wd-2022-68234-on-site",
     slug: "kia-sportage-gt-line-4wd-2022-68234",
     status: "for-sale",
-    availability: "on-site",
+    availability: "in-transit",
+    auctionSource: "Arval",
     brand: "Kia",
     model: "Sportage",
     version: "1.6 CRDi MHEV GT-Line 4WD DCT",
@@ -29,8 +30,8 @@ window.ATLANT_CARS = [
     price: 85900,
     currency: "PLN",
     description: {
-      pl: "Kia Sportage GT-Line z roku produkcji 2022, po raz pierwszy zarejestrowana w marcu 2023 roku, jest dostępna na placu Atlant Auto. Diesel 1.6 CRDi MHEV o mocy 136 KM współpracuje z siedmiobiegową skrzynią DCT i napędem na wszystkie koła. Zdjęcie zestawu wskaźników pokazuje przebieg 68 959 km, natomiast raport źródłowy odnotowuje 68 234 km. Samochód ma lakier Lunar Silver Metallic, dwa kluczyki oraz trzy wpisy serwisowe z lat 2024–2026. Wyposażenie obejmuje między innymi adaptacyjny tempomat, kamerę cofania, asystentów pasa ruchu i martwego pola, podgrzewane fotele z przodu i z tyłu oraz elektrycznie sterowaną klapę bagażnika.",
-      en: "This 2022 Kia Sportage GT-Line, first registered in March 2023, is available at the Atlant Auto site. Its 136 hp 1.6 CRDi mild-hybrid diesel is paired with a seven-speed DCT and all-wheel drive. The instrument-cluster photo shows 68,959 km, while the source report records 68,234 km. The car is finished in Lunar Silver Metallic, comes with two keys and has three service entries from 2024–2026. Equipment includes adaptive cruise control, a reversing camera, lane and blind-spot assistance, heated front and rear seats and a power tailgate."
+      pl: "Kia Sportage GT-Line z roku produkcji 2022, po raz pierwszy zarejestrowana w marcu 2023 roku, jest w drodze do Atlant Auto. Diesel 1.6 CRDi MHEV o mocy 136 KM współpracuje z siedmiobiegową skrzynią DCT i napędem na wszystkie koła. Zdjęcie zestawu wskaźników pokazuje przebieg 68 959 km, natomiast raport źródłowy odnotowuje 68 234 km. Samochód ma lakier Lunar Silver Metallic, dwa kluczyki oraz trzy wpisy serwisowe z lat 2024–2026. Wyposażenie obejmuje między innymi adaptacyjny tempomat, kamerę cofania, asystentów pasa ruchu i martwego pola, podgrzewane fotele z przodu i z tyłu oraz elektrycznie sterowaną klapę bagażnika.",
+      en: "This 2022 Kia Sportage GT-Line, first registered in March 2023, is in transit to Atlant Auto. Its 136 hp 1.6 CRDi mild-hybrid diesel is paired with a seven-speed DCT and all-wheel drive. The instrument-cluster photo shows 68,959 km, while the source report records 68,234 km. The car is finished in Lunar Silver Metallic, comes with two keys and has three service entries from 2024–2026. Equipment includes adaptive cruise control, a reversing camera, lane and blind-spot assistance, heated front and rear seats and a power tailgate."
     },
     mainImage: "../assets/cars/kia-sportage-gt-line-4wd-2022-68234/photo-06.jpg",
     images: [
@@ -85,7 +86,7 @@ window.ATLANT_CARS = [
       { date: "2024-03", mileageKm: 21935 }
     ],
     condition: {
-      "Местонахождение": "В наличии на площадке Atlant Auto",
+      "Местонахождение": "В пути в Atlant Auto",
       "Пробег": "68 959 км (на фото приборной панели)",
       "Ключи": "2",
       "Сервисная история": "3 записи в отчёте продавца"
@@ -95,7 +96,8 @@ window.ATLANT_CARS = [
     id: "seat-arona-style-business-2022-204417-on-site",
     slug: "seat-arona-style-business-2022-204417",
     status: "for-sale",
-    availability: "on-site",
+    availability: "in-transit",
+    auctionSource: "Arval",
     brand: "SEAT",
     model: "Arona",
     version: "1.0 EcoTSI 110 Style Business DSG7",
@@ -121,8 +123,8 @@ window.ATLANT_CARS = [
     price: 42900,
     currency: "PLN",
     description: {
-      pl: "SEAT Arona Style Business, po raz pierwszy zarejestrowany we wrześniu 2022 roku, jest dostępny na placu Atlant Auto. Benzynowy silnik 1.0 EcoTSI o mocy 110 KM współpracuje z siedmiobiegową automatyczną skrzynią DSG. Samochód ma przebieg 204 417 km, lakier Candy White, dwa kluczyki i 11 wpisów w historii serwisowej, obejmujących między innymi obsługę hamulców, wymianę płynu hamulcowego i serwis ogumienia.",
-      en: "This SEAT Arona Style Business, first registered in September 2022, is available at the Atlant Auto site. Its 110 hp 1.0 EcoTSI petrol engine is paired with a seven-speed DSG automatic transmission. The car has covered 204,417 km, is finished in Candy White, comes with two keys and has 11 service-history entries, including brake work, brake-fluid replacement and tyre servicing."
+      pl: "SEAT Arona Style Business, po raz pierwszy zarejestrowany we wrześniu 2022 roku, jest w drodze do Atlant Auto. Benzynowy silnik 1.0 EcoTSI o mocy 110 KM współpracuje z siedmiobiegową automatyczną skrzynią DSG. Samochód ma przebieg 204 417 km, lakier Candy White, dwa kluczyki i 11 wpisów w historii serwisowej, obejmujących między innymi obsługę hamulców, wymianę płynu hamulcowego i serwis ogumienia.",
+      en: "This SEAT Arona Style Business, first registered in September 2022, is in transit to Atlant Auto. Its 110 hp 1.0 EcoTSI petrol engine is paired with a seven-speed DSG automatic transmission. The car has covered 204,417 km, is finished in Candy White, comes with two keys and has 11 service-history entries, including brake work, brake-fluid replacement and tyre servicing."
     },
     mainImage: "../assets/cars/seat-arona-style-business-2022-204417/photo-04.jpg",
     images: [
@@ -153,7 +155,7 @@ window.ATLANT_CARS = [
       { date: "2023-03", mileageKm: 27739 }
     ],
     condition: {
-      "Местонахождение": "В наличии на площадке Atlant Auto",
+      "Местонахождение": "В пути в Atlant Auto",
       "Пробег": "204 417 км",
       "Ключи": "2",
       "Сервисная история": "11 записей в отчёте продавца"
@@ -163,7 +165,8 @@ window.ATLANT_CARS = [
     id: "peugeot-408-gt-2023-127024-on-site",
     slug: "peugeot-408-gt-2023-127024",
     status: "for-sale",
-    availability: "on-site",
+    availability: "in-transit",
+    auctionSource: "Arval",
     brand: "Peugeot",
     model: "408",
     version: "GT 1.2 PureTech 130 EAT8",
@@ -189,8 +192,8 @@ window.ATLANT_CARS = [
     price: 77900,
     currency: "PLN",
     description: {
-      pl: "Peugeot 408 GT z 2023 roku jest dostępny na placu Atlant Auto. Benzynowy silnik 1.2 PureTech o mocy 130 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Samochód ma przebieg 127 024 km, lakier Rouge Elixir i udokumentowaną historię serwisową. Bogate wyposażenie obejmuje Night Vision, cyfrowy zestaw wskaźników, kamerę cofania 180°, czujniki parkowania z przodu i z tyłu, elektryczny dach, hak holowniczy oraz system kontroli martwego pola.",
-      en: "This 2023 Peugeot 408 GT is available at the Atlant Auto site. Its 130 hp 1.2 PureTech petrol engine is paired with an eight-speed EAT8 automatic transmission. The car has covered 127,024 km, is finished in Rouge Elixir and has a documented service history. Equipment includes Night Vision, a digital instrument cluster, a 180° reversing camera, front and rear parking sensors, an electric sunroof, a tow bar and blind-spot monitoring."
+      pl: "Peugeot 408 GT z 2023 roku jest w drodze do Atlant Auto. Benzynowy silnik 1.2 PureTech o mocy 130 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Samochód ma przebieg 127 024 km, lakier Rouge Elixir i udokumentowaną historię serwisową. Bogate wyposażenie obejmuje Night Vision, cyfrowy zestaw wskaźników, kamerę cofania 180°, czujniki parkowania z przodu i z tyłu, elektryczny dach, hak holowniczy oraz system kontroli martwego pola.",
+      en: "This 2023 Peugeot 408 GT is in transit to Atlant Auto. Its 130 hp 1.2 PureTech petrol engine is paired with an eight-speed EAT8 automatic transmission. The car has covered 127,024 km, is finished in Rouge Elixir and has a documented service history. Equipment includes Night Vision, a digital instrument cluster, a 180° reversing camera, front and rear parking sensors, an electric sunroof, a tow bar and blind-spot monitoring."
     },
     mainImage: "../assets/cars/peugeot-408-gt-2023-127024/photo-04.jpg",
     images: [
@@ -230,7 +233,7 @@ window.ATLANT_CARS = [
       { date: "2023-10", mileageKm: 18905 }
     ],
     condition: {
-      "Местонахождение": "В наличии на площадке Atlant Auto",
+      "Местонахождение": "В пути в Atlant Auto",
       "Пробег": "127 024 км",
       "Ключи": "2",
       "Сервисная история": "14 записей в отчёте продавца"
@@ -241,6 +244,7 @@ window.ATLANT_CARS = [
     slug: "peugeot-408-allure-2023-157570",
     status: "for-sale",
     availability: "on-site",
+    auctionSource: "Arval",
     brand: "Peugeot",
     model: "408",
     version: "Allure 1.2 PureTech 130 EAT8",
@@ -315,6 +319,7 @@ window.ATLANT_CARS = [
     slug: "bmw-116d-business-advantage-2022",
     status: "for-sale",
     availability: "on-site",
+    auctionSource: "Arval",
     brand: "BMW",
     model: "116d",
     version: "Business Advantage DCT",
@@ -383,6 +388,7 @@ window.ATLANT_CARS = [
     slug: "renault-megane-sporter-equilibre-2022",
     status: "for-sale",
     availability: "on-site",
+    auctionSource: "Arval",
     brand: "Renault",
     model: "Mégane Sporter",
     version: "Blue dCi 115 Equilibre EDC",
@@ -444,9 +450,10 @@ window.ATLANT_CARS = [
     }
   },
   {
-    id: "ford-focus-wagon-2022-wf0pxxgchpme12984",
+    id: "ford-focus-wagon-2022-sold",
     slug: "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022",
-    status: "for-sale",
+    status: "sold",
+    availability: "sold",
     brand: "Ford",
     model: "Focus",
     version: "Wagon 1.0 EcoBoost ST-Line X Business",
@@ -463,7 +470,6 @@ window.ATLANT_CARS = [
     color: "Синий металлик",
     doors: 5,
     seats: 5,
-    vin: "WF0PXXGCHPME12984",
     registrationNumber: "N-348-SP",
     registrationCountry: "Нидерланды",
     vehicleSource: "Лизинг",
@@ -471,8 +477,9 @@ window.ATLANT_CARS = [
     emissionStandard: "Euro 6",
     co2GKm: 130,
     motDate: "2026-01-07",
-    price: 15500,
-    currency: "EUR",
+    price: 45900,
+    currency: "PLN",
+    priceType: "market-estimate",
     description: {
       ru: "Ford Focus Wagon ST-Line X Business — практичный и динамичный универсал для ежедневных поездок и дальних маршрутов. Бензиновый двигатель 1.0 EcoBoost мощностью 125 л.с. сочетается с механической коробкой передач. Просторный багажник, навигация, климат-контроль, подогрев передних сидений, камера заднего вида и парковочные датчики делают автомобиль удобным для семьи и работы.",
       pl: "Ford Focus Wagon ST-Line X Business to praktyczne i dynamiczne kombi do codziennej jazdy oraz dalszych podróży. Benzynowy silnik 1.0 EcoBoost o mocy 125 KM współpracuje z manualną skrzynią biegów. Pojemny bagażnik, nawigacja, klimatyzacja, podgrzewane przednie fotele, kamera cofania i czujniki parkowania zwiększają wygodę w użytkowaniu rodzinnym i służbowym.",
@@ -514,9 +521,10 @@ window.ATLANT_CARS = [
     }
   },
   {
-    id: "bmw-216d-gran-tourer-2022-wba6w510305v50572",
+    id: "bmw-216d-gran-tourer-2022-sold",
     slug: "bmw-216d-gran-tourer-2022",
-    status: "for-sale",
+    status: "sold",
+    availability: "sold",
     brand: "BMW",
     model: "216d Gran Tourer",
     version: "7PL Automatic",
@@ -533,16 +541,16 @@ window.ATLANT_CARS = [
     color: "Sparkling Brown Metallic",
     doors: 5,
     seats: 7,
-    vin: "WBA6W510305V50572",
     registrationNumber: "2CDW441",
     registrationCountry: "Бельгия",
     vehicleSource: "Лизинг",
     keysCount: 1,
     emissionStandard: "Euro 6",
     co2GKm: 136,
-    price: null,
-    priceOnRequest: true,
-    currency: "EUR",
+    price: 56900,
+    priceOnRequest: false,
+    currency: "PLN",
+    priceType: "market-estimate",
     description: {
       ru: "BMW 216d Gran Tourer — практичный семиместный автомобиль для семьи, который сочетает просторный трансформируемый салон с комфортом BMW. Экономичный дизельный двигатель мощностью 116 л.с. работает в паре с автоматической коробкой передач и хорошо подходит для города и дальних поездок. Панорамная крыша, LED-фары, навигация, камера заднего вида, климат-контроль, подогрев спортивных кожаных сидений и бесключевой доступ делают каждую поездку удобнее.",
       pl: "BMW 216d Gran Tourer to praktyczny, siedmioosobowy samochód rodzinny, który łączy przestronne i elastyczne wnętrze z komfortem marki BMW. Oszczędny silnik Diesla o mocy 116 KM współpracuje z automatyczną skrzynią biegów i dobrze sprawdzi się zarówno w mieście, jak i podczas dalszych podróży. Panoramiczny dach, reflektory LED, nawigacja, kamera cofania, klimatyzacja automatyczna, podgrzewane sportowe fotele skórzane oraz system bezkluczykowego dostępu zwiększają komfort każdej podróży.",
@@ -597,9 +605,10 @@ window.ATLANT_CARS = [
     ]
   },
   {
-    id: "bmw-x1-sdrive16d-2021-wba31ac0505u45555",
+    id: "bmw-x1-sdrive16d-2021-sold",
     slug: "bmw-x1-sdrive16d-2021",
-    status: "for-sale",
+    status: "sold",
+    availability: "sold",
     brand: "BMW",
     model: "X1",
     version: "sDrive16d Automatic",
@@ -616,16 +625,16 @@ window.ATLANT_CARS = [
     color: "Mineralgrau Metallic",
     doors: 5,
     seats: 5,
-    vin: "WBA31AC0505U45555",
     registrationNumber: "2FJB314",
     registrationCountry: null,
     vehicleSource: null,
     keysCount: null,
     emissionStandard: "Euro 6",
     co2GKm: 109,
-    price: null,
-    priceOnRequest: true,
-    currency: "EUR",
+    price: 78900,
+    priceOnRequest: false,
+    currency: "PLN",
+    priceType: "market-estimate",
     description: {
       ru: "BMW X1 sDrive16d — практичный компактный кроссовер для города, семьи и дальних поездок. Экономичный дизельный двигатель мощностью 116 л.с. работает в паре с автоматической коробкой передач, а высокая посадка и удобные размеры помогают уверенно чувствовать себя в ежедневной эксплуатации. Просторный пятиместный салон, навигация, климат-контроль, парктроники и электропривод багажника делают автомобиль комфортным и функциональным.",
       pl: "BMW X1 sDrive16d to praktyczny kompaktowy SUV, który dobrze sprawdzi się w mieście, podczas rodzinnych wyjazdów i na dłuższych trasach. Oszczędny silnik Diesla o mocy 116 KM współpracuje z automatyczną skrzynią biegów, a podwyższona pozycja za kierownicą i wygodne wymiary ułatwiają codzienną jazdę. Przestronne pięcioosobowe wnętrze, nawigacja, klimatyzacja, czujniki parkowania oraz elektrycznie sterowana klapa bagażnika zwiększają komfort i funkcjonalność.",
@@ -685,7 +694,8 @@ window.ATLANT_CARS = [
   {
     id: "peugeot-308-sw-allure-2023-warsaw-stock",
     slug: "peugeot-308-sw-allure-2023",
-    status: "for-sale",
+    status: "sold",
+    availability: "sold",
     brand: "Peugeot",
     model: "308 SW",
     version: "Allure 1.5 BlueHDi 130 EAT8",
@@ -702,20 +712,20 @@ window.ATLANT_CARS = [
     color: "Красный Rosso Elixir",
     doors: 5,
     seats: 5,
-    vin: "VR3FCYHZTNY637553",
     registrationNumber: "GM014PK",
     registrationCountry: "Италия",
     vehicleSource: "Лизинг",
     keysCount: 2,
     emissionStandard: "Euro 5a",
     co2GKm: null,
-    price: 9900,
+    price: 56900,
     priceExcludingVat: true,
-    currency: "EUR",
+    currency: "PLN",
+    priceType: "market-estimate",
     description: {
       ru: "Peugeot 308 SW Allure 2023 года — современный и практичный универсал для города, семьи и дальних поездок. Дизельный двигатель 1.5 BlueHDi мощностью 131 л.с. работает в паре с восьмиступенчатой автоматической коробкой EAT8. Комплектация включает двухзонный климат-контроль, навигацию, камеру заднего вида, LED-фары, бесключевой доступ и 17-дюймовые легкосплавные диски. Пробег 187 618 км подтверждён отчётом BCA. Автомобиль находится в наличии в Варшаве.",
-      pl: "Peugeot 308 SW Allure z 2023 roku to nowoczesne i praktyczne kombi do miasta, dla rodziny i na dłuższe trasy. Silnik Diesla 1.5 BlueHDi o mocy 131 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Wyposażenie obejmuje dwustrefową klimatyzację automatyczną, nawigację, kamerę cofania, reflektory LED, dostęp bezkluczykowy i 17-calowe felgi aluminiowe. Przebieg 187 618 km potwierdza raport BCA. Samochód jest dostępny od ręki w Warszawie.",
-      en: "The 2023 Peugeot 308 SW Allure is a modern and practical estate for city use, family travel and longer journeys. Its 131 hp 1.5 BlueHDi diesel engine is paired with an eight-speed EAT8 automatic transmission. Equipment includes dual-zone climate control, navigation, a reversing camera, LED headlights, keyless entry and 17-inch alloy wheels. The BCA report confirms 187,618 km. The car is in stock in Warsaw."
+      pl: "Peugeot 308 SW Allure z 2023 roku to nowoczesne i praktyczne kombi do miasta, dla rodziny i na dłuższe trasy. Silnik Diesla 1.5 BlueHDi o mocy 131 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Wyposażenie obejmuje dwustrefową klimatyzację automatyczną, nawigację, kamerę cofania, reflektory LED, dostęp bezkluczykowy i 17-calowe felgi aluminiowe. Przebieg 187 618 km potwierdza raport BCA. Samochód został niedawno sprzedany.",
+      en: "The 2023 Peugeot 308 SW Allure is a modern and practical estate for city use, family travel and longer journeys. Its 131 hp 1.5 BlueHDi diesel engine is paired with an eight-speed EAT8 automatic transmission. Equipment includes dual-zone climate control, navigation, a reversing camera, LED headlights, keyless entry and 17-inch alloy wheels. The BCA report confirms 187,618 km. The car was recently sold."
     },
     mainImage: "../assets/cars/peugeot-308-sw-allure-2023/photo_2_2026-07-19_19-21-51.jpg",
     images: [
@@ -761,9 +771,10 @@ window.ATLANT_CARS = [
     ]
   },
   {
-    id: "peugeot-408-allure-2023-vr3fphnstpy586262",
+    id: "peugeot-408-allure-2023-sold",
     slug: "peugeot-408-allure-2023",
-    status: "for-sale",
+    status: "sold",
+    availability: "sold",
     brand: "Peugeot",
     model: "408",
     version: "Allure 1.2 PureTech 130 EAT8",
@@ -780,20 +791,20 @@ window.ATLANT_CARS = [
     color: "Серый металлик",
     doors: 5,
     seats: 5,
-    vin: "VR3FPHNSTPY586262",
     registrationNumber: "GQ544DA",
     registrationCountry: "Франция",
     vehicleSource: "Лизинг",
     keysCount: 1,
     emissionStandard: "Euro 6D",
     co2GKm: 136,
-    price: 12900,
+    price: 69900,
     priceExcludingVat: true,
-    currency: "EUR",
+    currency: "PLN",
+    priceType: "market-estimate",
     description: {
       ru: "Peugeot 408 Allure 2023 года — выразительный и просторный фастбэк-кроссовер для города и дальних поездок. Бензиновый двигатель 1.2 PureTech мощностью 130 л.с. работает в паре с восьмиступенчатой автоматической коробкой EAT8. В оснащение входят цифровая приборная панель, навигация, двухзонный климат-контроль, камера заднего вида и современные системы помощи водителю. Сервисная история подтверждена документами: комплект ремня ГРМ с роликами заменён на пробеге 107 604 км, последнее обслуживание выполнено на 125 488 км. Автомобиль находится в наличии в Варшаве.",
-      pl: "Peugeot 408 Allure z 2023 roku to efektowny i przestronny crossover typu fastback, odpowiedni do miasta i na dłuższe trasy. Benzynowy silnik 1.2 PureTech o mocy 130 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Wyposażenie obejmuje cyfrowy zestaw wskaźników, nawigację, dwustrefową klimatyzację automatyczną, kamerę cofania i nowoczesne systemy wsparcia kierowcy. Historia serwisowa jest udokumentowana: zestaw paska rozrządu z rolkami wymieniono przy 107 604 km, a ostatni przegląd wykonano przy 125 488 km. Samochód jest dostępny od ręki w Warszawie.",
-      en: "The 2023 Peugeot 408 Allure is a distinctive and spacious fastback crossover for city driving and longer journeys. Its 130 hp 1.2 PureTech petrol engine is paired with an eight-speed EAT8 automatic transmission. Equipment includes a digital instrument cluster, navigation, dual-zone climate control, a reversing camera and modern driver-assistance systems. The documented service history records a timing-belt kit and roller replacement at 107,604 km, with the latest service completed at 125,488 km. The car is in stock in Warsaw."
+      pl: "Peugeot 408 Allure z 2023 roku to efektowny i przestronny crossover typu fastback, odpowiedni do miasta i na dłuższe trasy. Benzynowy silnik 1.2 PureTech o mocy 130 KM współpracuje z ośmiobiegową automatyczną skrzynią EAT8. Wyposażenie obejmuje cyfrowy zestaw wskaźników, nawigację, dwustrefową klimatyzację automatyczną, kamerę cofania i nowoczesne systemy wsparcia kierowcy. Historia serwisowa jest udokumentowana: zestaw paska rozrządu z rolkami wymieniono przy 107 604 km, a ostatni przegląd wykonano przy 125 488 km. Samochód został niedawno sprzedany.",
+      en: "The 2023 Peugeot 408 Allure is a distinctive and spacious fastback crossover for city driving and longer journeys. Its 130 hp 1.2 PureTech petrol engine is paired with an eight-speed EAT8 automatic transmission. Equipment includes a digital instrument cluster, navigation, dual-zone climate control, a reversing camera and modern driver-assistance systems. The documented service history records a timing-belt kit and roller replacement at 107,604 km, with the latest service completed at 125,488 km. The car was recently sold."
     },
     mainImage: "../assets/cars/peugeot-408-allure-2023/photo_2_2026-07-19_12-37-38.jpg",
     images: [
@@ -851,9 +862,10 @@ window.ATLANT_CARS = [
     ]
   },
   {
-    id: "mercedes-benz-cla-180-amg-line-2023-w1k5j8eb2pn369456",
+    id: "mercedes-benz-cla-180-amg-line-2023-sold",
     slug: "mercedes-benz-cla-180-amg-line-2023",
-    status: "for-sale",
+    status: "sold",
+    availability: "sold",
     brand: "Mercedes-Benz",
     model: "CLA 180",
     version: "AMG Line DCT",
@@ -870,7 +882,6 @@ window.ATLANT_CARS = [
     color: "Серый металлик",
     doors: 4,
     seats: 5,
-    vin: "W1K5J8EB2PN369456",
     registrationNumber: "S655ZR",
     registrationCountry: "Нидерланды",
     vehicleSource: "Лизинг",
@@ -878,12 +889,13 @@ window.ATLANT_CARS = [
     emissionStandard: "Euro 6d-TEMP",
     co2GKm: 146,
     motDate: "2027-05-05",
-    price: 16280,
-    currency: "EUR",
+    price: 84900,
+    currency: "PLN",
+    priceType: "market-estimate",
     description: {
       ru: "Mercedes-Benz CLA 180 AMG Line 2023 года сочетает выразительный дизайн четырёхдверного купе, спортивные детали AMG и комфорт для ежедневных поездок. Бензиновый турбодвигатель 1.33 мощностью 136 л.с. работает с автоматической коробкой DCT. В комплектацию входят панорамная сдвижная крыша, MULTIBEAM LED, навигация, камера заднего вида, передние и задние парктроники, контроль слепых зон, бесключевой доступ и 19-дюймовые AMG-диски. Подробная история обслуживания подтверждена отчётом: последнее обслуживание Mercedes-Benz выполнено на пробеге 162 284 км. Автомобиль находится в наличии в Варшаве.",
-      pl: "Mercedes-Benz CLA 180 AMG Line z 2023 roku łączy efektowną sylwetkę czterodrzwiowego coupé, sportowe dodatki AMG i komfort na co dzień. Benzynowy silnik turbo 1.33 o mocy 136 KM współpracuje z automatyczną skrzynią DCT. Wyposażenie obejmuje panoramiczny dach przesuwny, reflektory MULTIBEAM LED, nawigację, kamerę cofania, czujniki parkowania z przodu i z tyłu, asystenta martwego pola, dostęp bezkluczykowy oraz 19-calowe felgi AMG. Raport potwierdza szczegółową historię serwisową, a ostatni serwis Mercedes-Benz wykonano przy przebiegu 162 284 km. Samochód jest dostępny od ręki w Warszawie.",
-      en: "The 2023 Mercedes-Benz CLA 180 AMG Line combines a distinctive four-door coupé profile, sporty AMG details and everyday comfort. Its 136 hp 1.33-litre turbo petrol engine is paired with a DCT automatic transmission. Equipment includes a panoramic sliding roof, MULTIBEAM LED headlights, navigation, a reversing camera, front and rear parking sensors, blind-spot assistance, keyless entry and 19-inch AMG wheels. The report provides a detailed service record, with the latest Mercedes-Benz service completed at 162,284 km. The car is in stock in Warsaw."
+      pl: "Mercedes-Benz CLA 180 AMG Line z 2023 roku łączy efektowną sylwetkę czterodrzwiowego coupé, sportowe dodatki AMG i komfort na co dzień. Benzynowy silnik turbo 1.33 o mocy 136 KM współpracuje z automatyczną skrzynią DCT. Wyposażenie obejmuje panoramiczny dach przesuwny, reflektory MULTIBEAM LED, nawigację, kamerę cofania, czujniki parkowania z przodu i z tyłu, asystenta martwego pola, dostęp bezkluczykowy oraz 19-calowe felgi AMG. Raport potwierdza szczegółową historię serwisową, a ostatni serwis Mercedes-Benz wykonano przy przebiegu 162 284 km. Samochód został niedawno sprzedany.",
+      en: "The 2023 Mercedes-Benz CLA 180 AMG Line combines a distinctive four-door coupé profile, sporty AMG details and everyday comfort. Its 136 hp 1.33-litre turbo petrol engine is paired with a DCT automatic transmission. Equipment includes a panoramic sliding roof, MULTIBEAM LED headlights, navigation, a reversing camera, front and rear parking sensors, blind-spot assistance, keyless entry and 19-inch AMG wheels. The report provides a detailed service record, with the latest Mercedes-Benz service completed at 162,284 km. The car was recently sold."
     },
     mainImage: "../assets/cars/mercedes-benz-cla-180-amg-line-2023/photo_7_2026-07-19_23-47-58.jpg",
     images: [

@@ -50,20 +50,22 @@ test("public copy contains no vehicle export claims", () => {
   }
 });
 
-test("new on-site vehicle VINs are absent from every public page", () => {
-  const privateIdentifiers = [
-    "VR3FPHNSTPY601376",
-    "WBA7M710707M02404",
-    "VF1RFB00X70267513"
-    ,"VR3FPHNSTPY557022"
-    ,"VSSZZZKJ8PR014353"
-    ,"U5YPX81AHPL110108"
-  ];
+test("public company data uses the canonical NIP", () => {
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
-    for (const identifier of privateIdentifiers) {
-      assert.doesNotMatch(html, new RegExp(identifier, "i"), path.relative(root, file));
-    }
+    assert.doesNotMatch(html, /5243039677/, path.relative(root, file));
+  }
+
+  for (const relative of ["pl/index.html", "en/index.html"]) {
+    const html = fs.readFileSync(path.join(root, relative), "utf8");
+    assert.match(html, /9512563774/, relative);
+  }
+});
+
+test("vehicle VINs are absent from every public page", () => {
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, "utf8");
+    assert.doesNotMatch(html, /\b[A-HJ-NPR-Z0-9]{17}\b/i, path.relative(root, file));
   }
 });
 

@@ -110,9 +110,12 @@ function service(car, locale) {
 function condition(car, locale) {
   const items = localizedCarDetails[car.slug]?.condition;
   if (!items) throw new Error(`Missing localized condition: ${car.slug}`);
-  return `<dl class="detail-grid condition-list">${items.map(([label, value]) =>
-    `<div><dt>${t(locale, label)}</dt><dd>${esc(localizedValue(value, locale))}</dd></div>`
-  ).join("")}</dl>`;
+  return `<dl class="detail-grid condition-list">${items.map(([label, value]) => {
+    const displayedValue = car.status === "sold" && label === "vehicle.condition.location"
+      ? "vehicle.location.recentlySold"
+      : value;
+    return `<div><dt>${t(locale, label)}</dt><dd>${esc(localizedValue(displayedValue, locale))}</dd></div>`;
+  }).join("")}</dl>`;
 }
 
 function documents(car, locale) {
@@ -141,12 +144,12 @@ function schema(car, locale) {
     mileageFromOdometer: { "@type": "QuantitativeValue", value: car.mileageKm, unitCode: "KMT" },
     fuelType: t(locale, `vehicle.fuel.${car.fuelType}`),
     vehicleTransmission: t(locale, `vehicle.transmission.${car.transmission}`),
-    offers: {
+    ...(car.status === "sold" ? {} : { offers: {
       "@type": "Offer",
-      availability: "https://schema.org/InStock",
+      availability: car.availability === "in-transit" ? "https://schema.org/PreOrder" : "https://schema.org/InStock",
       ...(car.price == null ? {} : { price: car.price, priceCurrency: car.currency }),
       seller: { "@type": "AutoDealer", name: site.name, url: site.origin }
-    },
+    }}),
     inLanguage: locale
   }).replaceAll("<", "\\u003c");
 }
@@ -162,10 +165,21 @@ function html(car, locale) {
   const meta = localeMeta[locale];
   const name = carName(car);
   const route = carRoutes[locale](car.slug);
-  const statusLabel = t(locale, car.availability === "on-site" ? "vehicle.status.onSite" : "vehicle.status.forSale");
-  const titleDetail = car.availability === "on-site"
-    ? `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")} · ${statusLabel}`
-    : t(locale, "vehicle.seo.offerSuffix");
+  const statusKey = car.status === "sold"
+    ? "vehicle.status.recentlySold"
+    : car.availability === "in-transit"
+      ? "vehicle.status.inTransit"
+      : car.availability === "on-site"
+        ? "vehicle.status.onSite"
+        : "vehicle.status.forSale";
+  const statusLabel = t(locale, statusKey);
+  const titleDetail = car.status === "sold"
+    ? t(locale, "vehicle.seo.soldSuffix")
+    : car.availability === "in-transit"
+      ? t(locale, "vehicle.seo.inTransitSuffix")
+      : car.availability === "on-site"
+        ? `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")} · ${statusLabel}`
+        : t(locale, "vehicle.seo.offerSuffix");
   const title = `${name} — ${titleDetail} | Atlant Auto`;
   const description = car.description[locale];
   return `<!doctype html>
@@ -196,7 +210,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${statusLabel}</p><h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${car.auctionSource === "Arval" ? `<p><span class="badge static source">${t(locale, "vehicle.source.arvalAuction")}</span></p>` : ""}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p>${car.priceType === "market-estimate" ? `<p class="price-note detail-price-note">${t(locale, "vehicle.sold.priceNote")}</p>` : ""}<p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a>`}</div>
     </section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>

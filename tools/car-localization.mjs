@@ -243,6 +243,8 @@ export const carLocalizationMessages = {
   "vehicle.condition.taxStatus": entry("Налоговый статус", "Status podatkowy", "Tax status"),
   "vehicle.condition.serviceHistory": entry("Сервисная история", "Historia serwisowa", "Service history"),
   "vehicle.location.dealershipStock": entry("В наличии на площадке Atlant Auto", "Dostępny na placu Atlant Auto", "Available at the Atlant Auto site"),
+  "vehicle.location.inTransit": entry("В пути в Atlant Auto", "W drodze do Atlant Auto", "In transit to Atlant Auto"),
+  "vehicle.location.recentlySold": entry("Недавно продано", "Niedawno sprzedany", "Recently sold"),
   "vehicle.newCars.condition.serviceConfirmed": entry("Подтверждена отчётом продавца", "Potwierdzona raportem sprzedawcy", "Confirmed by the seller report"),
   "vehicle.ford.condition.general": entry(
     "На кузове и колёсах присутствуют отдельные косметические следы эксплуатации. Подробности указаны в инспекционном отчёте.",
@@ -407,7 +409,7 @@ export const localizedCarDetails = {
       "vehicle.newCars.service.oilAirCabin"
     ],
     condition: [
-      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.condition.location", "vehicle.location.inTransit"],
       ["vehicle.field.mileage", { ru: "68 959 км (на фото приборной панели)", pl: "68 959 km (na zdjęciu zestawu wskaźników)", en: "68,959 km (shown in the instrument-cluster photo)" }],
       ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
       ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
@@ -431,7 +433,7 @@ export const localizedCarDetails = {
       "vehicle.seatArona.service.wipers"
     ],
     condition: [
-      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.condition.location", "vehicle.location.inTransit"],
       ["vehicle.field.mileage", { ru: "204 417 км", pl: "204 417 km", en: "204,417 km" }],
       ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
       ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
@@ -458,7 +460,7 @@ export const localizedCarDetails = {
       "vehicle.peugeot408gt.service.winterTyres"
     ],
     condition: [
-      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.condition.location", "vehicle.location.inTransit"],
       ["vehicle.field.mileage", { ru: "127 024 км", pl: "127 024 km", en: "127,024 km" }],
       ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
       ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]

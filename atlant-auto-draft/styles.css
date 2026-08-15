@@ -216,6 +216,15 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .car-card-link:focus-visible { outline: 3px solid var(--green); outline-offset: -3px; }
 .car-media { position: relative; aspect-ratio: 4 / 3; background: #d8dde3; overflow: hidden; }
 .car-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.car-badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  max-width: calc(100% - 24px);
+  flex-wrap: wrap;
+  gap: 6px;
+}
 .badge {
   position: absolute;
   top: 12px;
@@ -227,7 +236,9 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   font-size: 13px;
   font-weight: 600;
 }
+.car-badges .badge { position: static; }
 .badge.sold { background: rgba(110, 31, 31, .9); }
+.badge.source { background: rgba(11, 91, 145, .92); }
 .car-body { display: flex; flex: 1; min-width: 0; flex-direction: column; padding: 20px; }
 .car-body h3 { min-height: 55px; font-size: 21px; font-weight: 600; line-height: 1.3; }
 .specs { display: grid; gap: 7px; margin: 14px 0; color: var(--muted); font-size: 14px; }
@@ -247,6 +258,9 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .compact-specs span + span::before { content: " · "; white-space: pre; }
 .price-row { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 18px; }
 .price { max-width: 100%; font-size: 26px; font-weight: 700; color: var(--heading); overflow-wrap: anywhere; }
+.price-block { display: grid; gap: 3px; }
+.price-note { color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.35; }
+.detail-price-note { max-width: 58ch; margin-top: -10px; font-size: 14px; }
 .small-button {
   display: inline-flex;
   align-items: center;

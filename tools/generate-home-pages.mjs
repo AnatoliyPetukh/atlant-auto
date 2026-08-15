@@ -19,6 +19,13 @@ const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&
 const format = (value, locale) => new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB").format(value);
 const output = (locale) => path.join(root, locale, "index.html");
 
+function statusKey(car) {
+  if (car.status === "sold") return "vehicle.status.recentlySold";
+  if (car.availability === "in-transit") return "vehicle.status.inTransit";
+  if (car.availability === "on-site") return "vehicle.status.onSite";
+  return "vehicle.status.forSale";
+}
+
 function carCards(locale) {
   return cars.map((car) => {
     const name = `${car.brand} ${car.model} ${car.version}`;
@@ -27,10 +34,13 @@ function carCards(locale) {
     const year = car.productionDate || car.firstRegistrationDate?.slice(0,4) || "";
     const transmission = t(locale, `vehicle.transmission.${car.transmission}`);
     const detailUrl = carRoute(locale, car.slug);
-    const statusLabel = t(locale, car.availability === "on-site" ? "vehicle.status.onSite" : "vehicle.status.forSale");
-    return `<article class="car-card" data-status="available"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
-      <div class="car-media"><img src="/${car.mainImage.replace(/^(\.\.\/)+/, "")}" alt="${esc(t(locale, "vehicle.gallery.mainAlt", { vehicle: name }))}" width="1280" height="960" loading="lazy"><span class="badge">${statusLabel}</span></div>
-      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price">${esc(price)}</span><span class="small-button">${t(locale, "action.viewVehicle")}</span></div></div>
+    const sold = car.status === "sold";
+    const statusLabel = t(locale, statusKey(car));
+    const sourceBadge = car.auctionSource === "Arval" ? `<span class="badge source">${t(locale, "vehicle.source.arvalAuction")}</span>` : "";
+    const priceNote = car.priceType === "market-estimate" ? `<small class="price-note">${t(locale, "common.marketEstimate")}</small>` : "";
+    return `<article class="car-card" data-status="${sold ? "sold" : "available"}"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
+      <div class="car-media"><img src="/${car.mainImage.replace(/^(\.\.\/)+/, "")}" alt="${esc(t(locale, "vehicle.gallery.mainAlt", { vehicle: name }))}" width="1280" height="960" loading="lazy"><div class="car-badges"><span class="badge${sold ? " sold" : ""}">${statusLabel}</span>${sourceBadge}</div></div>
+      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price-block">${priceNote}<span class="price">${esc(price)}</span></span><span class="small-button">${t(locale, "action.viewVehicle")}</span></div></div>
     </a></article>`;
   }).join("");
 }
