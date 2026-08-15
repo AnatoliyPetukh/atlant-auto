@@ -16,6 +16,14 @@ const process = { pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
 const contact = { pl: "/pl/kontakt/", en: "/en/contact/" };
 const about = { pl: "/pl/o-nas/", en: "/en/about/" };
 const privacy = { pl: "/pl/polityka-prywatnosci/", en: "/en/privacy/" };
+const platforms = [
+  { name: "Athlon", logo: "athlon.svg", url: "https://www.athlon.com/", type: "direct" },
+  { name: "Ayvens Carmarket", logo: "ayvens.png", url: "https://carmarket.ayvens.com/", type: "direct" },
+  { name: "Arval MotorTrade", logo: "arval.png", url: "https://www.motortrade.arval.com/", type: "direct", square: true },
+  { name: "Autorola", logo: "autorola.png", url: "https://www.autorola.eu/", type: "marketplace" },
+  { name: "OPENLANE Europe", logo: "openlane.svg", url: "https://www.openlane.eu/", type: "marketplace" },
+  { name: "BCA", logo: "bca.svg", url: "https://www.bca.com/", type: "marketplace" }
+];
 const carRoute = (locale, slug) => locale === "pl" ? `/pl/samochody/${slug}/` : `/en/cars/${slug}/`;
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
 const format = (value, locale) => new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB").format(value);
@@ -52,6 +60,7 @@ function html(locale) {
   const processSteps = [1,2,3,4,5].map((index) => `<li${index === 3 ? ' class="featured"' : ""}><span class="process-marker">0${index}</span><article class="process-card"><small>${t(locale, `home.process.step${index}.tag`)}</small><h3>${t(locale, `home.process.step${index}.title`)}</h3><p>${t(locale, `home.process.step${index}.text`)}</p></article></li>`).join("");
   const advantages = [1,2,3,4,5,6].map((index) => `<article class="advantage-card"><span class="advantage-number">0${index}</span><h3>${t(locale, `home.advantages.item${index}.title`)}</h3><p>${t(locale, `home.advantages.item${index}.text`)}</p></article>`).join("");
   const numberCards = Object.entries(catalogueCounts).map(([key, value]) => `<div class="number-card"><strong>${value}</strong><span>${t(locale, `home.numbers.${key}`)}</span></div>`).join("");
+  const platformCards = platforms.map(({ name, logo, url, type, square = false }) => `<a class="platform-card" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(t(locale, "home.platforms.visit"))}: ${esc(name)}"><span class="platform-logo${square ? " square" : ""}"><img src="/assets/auctions/${logo}" alt="${esc(name)}" loading="lazy"></span><span class="platform-type ${type}">${t(locale, `home.platforms.${type}`)}</span><span class="platform-link">${t(locale, "home.platforms.visit")} <span aria-hidden="true">↗</span></span></a>`).join("");
   const pricingItems = (packageName, count) => Array.from({ length: count }, (_, index) => `<li>${t(locale, `home.pricing.${packageName}.item${index + 1}`)}</li>`).join("");
   const pricingCards = [
     { key: "base", price: "500 €", items: 6 },
@@ -80,6 +89,7 @@ function html(locale) {
     <section class="section numbers-section" id="numbers"><header class="numbers-head"><p class="eyebrow">${t(locale, "home.numbers.eyebrow")}</p><h2>${t(locale, "home.numbers.title")}</h2></header><div class="numbers-grid">${numberCards}</div></section>
     <section class="section cars-section" id="cars"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.catalog.eyebrow")}</p><h2>${t(locale, "home.catalog.title")}</h2></div><div class="filters" aria-label="${t(locale, "home.catalog.filterLabel")}"><button class="filter active" data-filter="all">${t(locale, "home.catalog.filterAll")}</button><button class="filter" data-filter="available">${t(locale, "home.catalog.filterAvailable")}</button><button class="filter" data-filter="sold">${t(locale, "home.catalog.filterSold")}</button></div></div><div class="cars-grid" id="carsGrid">${carCards(locale)}</div><p class="empty-state" data-empty-state hidden>${t(locale, "empty.cars")}</p></section>
     <section class="section process-showcase" id="process"><header class="process-intro"><div><p class="eyebrow">${t(locale, "home.process.eyebrow")}</p><h2>${t(locale, "home.process.title")}</h2></div><div><p class="section-text">${t(locale, "home.process.intro")}</p><a class="text-link" href="${process[locale]}">${t(locale, "home.process.more")}</a></div></header><ol class="process-roadmap">${processSteps}</ol></section>
+    <section class="platforms-section" id="platforms"><div class="platforms-inner"><header class="platforms-head"><div><p class="eyebrow">${t(locale, "home.platforms.eyebrow")}</p><h2>${t(locale, "home.platforms.title")}</h2></div><p>${t(locale, "home.platforms.intro")}</p></header><div class="platforms-grid">${platformCards}</div><p class="platforms-note">${t(locale, "home.platforms.note")}</p></div></section>
     <section class="advantages-section" id="advantages"><div class="advantages-inner"><header class="advantages-head"><p class="eyebrow">${t(locale, "home.advantages.eyebrow")}</p><h2>${t(locale, "home.advantages.title")}</h2><p>${t(locale, "home.advantages.intro")}</p></header><div class="advantages-grid">${advantages}</div></div></section>
     <section class="section pricing-section" id="pricing"><header class="pricing-head"><p class="eyebrow">${t(locale, "home.pricing.eyebrow")}</p><h2>${t(locale, "home.pricing.title")}</h2><p>${t(locale, "home.pricing.intro")}</p></header><div class="pricing-grid">${pricingCards}</div></section>
     <section class="section audience"><article><p class="eyebrow">${t(locale, "home.audience.privateEyebrow")}</p><h3>${t(locale, "home.audience.privateTitle")}</h3><p>${t(locale, "home.audience.privateText")}</p></article><article><p class="eyebrow">${t(locale, "home.audience.businessEyebrow")}</p><h3>${t(locale, "home.audience.businessTitle")}</h3><p>${t(locale, "home.audience.businessText")}</p></article></section>
