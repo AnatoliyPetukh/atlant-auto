@@ -70,6 +70,8 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /class="car-card-link"/, `${relative} lost clickable vehicle cards`);
     assert.match(html, /class="process-roadmap"/, `${relative} lost the purchase roadmap`);
     assert.equal((html.match(/class="process-card"/g) || []).length, 5, `${relative} must show five process stages`);
+    assert.match(html, /class="advantages-grid"/, `${relative} lost the advantages section`);
+    assert.equal((html.match(/class="advantage-card"/g) || []).length, 6, `${relative} must show six advantages`);
   }
 
   const routes = JSON.parse(fs.readFileSync(path.join(siteRoot, "vehicle-pages.json"), "utf8"));
