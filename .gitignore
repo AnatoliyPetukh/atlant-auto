@@ -10,6 +10,7 @@ node_modules/
 _publish-homepl/
 _drive_latest_cars/
 _backups/
+carplaza-by/
 *.zip
 
 # Temporary files
