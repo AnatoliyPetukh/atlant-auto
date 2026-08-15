@@ -465,6 +465,39 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .process-roadmap > li.featured .process-card h3 { color: white; }
 .process-roadmap > li.featured .process-card p { color: rgba(255,255,255,.7); }
 .process-roadmap > li.featured .process-card small { background: rgba(255,255,255,.1); color: #d7eadf; }
+.numbers-section { padding-top: 54px; }
+.numbers-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .65fr);
+  gap: 24px 64px;
+  align-items: end;
+  margin-bottom: 34px;
+}
+.numbers-head p:last-child { margin: 0; color: var(--muted); line-height: 1.65; }
+.numbers-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.number-card {
+  position: relative;
+  min-height: 176px;
+  padding: 30px 26px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--gold);
+  border-radius: 10px;
+  background: white;
+  box-shadow: var(--shadow-card);
+}
+.number-card::after {
+  position: absolute;
+  right: -38px;
+  bottom: -54px;
+  width: 120px;
+  height: 120px;
+  border: 22px solid rgba(31,107,74,.055);
+  border-radius: 50%;
+  content: "";
+}
+.number-card strong { display: block; color: var(--dark); font-size: clamp(42px, 5vw, 58px); line-height: 1; letter-spacing: -.04em; }
+.number-card span { position: relative; z-index: 1; display: block; max-width: 210px; margin-top: 18px; color: var(--muted); font-weight: 600; line-height: 1.45; }
 .advantages-section {
   margin-top: 34px;
   padding: 92px 0;
@@ -898,6 +931,8 @@ address a:hover { color: white; }
   .process-roadmap > li.featured { transform: none; }
   .process-marker { top: 18px; left: 18px; border-color: white; }
   .process-card { min-height: 280px; padding-top: 68px; }
+  .numbers-head { grid-template-columns: 1fr; }
+  .numbers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .advantages-head { grid-template-columns: 1fr; }
   .advantages-head .eyebrow { grid-column: auto; }
   .advantages-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -922,6 +957,8 @@ address a:hover { color: white; }
   .location-grid, .company-contact, .official-data { grid-template-columns: 1fr; }
   .process-roadmap { grid-template-columns: 1fr; }
   .process-card { min-height: 0; }
+  .numbers-grid { grid-template-columns: 1fr; }
+  .number-card { min-height: 0; }
   .advantages-section { padding: 64px 0; }
   .advantages-inner { width: min(100% - 28px, 1180px); }
   .advantages-grid { grid-template-columns: 1fr; }
