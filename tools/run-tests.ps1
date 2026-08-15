@@ -15,5 +15,5 @@ if ([string]::IsNullOrWhiteSpace($node)) {
   exit 1
 }
 
-& $node --test atlant-auto-draft/js/customs-calculator.test.mjs atlant-auto-draft/js/catalog-data.test.mjs atlant-auto-draft/js/seo.test.mjs atlant-auto-draft/js/i18n.test.mjs
+& $node --test atlant-auto-draft/js/catalog-data.test.mjs atlant-auto-draft/js/seo.test.mjs atlant-auto-draft/js/i18n.test.mjs atlant-auto-draft/js/kyc-content.test.mjs
 exit $LASTEXITCODE

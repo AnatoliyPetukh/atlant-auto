@@ -29,13 +29,12 @@ New-Item -ItemType Directory -Path $stage | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $stage "root") | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $stage "auction-post") | Out-Null
 
-foreach ($file in @("index.html", "styles.css", "app.js", "customs-calculator.html")) {
-  Copy-Item -LiteralPath (Join-Path $siteSource $file) -Destination (Join-Path $stage "root\$file") -Force
-}
-foreach ($directory in @("assets", "cars", "data", "js")) {
-  Copy-Item -LiteralPath (Join-Path $siteSource $directory) -Destination (Join-Path $stage "root") -Recurse -Force
-}
+Copy-Item -Path (Join-Path $siteSource "*") -Destination (Join-Path $stage "root") -Recurse -Force
+Remove-Item -LiteralPath (Join-Path $stage "root\data") -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath (Join-Path $stage "root\README.md") -Force -ErrorAction SilentlyContinue
 Get-ChildItem -LiteralPath (Join-Path $stage "root\js") -Filter "*.test.mjs" -File |
+  Remove-Item -Force
+Get-ChildItem -LiteralPath (Join-Path $stage "root") -Filter "*.pdf" -File -Recurse |
   Remove-Item -Force
 Copy-Item -Path (Join-Path $auctionSource "*") -Destination (Join-Path $stage "auction-post") -Force
 

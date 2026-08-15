@@ -66,6 +66,17 @@ export const carLocalizationMessages = {
   "vehicle.feature.amgWheels19": entry("Легкосплавные диски AMG R19", "19-calowe felgi aluminiowe AMG", "19-inch AMG alloy wheels"),
   "vehicle.feature.nightPackage": entry("Пакет Night", "Pakiet Night", "Night package"),
   "vehicle.feature.metallicGrey": entry("Серый металлик", "Szary metalik", "Metallic grey"),
+  "vehicle.feature.manualAirConditioning": entry("Ручной кондиционер", "Klimatyzacja manualna", "Manual air conditioning"),
+  "vehicle.feature.hillStartAssist": entry("Помощь при старте в гору", "Asystent ruszania pod górę", "Hill-start assist"),
+  "vehicle.feature.driverAttention": entry("Контроль усталости водителя", "System monitorowania zmęczenia kierowcy", "Driver-attention monitoring"),
+  "vehicle.feature.sos": entry("Система SOS", "System SOS", "SOS system"),
+  "vehicle.feature.tractionControl": entry("Контроль тяги", "Kontrola trakcji", "Traction control"),
+  "vehicle.feature.fogLights": entry("Противотуманные фары", "Światła przeciwmgielne", "Fog lights"),
+  "vehicle.feature.drivingModes": entry("Режимы движения", "Tryby jazdy", "Driving modes"),
+  "vehicle.feature.metallicPaint": entry("Лак металлик", "Lakier metalizowany", "Metallic paint"),
+  "vehicle.feature.smartphoneIntegration": entry("Интеграция смартфона", "Integracja ze smartfonem", "Smartphone integration"),
+  "vehicle.feature.touchscreen7": entry("Сенсорный экран 7 дюймов", "Ekran dotykowy 7 cali", "7-inch touchscreen"),
+  "vehicle.feature.particulateFilter": entry("Сажевый фильтр", "Filtr cząstek stałych", "Particulate filter"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -173,6 +184,17 @@ export const carLocalizationMessages = {
     "Serwis Mercedes-Benz B, wymiana tylnych klocków hamulcowych, filtra powietrza, świec zapłonowych i płynu chłodniczego oraz prace przy kołach.",
     "Mercedes-Benz Service B with rear brake-pad, air-filter, spark-plug and coolant replacement, plus wheel work."
   ),
+  "vehicle.newCars.service.oilCabin": entry("Замена моторного масла, масляного и салонного фильтров.", "Wymiana oleju silnikowego oraz filtrów oleju i kabinowego.", "Engine oil, oil-filter and cabin-filter replacement."),
+  "vehicle.newCars.service.oilAirCabin": entry("Замена моторного масла, масляного, воздушного и салонного фильтров.", "Wymiana oleju silnikowego oraz filtrów oleju, powietrza i kabinowego.", "Engine oil, oil-filter, air-filter and cabin-filter replacement."),
+  "vehicle.newCars.service.oilFuelCabin": entry("Замена моторного масла, масляного, топливного и салонного фильтров.", "Wymiana oleju silnikowego oraz filtrów oleju, paliwa i kabinowego.", "Engine oil, oil-filter, fuel-filter and cabin-filter replacement."),
+  "vehicle.newCars.service.oilAirFuelCabin": entry("Замена моторного масла, масляного, воздушного, топливного и салонного фильтров.", "Wymiana oleju silnikowego oraz filtrów oleju, powietrza, paliwa i kabinowego.", "Engine oil, oil-filter, air-filter, fuel-filter and cabin-filter replacement."),
+  "vehicle.newCars.service.winterTyres": entry("Зимние шины.", "Opony zimowe.", "Winter tyres."),
+  "vehicle.newCars.service.peugeotFull": entry("Плановое обслуживание с заменой щёток стеклоочистителя, свечей зажигания, воздушного и салонного фильтров и охлаждающей жидкости.", "Przegląd z wymianą piór wycieraczek, świec zapłonowych, filtrów powietrza i kabinowego oraz płynu chłodniczego.", "Scheduled service with wiper-blade, spark-plug, air-filter, cabin-filter and coolant replacement."),
+  "vehicle.newCars.service.peugeotBrakes": entry("Плановое обслуживание: передние тормозные диски, задние колодки, салонный фильтр, охлаждающая жидкость и щётки стеклоочистителя.", "Przegląd: przednie tarcze hamulcowe, tylne klocki, filtr kabinowy, płyn chłodniczy i pióra wycieraczek.", "Scheduled service: front brake discs, rear pads, cabin filter, coolant and wiper blades."),
+  "vehicle.newCars.service.peugeotTiming": entry("Плановое обслуживание: передние амортизаторы, свечи зажигания, приводной ремень и ремень ГРМ, воздушный и салонный фильтры и охлаждающая жидкость.", "Przegląd: przednie amortyzatory, świece zapłonowe, pasek osprzętu i rozrządu, filtry powietrza i kabinowy oraz płyn chłodniczy.", "Scheduled service: front dampers, spark plugs, accessory and timing belts, air and cabin filters, and coolant."),
+  "vehicle.newCars.service.peugeotRear": entry("Плановое обслуживание: задние амортизаторы и тормозные колодки, тормозная жидкость, салонный фильтр, лампа, левый задний фонарь и щётки стеклоочистителя.", "Przegląd: tylne amortyzatory i klocki hamulcowe, płyn hamulcowy, filtr kabinowy, żarówka, lewa lampa tylna i pióra wycieraczek.", "Scheduled service: rear dampers and brake pads, brake fluid, cabin filter, bulb, left rear lamp and wiper blades."),
+  "vehicle.newCars.service.peugeotBasic": entry("Плановое обслуживание с заменой лампы, щёток стеклоочистителя, свечей зажигания, воздушного и салонного фильтров.", "Przegląd z wymianą żarówki, piór wycieraczek, świec zapłonowych oraz filtrów powietrza i kabinowego.", "Scheduled service with bulb, wiper-blade, spark-plug, air-filter and cabin-filter replacement."),
+  "vehicle.newCars.service.cabinService": entry("Плановое обслуживание и замена салонного фильтра.", "Przegląd i wymiana filtra kabinowego.", "Scheduled service and cabin-filter replacement."),
   "vehicle.condition.cosmeticClass": entry("Косметический класс", "Klasa kosmetyczna", "Cosmetic grade"),
   "vehicle.condition.general": entry("Состояние", "Stan", "Condition"),
   "vehicle.condition.odometer": entry("Одометр", "Drogomierz", "Odometer"),
@@ -193,6 +215,8 @@ export const carLocalizationMessages = {
   "vehicle.condition.runningCondition": entry("Состояние на площадке", "Stan na placu", "Condition at the facility"),
   "vehicle.condition.taxStatus": entry("Налоговый статус", "Status podatkowy", "Tax status"),
   "vehicle.condition.serviceHistory": entry("Сервисная история", "Historia serwisowa", "Service history"),
+  "vehicle.location.dealershipStock": entry("В наличии на площадке Atlant Auto", "Dostępny na placu Atlant Auto", "Available at the Atlant Auto site"),
+  "vehicle.newCars.condition.serviceConfirmed": entry("Подтверждена отчётом продавца", "Potwierdzona raportem sprzedawcy", "Confirmed by the seller report"),
   "vehicle.ford.condition.general": entry(
     "На кузове и колёсах присутствуют отдельные косметические следы эксплуатации. Подробности указаны в инспекционном отчёте.",
     "Na nadwoziu i kołach widoczne są pojedyncze ślady użytkowania. Szczegóły znajdują się w raporcie z inspekcji.",
@@ -320,11 +344,79 @@ const rawFeaturePairs = [
   ,["Легкосплавные диски AMG R19", "vehicle.feature.amgWheels19"]
   ,["Пакет Night", "vehicle.feature.nightPackage"]
   ,["Серый металлик", "vehicle.feature.metallicGrey"]
+  ,["Ручной кондиционер", "vehicle.feature.manualAirConditioning"]
+  ,["Помощь при старте в гору", "vehicle.feature.hillStartAssist"]
+  ,["Контроль усталости водителя", "vehicle.feature.driverAttention"]
+  ,["Система SOS", "vehicle.feature.sos"]
+  ,["Контроль тяги", "vehicle.feature.tractionControl"]
+  ,["Противотуманные фары", "vehicle.feature.fogLights"]
+  ,["Режимы движения", "vehicle.feature.drivingModes"]
+  ,["Лак металлик", "vehicle.feature.metallicPaint"]
+  ,["Интеграция смартфона", "vehicle.feature.smartphoneIntegration"]
+  ,["Сенсорный экран 7 дюймов", "vehicle.feature.touchscreen7"]
+  ,["Сажевый фильтр", "vehicle.feature.particulateFilter"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
 
 export const localizedCarDetails = {
+  "peugeot-408-allure-2023-157570": {
+    bodyKey: "vehicle.body.fastbackCrossover",
+    color: { ru: "Серый Artense", pl: "Szary Artense", en: "Artense Grey" },
+    serviceKeys: [
+      "vehicle.newCars.service.peugeotFull",
+      "vehicle.newCars.service.winterTyres",
+      "vehicle.newCars.service.peugeotBrakes",
+      "vehicle.newCars.service.peugeotTiming",
+      "vehicle.newCars.service.peugeotRear",
+      "vehicle.newCars.service.peugeotBasic",
+      "vehicle.newCars.service.winterTyres",
+      "vehicle.newCars.service.cabinService"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "157 570 км", pl: "157 570 km", en: "157,570 km" }],
+      ["vehicle.condition.keys", { ru: "1", pl: "1", en: "1" }],
+      ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
+    ],
+    documentKeys: []
+  },
+  "bmw-116d-business-advantage-2022": {
+    bodyKey: "vehicle.body.hatchback",
+    color: { ru: "Storm Bay Metallic", pl: "Storm Bay Metallic", en: "Storm Bay Metallic" },
+    serviceKeys: [
+      "vehicle.newCars.service.oilAirFuelCabin",
+      "vehicle.newCars.service.oilCabin",
+      "vehicle.newCars.service.oilAirCabin",
+      "vehicle.newCars.service.oilFuelCabin",
+      "vehicle.newCars.service.oilAirCabin",
+      "vehicle.newCars.service.oilCabin"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "157 323 км", pl: "157 323 km", en: "157,323 km" }],
+      ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
+      ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
+    ],
+    documentKeys: []
+  },
+  "renault-megane-sporter-equilibre-2022": {
+    bodyKey: "vehicle.body.wagon",
+    color: { ru: "Серый Titanium", pl: "Szary Titanium", en: "Titanium Grey" },
+    serviceKeys: [
+      "vehicle.newCars.service.oilAirCabin",
+      "vehicle.newCars.service.oilAirFuelCabin",
+      "vehicle.newCars.service.oilAirCabin",
+      "vehicle.newCars.service.oilAirCabin"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "114 404 км", pl: "114 404 km", en: "114,404 km" }],
+      ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
+      ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
+    ],
+    documentKeys: []
+  },
   "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022": {
     bodyKey: "vehicle.body.wagon",
     color: { ru: "Синий металлик", pl: "Niebieski metalik", en: "Metallic blue" },

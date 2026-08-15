@@ -38,4 +38,4 @@ createServer((request, response) => {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");
   }
-}).listen(port, "0.0.0.0");
+}).listen(port, "127.0.0.1");

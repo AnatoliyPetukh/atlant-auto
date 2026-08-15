@@ -12,7 +12,7 @@ const outputPath = (route) => route === "/" ? path.join(root, "index.html") : pa
 function alternates(key) {
   return Object.entries(equivalents[key]).map(([lang, route]) =>
     `<link rel="alternate" hreflang="${lang}" href="${absolute(route)}">`
-  ).concat(`<link rel="alternate" hreflang="x-default" href="${absolute(equivalents[key].ru)}">`).join("\n  ");
+  ).concat(`<link rel="alternate" hreflang="x-default" href="${absolute(equivalents[key].pl)}">`).join("\n  ");
 }
 
 function organizationSchema() {
@@ -76,8 +76,13 @@ function schema(page, locale) {
 }
 
 function nav(locale) {
-  const keys = ["navigation.catalog", "navigation.process", "navigation.calculator", "navigation.about", "navigation.contact"];
-  return keys.map((key, index) => `<a href="${locale.routes[index]}">${t(locale.lang, key)}</a>`).join("");
+  const items = [
+    ["navigation.catalog", locale.routes[0]],
+    ["navigation.process", locale.routes[1]],
+    ["navigation.about", locale.routes[3]],
+    ["navigation.contact", locale.routes[4]]
+  ];
+  return items.map(([key, route]) => `<a href="${route}">${t(locale.lang, key)}</a>`).join("");
 }
 
 function languageNav(current) {
@@ -97,10 +102,20 @@ function pageHtml(page, localeCode) {
   const isHome = key === "home";
   const contactAction = locale.routes[4];
   const catalogue = locale.routes[0];
-  const vehiclePrefix = localeCode === "ru" ? "/cars/" : localeCode === "pl" ? "/pl/samochody/" : "/en/cars/";
-  const vehicleSuffix = localeCode === "ru" ? ".html" : "/";
+  const vehiclePrefix = localeCode === "pl" ? "/pl/samochody/" : "/en/cars/";
+  const vehicleSuffix = "/";
   const linkedVehicleSlugs = key === "cars"
-    ? ["bmw-216d-gran-tourer-2022", "bmw-x1-sdrive16d-2021", "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022", "peugeot-308-sw-allure-2023"]
+    ? [
+        "peugeot-408-allure-2023-157570",
+        "bmw-116d-business-advantage-2022",
+        "renault-megane-sporter-equilibre-2022",
+        "bmw-216d-gran-tourer-2022",
+        "bmw-x1-sdrive16d-2021",
+        "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022",
+        "peugeot-308-sw-allure-2023",
+        "peugeot-408-allure-2023",
+        "mercedes-benz-cla-180-amg-line-2023"
+      ]
     : key === "cases"
       ? ["bmw-216d-gran-tourer-2022", "bmw-x1-sdrive16d-2021", "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022"]
       : null;
@@ -108,8 +123,6 @@ function pageHtml(page, localeCode) {
   const cardsHtml = localizedCards.map((card, index) => `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(intro)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${t(localeCode, "topic.cards.viewVehicle")}</a>` : ""}</article>`).join("");
   const faqAnswers = ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"];
   const faq = key === "faq" ? `<section class="content-section faq">${localizedCards.map((q, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${t(localeCode, faqAnswers[index])}</p></details>`).join("")}</section>` : "";
-  const calculatorRoute = localeCode === "ru" ? "/customs-calculator.html" : `/${localeCode}/customs-calculator.html`;
-  const calculatorNote = key === "calculator" ? `<p class="seo-callout">${t(localeCode, "topic.calculator.note")} <a class="text-link" href="${calculatorRoute}">${t(localeCode, "topic.calculator.open")}</a></p>` : "";
   return `<!doctype html>
 <html lang="${locale.lang}">
 <head>
@@ -146,7 +159,6 @@ function pageHtml(page, localeCode) {
       <p class="lead">${esc(intro)}</p>
       <div class="hero-actions"><a class="button primary" href="${contactAction}">${t(localeCode, "action.discussCar")}</a><a class="button ghost dark" href="${catalogue}">${t(localeCode, "navigation.catalog")}</a></div>
     </section>
-    ${calculatorNote}
     <section class="content-section topic-grid">${cardsHtml}</section>
     ${faq}
     <section class="content-section seo-copy">
@@ -157,7 +169,7 @@ function pageHtml(page, localeCode) {
   </main>
   <footer class="footer">
     <div><a class="brand footer-brand" href="${locale.home}"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>${site.legalName}</small></span></a><p>${t(localeCode, "footer.tagline")}</p><p>NIP ${site.nip}</p></div>
-    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">${t(localeCode, "common.telegram")}</a><span>${site.address}</span><a href="${localeCode === "ru" ? "/privacy/" : localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
+    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">${t(localeCode, "common.telegram")}</a><span>${site.address}</span><a href="${localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
   </footer>
   <aside class="cookie-banner" data-cookie-banner hidden>
     <div><strong>${t(localeCode, "cookie.banner.title")}</strong><p>${t(localeCode, "cookie.banner.description")}</p></div>
@@ -182,13 +194,9 @@ for (const [localeCode, localePages] of Object.entries(pages)) {
 const vehicleRoutesFile = path.join(root, "vehicle-pages.json");
 const vehicleRoutes = fs.existsSync(vehicleRoutesFile) ? JSON.parse(fs.readFileSync(vehicleRoutesFile, "utf8")) : [];
 const sitemapRoutes = [
-  "/",
   "/pl/",
   "/en/",
   ...generated,
-  "/customs-calculator.html",
-  "/pl/customs-calculator.html",
-  "/en/customs-calculator.html",
   ...vehicleRoutes
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

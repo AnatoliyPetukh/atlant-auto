@@ -5,11 +5,10 @@ import { t } from "./i18n-catalog.mjs";
 import { site } from "./seo-config.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atlant-auto-draft");
-const homes = { ru: "/", pl: "/pl/", en: "/en/" };
-const catalogues = { ru: "/avtomobili/", pl: "/pl/samochody/", en: "/en/cars/" };
+const homes = { pl: "/pl/", en: "/en/" };
+const catalogues = { pl: "/pl/samochody/", en: "/en/cars/" };
 const routes = {
-  ru: { 404: "/404.html", 500: "/500.html" },
-  pl: { 404: "/pl/404/", 500: "/pl/500/" },
+  pl: { 404: "/404.html", 500: "/500.html" },
   en: { 404: "/en/404/", 500: "/en/500/" }
 };
 const targetFor = (route) => route.endsWith(".html") ? path.join(root, route.slice(1)) : path.join(root, route.slice(1), "index.html");

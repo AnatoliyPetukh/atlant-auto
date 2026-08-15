@@ -2,8 +2,8 @@
   "name": "atlant-auto-private",
   "private": true,
   "scripts": {
-    "generate:seo": "node tools/generate-car-pages.mjs && node tools/generate-calculator-pages.mjs && node tools/generate-home-pages.mjs && node tools/generate-error-pages.mjs && node tools/generate-seo-pages.mjs",
-    "test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./tools/run-tests.ps1"
+    "generate:seo": "node tools/prepare-public-site.mjs && node tools/generate-car-pages.mjs && node tools/generate-home-pages.mjs && node tools/generate-error-pages.mjs && node tools/generate-seo-pages.mjs",
+    "test": "node --test atlant-auto-draft/js/catalog-data.test.mjs atlant-auto-draft/js/seo.test.mjs atlant-auto-draft/js/i18n.test.mjs atlant-auto-draft/js/kyc-content.test.mjs"
   },
   "dependencies": {
     "pdf-parse": "^2.4.5"

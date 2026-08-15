@@ -48,25 +48,26 @@ test("all indexable HTML pages have unique title, description, one H1 and self c
   }
 });
 
-test("localized pages have reciprocal hreflang sets and x-default", () => {
+test("public pages have reciprocal Polish and English hreflang sets", () => {
   const localized = htmlFiles.filter((file) => {
     const html = read(file);
-    return /hreflang="(?:ru|pl|en)"/.test(html);
+    return /hreflang="(?:pl|en)"/.test(html);
   });
   for (const file of localized) {
     const html = read(file);
     const route = routeFor(file);
     const links = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)];
     const map = Object.fromEntries(links.map(([, lang, href]) => [lang, href]));
-    for (const lang of ["ru", "pl", "en", "x-default"]) assert.ok(map[lang], `${route}: missing ${lang}`);
-    for (const lang of ["ru", "pl", "en"]) {
+    for (const lang of ["pl", "en", "x-default"]) assert.ok(map[lang], `${route}: missing ${lang}`);
+    assert.equal(map.ru, undefined, `${route}: Russian hreflang must not be published`);
+    for (const lang of ["pl", "en"]) {
       const targetRoute = new URL(map[lang]).pathname;
       const targetFile = targetRoute === "/" ? path.join(root, "index.html")
         : targetRoute.endsWith("/") ? path.join(root, targetRoute.slice(1), "index.html")
         : path.join(root, targetRoute.slice(1));
       assert.ok(fs.existsSync(targetFile), `${route}: hreflang target ${targetRoute} is missing`);
       const targetHtml = read(targetFile);
-      assert.match(targetHtml, new RegExp(`hreflang="${lang === "ru" ? (route.startsWith("/pl/") ? "pl" : route.startsWith("/en/") ? "en" : "ru") : lang}"|hreflang="(?:ru|pl|en)"`));
+      assert.match(targetHtml, /hreflang="(?:pl|en)"/);
       assert.ok(targetHtml.includes(`href="${origin}${route}"`), `${targetRoute}: no reciprocal link to ${route}`);
     }
   }
@@ -86,7 +87,7 @@ test("all JSON-LD blocks parse and contain no aggregateRating", () => {
 test("sitemap contains only existing canonical indexable pages", () => {
   const sitemap = read(path.join(root, "sitemap.xml"));
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  assert.ok(locations.length > 30, "sitemap should include localized SEO pages");
+  assert.ok(locations.length > 20, "sitemap should include Polish and English SEO pages");
   for (const location of locations) {
     const route = new URL(location).pathname;
     const file = route === "/" ? path.join(root, "index.html")
@@ -107,11 +108,12 @@ test("robots allows crawling and points to the canonical sitemap", () => {
 });
 
 test("critical vehicle and catalogue content exists in static HTML", () => {
-  const home = read(path.join(root, "index.html"));
+  const home = read(path.join(root, "pl/index.html"));
   const vehicleRoutes = JSON.parse(read(path.join(root, "vehicle-pages.json")));
-  const vehicleCount = vehicleRoutes.filter((route) => route.startsWith("/cars/")).length;
+  const vehicleCount = vehicleRoutes.filter((route) => route.startsWith("/pl/samochody/")).length;
   assert.equal((home.match(/<article class="car-card"/g) || []).length, vehicleCount);
-  for (const file of htmlFiles.filter((item) => path.dirname(item) === path.join(root, "cars"))) {
+  for (const route of vehicleRoutes.filter((item) => item.startsWith("/pl/samochody/"))) {
+    const file = path.join(root, route.slice(1), "index.html");
     const html = read(file);
     assert.match(html, /<section class="car-hero">/);
     assert.match(html, /<section class="car-section">/);

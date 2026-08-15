@@ -26,11 +26,20 @@ test("every car has required catalog fields", () => {
   }
 });
 
-test("every car has a detail page", async () => {
-  for (const car of cars) await access(new URL(`../cars/${car.slug}.html`, import.meta.url));
+test("every car has Polish and English detail pages", async () => {
+  for (const car of cars) {
+    await access(new URL(`../pl/samochody/${car.slug}/index.html`, import.meta.url));
+    await access(new URL(`../en/cars/${car.slug}/index.html`, import.meta.url));
+  }
 });
 
 test("structured values do not contain display sentinels", () => {
   const serialized = JSON.stringify(cars);
   assert.equal(/"(?:null|undefined|NaN)"/.test(serialized), false);
+});
+
+test("on-site vehicles do not store VIN values", () => {
+  const onSiteCars = cars.filter((car) => car.availability === "on-site");
+  assert.equal(onSiteCars.length, 3);
+  for (const car of onSiteCars) assert.equal(Object.hasOwn(car, "vin"), false, car.slug);
 });

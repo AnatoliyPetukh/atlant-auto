@@ -14,7 +14,7 @@ const requiredKeys = [
   "footer.privacy", "vehicle.gallery.mainAlt", "email.request.subject"
 ];
 
-test("translation catalogue uses semantic keys and has ru, pl and en values", () => {
+test("translation catalogue uses semantic keys and has Polish and English values", () => {
   assert.deepEqual(validateCatalog(), []);
   for (const key of requiredKeys) assert.ok(messages[key], `required semantic key is missing: ${key}`);
   assert.ok(Object.keys(messages).length > 180, "catalogue should cover the complete site interface");
@@ -41,17 +41,14 @@ test("Polish and English generated pages do not contain Cyrillic interface text"
 test("browser code does not call automatic translation services", () => {
   const files = [
     path.join(siteRoot, "app.js"),
-    path.join(siteRoot, "js/cookie-consent.js"),
-    path.join(siteRoot, "js/customs-calculator-page.mjs"),
-    path.join(siteRoot, "js/customs-calculator.mjs"),
-    path.join(siteRoot, "js/customs-rates.mjs")
+    path.join(siteRoot, "js/cookie-consent.js")
   ];
   const source = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
   assert.doesNotMatch(source, /translate\.google|deepl|microsofttranslator|translation.?api/i);
 });
 
 test("user-facing strings are absent from interactive browser components", () => {
-  for (const relative of ["app.js", "js/cookie-consent.js", "js/customs-calculator-page.mjs", "js/customs-calculator.mjs", "js/customs-rates.mjs"]) {
+  for (const relative of ["app.js", "js/cookie-consent.js"]) {
     const source = fs.readFileSync(path.join(siteRoot, relative), "utf8");
     assert.doesNotMatch(source, /[А-Яа-яЁё]/, `${relative} contains hardcoded Russian interface text`);
   }
@@ -67,7 +64,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.ok(styles.includes(selector), `missing responsive style: ${selector}`);
   }
 
-  for (const relative of ["index.html", "pl/index.html", "en/index.html"]) {
+  for (const relative of ["pl/index.html", "en/index.html"]) {
     const html = fs.readFileSync(path.join(siteRoot, relative), "utf8");
     assert.match(html, /class="cars-grid"/, `${relative} lost the catalogue grid`);
     assert.match(html, /class="car-card-link"/, `${relative} lost clickable vehicle cards`);

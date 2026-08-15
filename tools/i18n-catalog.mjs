@@ -84,6 +84,7 @@ const common = {
     "Please try again later or contact us directly."
   ),
   "vehicle.status.forSale": entry("В продаже", "Dostępny", "Available"),
+  "vehicle.status.onSite": entry("В наличии на площадке", "Dostępny na placu", "Available on site"),
   "vehicle.status.sold": entry("Продано", "Sprzedany", "Sold"),
   "vehicle.seo.offerSuffix": entry("в продаже в Варшаве", "na sprzedaż w Warszawie", "for sale in Warsaw"),
   "vehicle.fuel.petrol": entry("Бензин", "Benzyna", "Petrol"),
@@ -94,6 +95,7 @@ const common = {
   "vehicle.transmission.automatic": entry("Автоматическая", "Automatyczna", "Automatic"),
   "vehicle.drive.front": entry("Передний", "Przedni", "Front-wheel drive"),
   "vehicle.body.wagon": entry("Универсал", "Kombi", "Estate"),
+  "vehicle.body.hatchback": entry("Хэтчбек", "Hatchback", "Hatchback"),
   "vehicle.body.compactVan": entry("Компактвэн", "Minivan kompaktowy", "Compact MPV"),
   "vehicle.body.crossover": entry("Кроссовер", "Crossover", "Crossover"),
   "vehicle.body.fastbackCrossover": entry("Фастбэк-кроссовер", "Crossover typu fastback", "Fastback crossover"),
@@ -288,7 +290,7 @@ export function validateCatalog() {
     if (!/^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9]+)+$/.test(key)) {
       errors.push(`${key}: invalid semantic key`);
     }
-    for (const locale of ["ru", "pl", "en"]) {
+    for (const locale of Object.keys(locales)) {
       if (typeof values[locale] !== "string" || !values[locale].trim()) {
         errors.push(`${key}: missing ${locale}`);
       }

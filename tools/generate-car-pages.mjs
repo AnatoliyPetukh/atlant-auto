@@ -10,14 +10,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atla
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
 const cars = context.window.ATLANT_CARS;
-const localeCodes = ["ru", "pl", "en"];
+const localeCodes = ["pl", "en"];
 const localeMeta = {
-  ru: { lang: "ru", home: "/", catalogue: "/avtomobili/", contact: "/kontakty/" },
   pl: { lang: "pl", home: "/pl/", catalogue: "/pl/samochody/", contact: "/pl/kontakt/" },
   en: { lang: "en", home: "/en/", catalogue: "/en/cars/", contact: "/en/contact/" }
 };
 const carRoutes = {
-  ru: (slug) => `/cars/${slug}.html`,
   pl: (slug) => `/pl/samochody/${slug}/`,
   en: (slug) => `/en/cars/${slug}/`
 };
@@ -27,8 +25,13 @@ const esc = (value) => String(value ?? "")
 const url = (route) => `${site.origin}${route}`;
 const publicPath = (source) => `/${String(source).replace(/^(\.\.\/)+/, "")}`;
 const carName = (car) => `${car.brand} ${car.model} ${car.version}`.trim();
-const number = (value, locale) => new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB").format(value);
-const date = (value, locale) => new Intl.DateTimeFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB").format(new Date(`${value}T12:00:00Z`));
+const number = (value, locale) => new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB").format(value);
+const date = (value, locale) => {
+  const monthOnly = /^\d{4}-\d{2}$/.test(value);
+  const options = monthOnly ? { month: "long", year: "numeric" } : undefined;
+  return new Intl.DateTimeFormat(locale === "pl" ? "pl-PL" : "en-GB", options)
+    .format(new Date(`${value}${monthOnly ? "-01" : ""}T12:00:00Z`));
+};
 const targetFor = (route) => route.endsWith("/")
   ? path.join(root, route.slice(1), "index.html")
   : path.join(root, route.slice(1));
@@ -36,7 +39,7 @@ const targetFor = (route) => route.endsWith("/")
 function alternates(car) {
   return localeCodes.map((code) =>
     `<link rel="alternate" hreflang="${code}" href="${url(carRoutes[code](car.slug))}">`
-  ).concat(`<link rel="alternate" hreflang="x-default" href="${url(carRoutes.ru(car.slug))}">`).join("\n  ");
+  ).concat(`<link rel="alternate" hreflang="x-default" href="${url(carRoutes.pl(car.slug))}">`).join("\n  ");
 }
 
 function languageNav(car, current) {
@@ -47,7 +50,7 @@ function languageNav(car, current) {
 
 function price(car, locale) {
   if (car.priceOnRequest || car.price == null) return t(locale, "common.priceOnRequest");
-  const formatted = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB", {
+  const formatted = new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB", {
     style: "currency", currency: car.currency, maximumFractionDigits: 0
   }).format(car.price);
   return car.priceExcludingVat ? `${formatted} · ${t(locale, "common.priceExcludingVat")}` : formatted;
@@ -98,9 +101,10 @@ function service(car, locale) {
   const details = localizedCarDetails[car.slug];
   if (!car.serviceHistory?.length) return `<p>${t(locale, car.slug.startsWith("ford-") ? "vehicle.ford.service.unavailable" : "vehicle.service.unavailable")}</p>`;
   if (details.serviceKeys.length !== car.serviceHistory.length) throw new Error(`Service translation count mismatch: ${car.slug}`);
-  return `<ol class="timeline service-list">${car.serviceHistory.map((item, index) =>
-    `<li><strong>${date(item.date, locale)} · ${number(item.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</strong><p>${t(locale, details.serviceKeys[index])}</p></li>`
-  ).join("")}</ol>`;
+  return `<ol class="timeline service-list">${car.serviceHistory.map((item, index) => {
+    const mileage = item.mileageKm == null ? "" : ` · ${number(item.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}`;
+    return `<li><strong>${date(item.date, locale)}${mileage}</strong><p>${t(locale, details.serviceKeys[index])}</p></li>`;
+  }).join("")}</ol>`;
 }
 
 function condition(car, locale) {
@@ -112,13 +116,7 @@ function condition(car, locale) {
 }
 
 function documents(car, locale) {
-  const source = car.documents || (car.inspectionDocument ? [car.inspectionDocument] : []);
-  const keys = localizedCarDetails[car.slug]?.documentKeys || [];
-  if (source.length !== keys.length) throw new Error(`Document translation count mismatch: ${car.slug}`);
-  if (!source.length) return `<p>${t(locale, "common.notAvailable")}</p>`;
-  return `<div class="document-list">${source.map((document, index) =>
-    `<a class="document-card" href="${publicPath(document.file)}" target="_blank" rel="noopener"><strong>${t(locale, keys[index])}</strong><span>${t(locale, "action.download")} · ${esc(String(document.size).match(/[\d,.]+/)?.[0] || "")} ${t(locale, "vehicle.unit.megabytes")}</span></a>`
-  ).join("")}</div>`;
+  return `<p>${t(locale, "common.notAvailable")}</p>`;
 }
 
 function gallery(car, locale) {
@@ -146,6 +144,7 @@ function schema(car, locale) {
     offers: {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
+      ...(car.price == null ? {} : { price: car.price, priceCurrency: car.currency }),
       seller: { "@type": "AutoDealer", name: site.name, url: site.origin }
     },
     inLanguage: locale
@@ -163,7 +162,11 @@ function html(car, locale) {
   const meta = localeMeta[locale];
   const name = carName(car);
   const route = carRoutes[locale](car.slug);
-  const title = `${name} — ${t(locale, "vehicle.seo.offerSuffix")} | Atlant Auto`;
+  const statusLabel = t(locale, car.availability === "on-site" ? "vehicle.status.onSite" : "vehicle.status.forSale");
+  const titleDetail = car.availability === "on-site"
+    ? `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")} · ${statusLabel}`
+    : t(locale, "vehicle.seo.offerSuffix");
+  const title = `${name} — ${titleDetail} | Atlant Auto`;
   const description = car.description[locale];
   return `<!doctype html>
 <html lang="${meta.lang}">
@@ -193,7 +196,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${t(locale, "vehicle.status.forSale")}</p><h1>${esc(name)}</h1><p>${esc(description)}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p><h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
     </section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>
