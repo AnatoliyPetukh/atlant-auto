@@ -719,7 +719,6 @@ window.ATLANT_CARS = [
     emissionStandard: "Euro 5a",
     co2GKm: null,
     price: 56900,
-    priceExcludingVat: true,
     currency: "PLN",
     priceType: "market-estimate",
     description: {
@@ -798,7 +797,6 @@ window.ATLANT_CARS = [
     emissionStandard: "Euro 6D",
     co2GKm: 136,
     price: 69900,
-    priceExcludingVat: true,
     currency: "PLN",
     priceType: "market-estimate",
     description: {

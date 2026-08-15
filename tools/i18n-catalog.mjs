@@ -54,6 +54,7 @@ const common = {
   "footer.companyInfo": entry("О компании и официальная информация", "O firmie i dane rejestrowe", "Company and registration details"),
   "common.priceOnRequest": entry("Цена по запросу", "Cena na zapytanie", "Price on request"),
   "common.priceExcludingVat": entry("без НДС", "netto (bez VAT)", "excl. VAT"),
+  "common.priceGross": entry("брутто", "brutto", "gross"),
   "common.marketEstimate": entry("Ориентировочная рыночная цена", "Orientacyjna cena rynkowa", "Indicative market price"),
   "common.notAvailable": entry("Нет данных", "Brak danych", "Not available"),
   "footer.tagline": entry(

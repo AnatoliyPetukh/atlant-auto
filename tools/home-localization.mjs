@@ -11,7 +11,7 @@ export const homeLocalizationMessages = {
   "home.hero.secondaryCta": entry("Смотреть предложения", "Zobacz oferty", "View offers"),
   "home.numbers.eyebrow": entry("Каталог в цифрах", "Katalog w liczbach", "Catalogue in figures"),
   "home.numbers.title": entry("Актуальные автомобили Atlant Auto", "Aktualne samochody Atlant Auto", "Current Atlant Auto vehicles"),
-  "home.numbers.intro": entry("Цифры сформированы из опубликованного каталога и обновляются вместе с ним.", "Dane pochodzą z opublikowanego katalogu i aktualizują się razem z nim.", "The figures come from the published catalogue and update with it."),
+  "home.numbers.intro": entry("Актуальные показатели предложения, площадки и недавно завершённых продаж Atlant Auto.", "Aktualne dane dotyczące oferty, placu i niedawno zakończonych sprzedaży Atlant Auto.", "Current figures for Atlant Auto offers, on-site vehicles and recently completed sales."),
   "home.numbers.available": entry("автомобилей в актуальном предложении", "samochodów w aktualnej ofercie", "vehicles in the current offer"),
   "home.numbers.onSite": entry("автомобиля на площадке в Варшаве", "samochody na placu w Warszawie", "vehicles at the Warsaw site"),
   "home.numbers.inTransit": entry("автомобиля в пути", "samochody w drodze", "vehicles in transit"),
@@ -122,5 +122,10 @@ export const homeLocalizationMessages = {
   "home.form.message": entry("Что ищете", "Czego szukasz", "What are you looking for?"),
   "home.form.messagePlaceholder": entry("Марка, модель, год, пробег и важные требования", "Marka, model, rok, przebieg i ważne wymagania", "Make, model, year, mileage and key requirements"),
   "home.form.submit": entry("Подготовить письмо", "Przygotuj wiadomość", "Prepare email"),
-  "home.form.emailSubject": entry("Запрос с сайта Atlant Auto", "Zapytanie ze strony Atlant Auto", "Atlant Auto website enquiry")
+  "home.form.emailSubject": entry("Запрос с сайта Atlant Auto", "Zapytanie ze strony Atlant Auto", "Atlant Auto website enquiry"),
+  "home.location.eyebrow": entry("Как добраться", "Dojazd", "Directions"),
+  "home.location.title": entry("Площадка Atlant Auto в Варшаве", "Plac Atlant Auto w Warszawie", "Atlant Auto vehicle site in Warsaw"),
+  "home.location.intro": entry("Перед визитом свяжитесь с нами, чтобы согласовать время и подтвердить наличие интересующего автомобиля.", "Przed wizytą skontaktuj się z nami, aby ustalić godzinę i potwierdzić dostępność wybranego samochodu.", "Contact us before visiting to arrange a time and confirm that the vehicle you want to see is available."),
+  "home.location.cta": entry("Построить маршрут", "Wyznacz trasę", "Get directions"),
+  "home.location.mapTitle": entry("Карта проезда к площадке Atlant Auto", "Mapa dojazdu na plac Atlant Auto", "Map showing directions to the Atlant Auto vehicle site")
 };

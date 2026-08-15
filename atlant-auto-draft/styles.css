@@ -239,6 +239,16 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .car-badges .badge { position: static; }
 .badge.sold { background: rgba(110, 31, 31, .9); }
 .badge.source { background: rgba(11, 91, 145, .92); }
+.badge.arval-badge {
+  display: block;
+  width: 112px;
+  height: 32px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.8);
+  background: white;
+}
+.arval-badge img { display: block; width: 108px; max-width: none; height: auto; transform: translate(1px, -18px); }
 .car-body { display: flex; flex: 1; min-width: 0; flex-direction: column; padding: 20px; }
 .car-body h3 { min-height: 55px; font-size: 21px; font-weight: 600; line-height: 1.3; }
 .specs { display: grid; gap: 7px; margin: 14px 0; color: var(--muted); font-size: 14px; }
@@ -770,6 +780,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 textarea { resize: vertical; line-height: 1.5; }
 .request-form .button { grid-column: 1 / -1; }
 .form-note { grid-column: 1 / -1; margin: 0; color: var(--green); font-weight: 600; }
+.route-section { padding: 86px 0; background: linear-gradient(145deg, #111827, #173247); color: white; }
+.route-inner { display: grid; width: min(1180px, calc(100% - 36px)); margin: 0 auto; grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr); gap: 34px; align-items: stretch; }
+.route-copy { display: flex; padding: 36px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: rgba(255,255,255,.055); flex-direction: column; align-items: flex-start; }
+.route-copy h2 { color: white; }
+.route-copy > p:not(.eyebrow) { margin: 18px 0; color: rgba(255,255,255,.72); line-height: 1.65; }
+.route-copy address { margin: 0 0 26px; color: white; font-size: 18px; font-style: normal; font-weight: 700; line-height: 1.5; }
+.route-copy .button { margin-top: auto; }
+.route-map { min-height: 420px; overflow: hidden; border-radius: 12px; background: #d8dde3; box-shadow: 0 22px 52px rgba(0,0,0,.2); }
+.route-map iframe { display: block; width: 100%; height: 100%; min-height: 420px; border: 0; }
 .footer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr);
@@ -968,6 +987,7 @@ address a:hover { color: white; }
   .advantages-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pricing-grid { grid-template-columns: 1fr; }
   .pricing-description { min-height: 0; }
+  .route-inner { grid-template-columns: 1fr; }
   h1 { font-size: clamp(38px, 7vw, 56px); }
   h2 { font-size: clamp(32px, 5vw, 40px); }
 }
@@ -996,6 +1016,10 @@ address a:hover { color: white; }
   .advantages-grid { grid-template-columns: 1fr; }
   .advantage-card { min-height: 0; }
   .pricing-section { padding-top: 64px; }
+  .route-section { padding: 64px 0; }
+  .route-inner { width: min(100% - 28px, 1180px); }
+  .route-copy { padding: 26px; }
+  .route-map, .route-map iframe { min-height: 340px; }
   .location-card p { min-height: 0; }
   .content-hero { padding: 44px 0 28px; }
   .content-section { padding-bottom: 44px; }

@@ -55,6 +55,7 @@ test("historic vehicles are marked as recently sold with transparent estimates",
   for (const car of soldCars) {
     assert.equal(car.availability, "sold", car.slug);
     assert.equal(car.priceType, "market-estimate", car.slug);
+    assert.equal(Object.hasOwn(car, "priceExcludingVat"), false, car.slug);
     assert.equal(car.currency, "PLN", car.slug);
     assert.ok(car.price > 0, car.slug);
   }

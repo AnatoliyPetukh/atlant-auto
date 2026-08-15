@@ -81,6 +81,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/class="advantage-card"/g) || []).length, 6, `${relative} must show six advantages`);
     assert.match(html, /class="numbers-grid"/, `${relative} lost the catalogue figures`);
     assert.equal((html.match(/class="number-card"/g) || []).length, 4, `${relative} must show four catalogue figures`);
+    assert.deepEqual([...html.matchAll(/class="number-card"><strong>(\d+)<\/strong>/g)].map((match) => match[1]), ["14", "8", "24", "11"], `${relative} has incorrect business figures`);
     assert.doesNotMatch(html, /<dt>500\+<\/dt>|<dt>30%<\/dt>/, `${relative} exposes unverified hero figures`);
     assert.match(html, /class="pricing-grid"/, `${relative} lost the service pricing section`);
     assert.equal((html.match(/class="pricing-card(?: featured)?"/g) || []).length, 2, `${relative} must show two service packages`);
@@ -90,6 +91,12 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/data-service-package=/g) || []).length, 2, `${relative} must connect both packages to the request form`);
     assert.match(html, /select name="service"/, `${relative} lost the service selector`);
     assert.match(html, /data-recipient="autoatlantcapital@gmail\.com"/, `${relative} lost the request email recipient`);
+    assert.equal((html.match(/class="badge source arval-badge"/g) || []).length, 6, `${relative} must show the Arval logo for six current vehicles`);
+    assert.doesNotMatch(html, /Aukcja Arval|Arval auction|Orientacyjna cena rynkowa|Indicative market price/, `${relative} exposes superseded badge or price text`);
+    assert.match(html, relative.startsWith("pl/") ? /PLN brutto/ : /PLN gross/, `${relative} must show gross vehicle prices`);
+    assert.match(html, /class="route-section" id="route"/, `${relative} lost the route map section`);
+    assert.match(html, /Wielkiego Dębu 6, 03-262 Warszawa/, `${relative} lost the vehicle site address`);
+    assert.match(html, /google\.com\/maps\?q=Wielkiego%20D%C4%99bu%206/, `${relative} lost the embedded route map`);
   }
 
   const routes = JSON.parse(fs.readFileSync(path.join(siteRoot, "vehicle-pages.json"), "utf8"));

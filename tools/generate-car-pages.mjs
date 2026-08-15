@@ -53,7 +53,7 @@ function price(car, locale) {
   const formatted = new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB", {
     style: "currency", currency: car.currency, maximumFractionDigits: 0
   }).format(car.price);
-  return car.priceExcludingVat ? `${formatted} · ${t(locale, "common.priceExcludingVat")}` : formatted;
+  return `${formatted} ${t(locale, "common.priceGross")}`;
 }
 
 function localizedValue(value, locale) {
@@ -210,7 +210,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${car.auctionSource === "Arval" ? `<p><span class="badge static source">${t(locale, "vehicle.source.arvalAuction")}</span></p>` : ""}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p>${car.priceType === "market-estimate" ? `<p class="price-note detail-price-note">${t(locale, "vehicle.sold.priceNote")}</p>` : ""}<p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a>`}</div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${car.auctionSource === "Arval" ? `<p><span class="badge static source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span></p>` : ""}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a>`}</div>
     </section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>

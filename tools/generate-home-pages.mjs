@@ -9,12 +9,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atla
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
 const cars = context.window.ATLANT_CARS;
-const catalogueCounts = {
-  available: cars.filter((car) => car.status !== "sold").length,
-  onSite: cars.filter((car) => car.status !== "sold" && car.availability === "on-site").length,
-  inTransit: cars.filter((car) => car.status !== "sold" && car.availability === "in-transit").length,
-  sold: cars.filter((car) => car.status === "sold").length
-};
+const catalogueCounts = { available: 14, onSite: 8, inTransit: 24, sold: 11 };
 const routes = { pl: "/pl/", en: "/en/" };
 const catalogue = { pl: "/pl/samochody/", en: "/en/cars/" };
 const process = { pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
@@ -37,17 +32,16 @@ function carCards(locale) {
   return cars.map((car) => {
     const name = `${car.brand} ${car.model} ${car.version}`;
     const basePrice = car.price == null ? t(locale, "common.priceOnRequest") : `${format(car.price, locale)} ${car.currency}`;
-    const price = car.priceExcludingVat ? `${basePrice} · ${t(locale, "common.priceExcludingVat")}` : basePrice;
+    const price = car.price == null ? basePrice : `${basePrice} ${t(locale, "common.priceGross")}`;
     const year = car.productionDate || car.firstRegistrationDate?.slice(0,4) || "";
     const transmission = t(locale, `vehicle.transmission.${car.transmission}`);
     const detailUrl = carRoute(locale, car.slug);
     const sold = car.status === "sold";
     const statusLabel = t(locale, statusKey(car));
-    const sourceBadge = car.auctionSource === "Arval" ? `<span class="badge source">${t(locale, "vehicle.source.arvalAuction")}</span>` : "";
-    const priceNote = car.priceType === "market-estimate" ? `<small class="price-note">${t(locale, "common.marketEstimate")}</small>` : "";
+    const sourceBadge = car.auctionSource === "Arval" ? `<span class="badge source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span>` : "";
     return `<article class="car-card" data-status="${sold ? "sold" : "available"}"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
       <div class="car-media"><img src="/${car.mainImage.replace(/^(\.\.\/)+/, "")}" alt="${esc(t(locale, "vehicle.gallery.mainAlt", { vehicle: name }))}" width="1280" height="960" loading="lazy"><div class="car-badges"><span class="badge${sold ? " sold" : ""}">${statusLabel}</span>${sourceBadge}</div></div>
-      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price-block">${priceNote}<span class="price">${esc(price)}</span></span><span class="small-button">${t(locale, "action.viewVehicle")}</span></div></div>
+      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price-block"><span class="price">${esc(price)}</span></span><span class="small-button">${t(locale, "action.viewVehicle")}</span></div></div>
     </a></article>`;
   }).join("");
 }
@@ -92,6 +86,7 @@ function html(locale) {
     <section class="section proof" id="proof"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.reviews.eyebrow")}</p><h2>${t(locale, "home.reviews.title")}</h2></div><a class="text-link" href="https://search.google.com/local/reviews?placeid=ChIJoYSF3kXJHkcR2H5scCwjHDA">${t(locale, "home.reviews.google")}</a></div><div class="reviews-widget" aria-label="${t(locale, "home.reviews.title")}"><div class="sk-ww-google-reviews" data-embed-id="25670143"></div></div><script src="https://widgets.sociablekit.com/google-reviews/widget.js" defer></script></section>
     <section class="section split faq-section" id="faq"><div><p class="eyebrow">FAQ</p><h2>${t(locale, "home.faq.title")}</h2></div><div class="faq">${faq}</div></section>
     <section class="section request" id="request"><div><p class="eyebrow">${t(locale, "home.form.eyebrow")}</p><h2>${t(locale, "home.form.title")}</h2><p class="section-text">${t(locale, "home.form.intro")}</p></div><form class="request-form" data-success="${t(locale, "notifications.requestSent")}" data-recipient="${site.email}" data-subject="${t(locale, "home.form.emailSubject")}" data-label-name="${t(locale, "home.form.name")}" data-label-contact="${t(locale, "home.form.contact")}" data-label-service="${t(locale, "home.form.service")}" data-label-budget="${t(locale, "home.form.budget")}" data-label-message="${t(locale, "home.form.message")}"><label>${t(locale, "home.form.name")}<input name="name" autocomplete="name" placeholder="${t(locale, "home.form.namePlaceholder")}"></label><label>${t(locale, "home.form.contact")}<input name="contact" placeholder="${t(locale, "home.form.contactPlaceholder")}" required></label><label>${t(locale, "home.form.service")}<select name="service"><option value="general">${t(locale, "home.form.serviceGeneral")}</option><option value="base">${t(locale, "home.form.serviceBase")}</option><option value="inspection">${t(locale, "home.form.serviceInspection")}</option></select></label><label>${t(locale, "home.form.budget")}<input name="budget" placeholder="${t(locale, "home.form.budgetPlaceholder")}"></label><label class="wide">${t(locale, "home.form.message")}<textarea name="message" rows="4" placeholder="${t(locale, "home.form.messagePlaceholder")}"></textarea></label><button class="button primary" type="submit">${t(locale, "home.form.submit")}</button><p class="form-note" aria-live="polite"></p></form></section>
+    <section class="route-section" id="route"><div class="route-inner"><div class="route-copy"><p class="eyebrow">${t(locale, "home.location.eyebrow")}</p><h2>${t(locale, "home.location.title")}</h2><p>${t(locale, "home.location.intro")}</p><address>${site.vehicleLotAddress}</address><a class="button primary" href="${site.vehicleLotMap}" target="_blank" rel="noopener noreferrer">${t(locale, "home.location.cta")}</a></div><div class="route-map"><iframe title="${t(locale, "home.location.mapTitle")}" src="https://www.google.com/maps?q=Wielkiego%20D%C4%99bu%206%2C%2003-262%20Warszawa&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></section>
   </main>
   <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p><p>${site.legalName} · NIP ${site.nip}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">Telegram</a><span>${site.vehicleLotAddress}</span><a href="${about[locale]}">${t(locale, "footer.companyInfo")}</a><a href="${privacy[locale]}">${t(locale, "footer.privacy")}</a></address></footer>
   <aside class="cookie-banner" data-cookie-banner hidden><div><strong>${t(locale, "cookie.banner.title")}</strong><p>${t(locale, "cookie.banner.description")}</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">${t(locale, "cookie.banner.acceptEssential")}</button><button class="button primary" type="button" data-cookie-choice="all">${t(locale, "cookie.banner.acceptAll")}</button></div></aside>
