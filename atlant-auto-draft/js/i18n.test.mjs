@@ -96,9 +96,6 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/\/assets\/auctions\//g) || []).length, 6, `${relative} must show six platform logos`);
     assert.match(html, relative.startsWith("pl/") ? /Aukcje i platformy leasingowe/ : /Auctions and leasing platforms/, `${relative} lost the localized platforms heading`);
     assert.match(html, relative.startsWith("pl/") ? /nie oznaczają wyłącznego partnerstwa/ : /do not imply an exclusive partnership/, `${relative} lost the platform relationship disclaimer`);
-    assert.match(html, /class="faq-grid"/, `${relative} lost the expanded FAQ grid`);
-    assert.equal((html.match(/<details(?: open)?>/g) || []).length, 8, `${relative} must show eight practical FAQ entries`);
-    assert.match(html, relative.startsWith("pl/") ? /href="\/pl\/faq\/"/ : /href="\/en\/faq\/"/, `${relative} lost the full FAQ link`);
     assert.doesNotMatch(html, /<dt>500\+<\/dt>|<dt>30%<\/dt>/, `${relative} exposes unverified hero figures`);
     assert.match(html, /class="pricing-grid"/, `${relative} lost the service pricing section`);
     assert.equal((html.match(/class="pricing-card(?: featured)?"/g) || []).length, 2, `${relative} must show two service packages`);
