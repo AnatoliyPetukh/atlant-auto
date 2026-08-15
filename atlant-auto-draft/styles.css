@@ -205,6 +205,15 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 .car-card:hover { transform: translateY(-2px); border-color: #d5dbe2; box-shadow: var(--shadow-card-hover); }
+.car-card[data-status="sold"] { border-color: #d7dbde; background: #f1f3f3; box-shadow: none; }
+.car-card[data-status="sold"]:hover { transform: none; border-color: #cbd0d3; box-shadow: 0 5px 16px rgba(17,24,39,.045); }
+.car-card[data-status="sold"] .car-media { background: #6d7479; }
+.car-card[data-status="sold"] .car-media img { filter: grayscale(1) saturate(0) brightness(.8) contrast(.88); opacity: .72; transition: filter .2s ease, opacity .2s ease; }
+.car-card[data-status="sold"]:hover .car-media img { filter: grayscale(.9) saturate(.12) brightness(.84) contrast(.9); opacity: .78; }
+.car-card[data-status="sold"] .car-body { color: #70777d; opacity: .76; }
+.car-card[data-status="sold"] .car-body h3,
+.car-card[data-status="sold"] .price { color: #596168; }
+.car-card[data-status="sold"] .small-button { border-color: #cfd4d7; background: #eceeee; color: #6b7379; }
 .car-card-link {
   display: flex;
   flex: 1;
@@ -237,7 +246,7 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   font-weight: 600;
 }
 .car-badges .badge { position: static; }
-.badge.sold { background: rgba(110, 31, 31, .9); }
+.badge.sold { background: rgba(68, 72, 76, .92); }
 .badge.source { background: rgba(11, 91, 145, .92); }
 .badge.arval-badge {
   display: block;

@@ -70,6 +70,7 @@ test("generated pages keep the responsive layout contract", () => {
   ]) {
     assert.ok(styles.includes(selector), `missing responsive style: ${selector}`);
   }
+  assert.match(styles, /\.car-card\[data-status="sold"\][\s\S]*?grayscale\(1\)/, "sold vehicle cards must have a visually inactive grayscale treatment");
 
   for (const relative of ["pl/index.html", "en/index.html"]) {
     const html = fs.readFileSync(path.join(siteRoot, relative), "utf8");
