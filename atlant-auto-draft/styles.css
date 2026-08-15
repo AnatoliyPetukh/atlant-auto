@@ -549,6 +549,36 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .advantage-card h3 { max-width: 320px; margin: 24px 0 10px; }
 .advantage-card p { position: relative; z-index: 1; margin: 0; color: var(--muted); line-height: 1.65; }
 .advantage-card:nth-child(2), .advantage-card:nth-child(5) { background: #f3f7f4; }
+.pricing-section { padding-top: 92px; }
+.pricing-head { max-width: 780px; margin: 0 auto 42px; text-align: center; }
+.pricing-head .eyebrow { justify-content: center; }
+.pricing-head > p:last-child { margin: 18px auto 0; color: var(--muted); font-size: 18px; line-height: 1.6; }
+.pricing-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: stretch; }
+.pricing-card {
+  display: flex;
+  min-width: 0;
+  padding: clamp(28px, 4vw, 42px);
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--gold);
+  border-radius: 12px;
+  background: white;
+  box-shadow: var(--shadow-card);
+  flex-direction: column;
+}
+.pricing-card.featured { border-top-color: var(--green); background: linear-gradient(180deg, #f8fcfa, #fff 30%); }
+.pricing-label { align-self: flex-start; padding: 7px 11px; border-radius: 999px; background: #f7eddb; color: #775b29; font-size: 12px; font-weight: 700; letter-spacing: .035em; text-transform: uppercase; }
+.pricing-card.featured .pricing-label { background: #e7f3ec; color: var(--green); }
+.pricing-card h3 { margin: 22px 0 8px; font-size: clamp(24px, 3vw, 30px); }
+.service-price { color: var(--gold); font-size: clamp(44px, 6vw, 62px); line-height: 1; letter-spacing: -.045em; }
+.pricing-description { min-height: 58px; margin: 18px 0 10px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+.pricing-card ul { display: grid; gap: 13px; margin: 18px 0 26px; padding: 0; list-style: none; }
+.pricing-card li { position: relative; padding-left: 30px; color: #3d4855; line-height: 1.5; }
+.pricing-card li::before { position: absolute; top: .08em; left: 0; display: grid; place-items: center; width: 20px; height: 20px; border: 2px solid var(--green); border-radius: 50%; color: var(--green); content: "✓"; font-size: 12px; font-weight: 800; }
+.pricing-note { margin: auto 0 22px; padding: 18px; border: 1px solid var(--line); border-radius: 9px; background: #f6f8f7; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.pricing-card.featured .pricing-note { border-color: #cfe3d8; background: #eef7f2; }
+.pricing-card .button { align-self: flex-start; }
+.button.secondary { border: 1px solid var(--dark); background: transparent; color: var(--dark); }
+.button.secondary:hover { background: var(--dark); color: white; }
 .audience {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -936,6 +966,8 @@ address a:hover { color: white; }
   .advantages-head { grid-template-columns: 1fr; }
   .advantages-head .eyebrow { grid-column: auto; }
   .advantages-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-description { min-height: 0; }
   h1 { font-size: clamp(38px, 7vw, 56px); }
   h2 { font-size: clamp(32px, 5vw, 40px); }
 }
@@ -963,6 +995,7 @@ address a:hover { color: white; }
   .advantages-inner { width: min(100% - 28px, 1180px); }
   .advantages-grid { grid-template-columns: 1fr; }
   .advantage-card { min-height: 0; }
+  .pricing-section { padding-top: 64px; }
   .location-card p { min-height: 0; }
   .content-hero { padding: 44px 0 28px; }
   .content-section { padding-bottom: 44px; }

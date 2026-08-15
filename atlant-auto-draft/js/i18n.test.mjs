@@ -75,6 +75,10 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /class="numbers-grid"/, `${relative} lost the catalogue figures`);
     assert.equal((html.match(/class="number-card"/g) || []).length, 4, `${relative} must show four catalogue figures`);
     assert.doesNotMatch(html, /<dt>500\+<\/dt>|<dt>30%<\/dt>/, `${relative} exposes unverified hero figures`);
+    assert.match(html, /class="pricing-grid"/, `${relative} lost the service pricing section`);
+    assert.equal((html.match(/class="pricing-card(?: featured)?"/g) || []).length, 2, `${relative} must show two service packages`);
+    assert.match(html, /class="service-price">500 €<\/strong>/, `${relative} lost the base package price`);
+    assert.match(html, /class="service-price">750 €<\/strong>/, `${relative} lost the inspection package price`);
   }
 
   const routes = JSON.parse(fs.readFileSync(path.join(siteRoot, "vehicle-pages.json"), "utf8"));
