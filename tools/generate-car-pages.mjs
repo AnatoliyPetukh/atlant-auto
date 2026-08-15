@@ -203,7 +203,7 @@ function html(car, locale) {
 <body class="car-page">
   <header class="topbar">
     <a class="brand" href="${meta.home}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
-    <nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.about}">${t(locale, "navigation.about")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
+    <nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.home}#pricing">${t(locale, "navigation.services")}</a><a href="${meta.about}">${t(locale, "navigation.about")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
     <div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav(car, locale)}</div>
   </header>
   <main class="car-page-main">

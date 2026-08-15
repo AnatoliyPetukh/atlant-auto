@@ -98,6 +98,7 @@ function schema(page, locale) {
 function nav(locale) {
   const items = [
     ["navigation.catalog", locale.routes[0]],
+    ["navigation.services", `${locale.home}#pricing`],
     ["navigation.process", locale.routes[1]],
     ["navigation.about", locale.routes[3]],
     ["navigation.contact", locale.routes[4]]

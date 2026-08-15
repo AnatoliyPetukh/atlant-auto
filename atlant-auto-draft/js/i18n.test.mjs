@@ -47,6 +47,13 @@ test("browser code does not call automatic translation services", () => {
   assert.doesNotMatch(source, /translate\.google|deepl|microsofttranslator|translation.?api/i);
 });
 
+test("request form prepares a real email draft", () => {
+  const source = fs.readFileSync(path.join(siteRoot, "app.js"), "utf8");
+  assert.match(source, /mailto:/);
+  assert.match(source, /window\.location\.href = mailto/);
+  assert.match(source, /data-service-package/);
+});
+
 test("user-facing strings are absent from interactive browser components", () => {
   for (const relative of ["app.js", "js/cookie-consent.js"]) {
     const source = fs.readFileSync(path.join(siteRoot, relative), "utf8");
@@ -79,6 +86,10 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/class="pricing-card(?: featured)?"/g) || []).length, 2, `${relative} must show two service packages`);
     assert.match(html, /class="service-price">500 €<\/strong>/, `${relative} lost the base package price`);
     assert.match(html, /class="service-price">750 €<\/strong>/, `${relative} lost the inspection package price`);
+    assert.match(html, /href="#pricing"[^>]*>[^<]+<\/a>/, `${relative} lost the service navigation link`);
+    assert.equal((html.match(/data-service-package=/g) || []).length, 2, `${relative} must connect both packages to the request form`);
+    assert.match(html, /select name="service"/, `${relative} lost the service selector`);
+    assert.match(html, /data-recipient="autoatlantcapital@gmail\.com"/, `${relative} lost the request email recipient`);
   }
 
   const routes = JSON.parse(fs.readFileSync(path.join(siteRoot, "vehicle-pages.json"), "utf8"));

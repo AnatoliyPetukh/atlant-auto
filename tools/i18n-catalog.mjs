@@ -78,9 +78,9 @@ const common = {
     "Enter a phone number, email address or Telegram."
   ),
   "notifications.requestSent": entry(
-    "Заявка подготовлена. Мы свяжемся с вами после получения сообщения.",
-    "Zapytanie zostało przygotowane. Skontaktujemy się po otrzymaniu wiadomości.",
-    "Your request is ready. We will contact you after receiving the message."
+    "Черновик письма подготовлен. Проверьте его и нажмите «Отправить» в почтовом приложении.",
+    "Szkic wiadomości został przygotowany. Sprawdź go i kliknij „Wyślij” w programie pocztowym.",
+    "An email draft has been prepared. Review it and select Send in your email app."
   ),
   "empty.cars": entry(
     "По выбранным параметрам автомобилей пока нет.",

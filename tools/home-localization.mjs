@@ -113,9 +113,14 @@ export const homeLocalizationMessages = {
   "home.form.namePlaceholder": entry("Как к вам обращаться", "Jak mamy się do Ciebie zwracać", "How should we address you?"),
   "home.form.contact": entry("Телефон, email или Telegram", "Telefon, email lub Telegram", "Phone, email or Telegram"),
   "home.form.contactPlaceholder": entry("+48 ... или @username", "+48 ... lub @username", "+48 ... or @username"),
+  "home.form.service": entry("Вариант услуги", "Wariant usługi", "Service option"),
+  "home.form.serviceGeneral": entry("Пока не выбрано", "Jeszcze nie wybrano", "Not selected yet"),
+  "home.form.serviceBase": entry("Подбор и покупка — 500 €", "Wyszukanie i zakup — 500 €", "Sourcing and purchase — €500"),
+  "home.form.serviceInspection": entry("Подбор, покупка и проверка — 750 €", "Wyszukanie, zakup i kontrola — 750 €", "Sourcing, purchase and inspection — €750"),
   "home.form.budget": entry("Бюджет", "Budżet", "Budget"),
   "home.form.budgetPlaceholder": entry("Например, до 15 000 EUR", "Na przykład do 15 000 EUR", "For example, up to EUR 15,000"),
   "home.form.message": entry("Что ищете", "Czego szukasz", "What are you looking for?"),
   "home.form.messagePlaceholder": entry("Марка, модель, год, пробег и важные требования", "Marka, model, rok, przebieg i ważne wymagania", "Make, model, year, mileage and key requirements"),
-  "home.form.submit": entry("Подготовить заявку", "Przygotuj zapytanie", "Prepare request")
+  "home.form.submit": entry("Подготовить письмо", "Przygotuj wiadomość", "Prepare email"),
+  "home.form.emailSubject": entry("Запрос с сайта Atlant Auto", "Zapytanie ze strony Atlant Auto", "Atlant Auto website enquiry")
 };

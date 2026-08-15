@@ -13,9 +13,28 @@ document.querySelectorAll("[data-filter]").forEach((button) => {
   });
 });
 
+document.querySelectorAll("[data-service-package]").forEach((link) => {
+  link.addEventListener("click", () => {
+    const select = document.querySelector('.request-form select[name="service"]');
+    if (select) select.value = link.dataset.servicePackage || "general";
+  });
+});
+
 document.querySelector(".request-form")?.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!event.currentTarget.reportValidity()) return;
-  const note = event.currentTarget.querySelector(".form-note");
-  if (note) note.textContent = event.currentTarget.dataset.success || "";
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const service = form.querySelector('select[name="service"]')?.selectedOptions[0]?.textContent || "";
+  const lines = [
+    [form.dataset.labelName, data.get("name")],
+    [form.dataset.labelContact, data.get("contact")],
+    [form.dataset.labelService, service],
+    [form.dataset.labelBudget, data.get("budget")],
+    [form.dataset.labelMessage, data.get("message")]
+  ].filter(([, value]) => String(value || "").trim()).map(([label, value]) => `${label}: ${String(value).trim()}`);
+  const mailto = `mailto:${form.dataset.recipient}?subject=${encodeURIComponent(form.dataset.subject || "Atlant Auto")}&body=${encodeURIComponent(lines.join("\n\n"))}`;
+  const note = form.querySelector(".form-note");
+  if (note) note.textContent = form.dataset.success || "";
+  window.location.href = mailto;
 });
