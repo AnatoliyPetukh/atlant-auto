@@ -10,14 +10,11 @@ Private source repository for the Atlant Auto website and related internal tools
 - `publish-homepl.ps1` - deployment script for home.pl, without stored passwords.
 - `docs/` - project structure and Git workflow notes.
 
-The neighboring `carplaza-by/` folder is a separate Git repository and is not
-part of this repository.
-
 ## Moving to another computer
 
 Follow [`docs/NEW-COMPUTER-SETUP.md`](docs/NEW-COMPUTER-SETUP.md). It covers
-both repositories and the local-only files that must be copied separately if
-they are still needed.
+the repository and the local-only files that must be copied separately if they
+are still needed.
 
 ## Local preview
 
