@@ -82,6 +82,7 @@ export const carLocalizationMessages = {
   "vehicle.feature.trafficSignRecognition": entry("Распознавание дорожных знаков", "Rozpoznawanie znaków drogowych", "Traffic-sign recognition"),
   "vehicle.feature.nightVision": entry("Система ночного видения", "System Night Vision", "Night Vision system"),
   "vehicle.feature.towBar": entry("Съёмный фаркоп", "Demontowany hak holowniczy", "Removable tow bar"),
+  "vehicle.feature.luggageCover": entry("Шторка багажного отделения", "Roleta przestrzeni bagażowej", "Luggage-compartment cover"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -209,6 +210,13 @@ export const carLocalizationMessages = {
   "vehicle.peugeot408gt.service.cabinWipers": entry("Плановое обслуживание с заменой щёток стеклоочистителя и салонного фильтра.", "Przegląd z wymianą piór wycieraczek i filtra kabinowego.", "Scheduled service with wiper-blade and cabin-filter replacement."),
   "vehicle.peugeot408gt.service.basicFull": entry("Плановое обслуживание с заменой щёток стеклоочистителя, свечей зажигания, воздушного и салонного фильтров.", "Przegląd z wymianą piór wycieraczek, świec zapłonowych oraz filtrów powietrza i kabinowego.", "Scheduled service with wiper-blade, spark-plug, air-filter and cabin-filter replacement."),
   "vehicle.peugeot408gt.service.winterTyres": entry("Зимние шины и сезонное хранение.", "Opony zimowe i przechowywanie sezonowe.", "Winter tyres and seasonal storage."),
+  "vehicle.seatArona.service.tyreRepair": entry("Ремонт шины.", "Naprawa opony.", "Tyre repair."),
+  "vehicle.seatArona.service.summerTyres": entry("Летние шины.", "Opony letnie.", "Summer tyres."),
+  "vehicle.seatArona.service.brakeFluid": entry("Плановое обслуживание и замена тормозной жидкости.", "Przegląd i wymiana płynu hamulcowego.", "Scheduled service and brake-fluid replacement."),
+  "vehicle.seatArona.service.wipers": entry("Плановое обслуживание и замена передних и задней щёток стеклоочистителя.", "Przegląd i wymiana przednich oraz tylnego pióra wycieraczki.", "Scheduled service with front and rear wiper-blade replacement."),
+  "vehicle.seatArona.service.revision": entry("Плановое обслуживание.", "Przegląd okresowy.", "Scheduled service."),
+  "vehicle.seatArona.service.brakes": entry("Плановое обслуживание: передние тормозные диски, задние колодки и щётки стеклоочистителя.", "Przegląd: przednie tarcze hamulcowe, tylne klocki i pióra wycieraczek.", "Scheduled service: front brake discs, rear pads and wiper blades."),
+  "vehicle.seatArona.service.frontPads": entry("Плановое обслуживание: передние тормозные колодки и щётки стеклоочистителя.", "Przegląd: przednie klocki hamulcowe i pióra wycieraczek.", "Scheduled service: front brake pads and wiper blades."),
   "vehicle.condition.cosmeticClass": entry("Косметический класс", "Klasa kosmetyczna", "Cosmetic grade"),
   "vehicle.condition.general": entry("Состояние", "Stan", "Condition"),
   "vehicle.condition.odometer": entry("Одометр", "Drogomierz", "Odometer"),
@@ -374,11 +382,36 @@ const rawFeaturePairs = [
   ,["Распознавание дорожных знаков", "vehicle.feature.trafficSignRecognition"]
   ,["Система ночного видения", "vehicle.feature.nightVision"]
   ,["Съёмный фаркоп", "vehicle.feature.towBar"]
+  ,["Шторка багажного отделения", "vehicle.feature.luggageCover"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
 
 export const localizedCarDetails = {
+  "seat-arona-style-business-2022-204417": {
+    bodyKey: "vehicle.body.crossover",
+    color: { ru: "Белый Candy", pl: "Biały Candy", en: "Candy White" },
+    serviceKeys: [
+      "vehicle.seatArona.service.tyreRepair",
+      "vehicle.seatArona.service.summerTyres",
+      "vehicle.seatArona.service.brakeFluid",
+      "vehicle.seatArona.service.wipers",
+      "vehicle.seatArona.service.revision",
+      "vehicle.peugeot408gt.service.assistance",
+      "vehicle.seatArona.service.summerTyres",
+      "vehicle.seatArona.service.brakes",
+      "vehicle.seatArona.service.summerTyres",
+      "vehicle.seatArona.service.frontPads",
+      "vehicle.seatArona.service.wipers"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "204 417 км", pl: "204 417 km", en: "204,417 km" }],
+      ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
+      ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
+    ],
+    documentKeys: []
+  },
   "peugeot-408-gt-2023-127024": {
     bodyKey: "vehicle.body.fastbackCrossover",
     color: { ru: "Красный Rouge Elixir", pl: "Czerwony Rouge Elixir", en: "Rouge Elixir red" },

@@ -1,5 +1,73 @@
 window.ATLANT_CARS = [
   {
+    id: "seat-arona-style-business-2022-204417-on-site",
+    slug: "seat-arona-style-business-2022-204417",
+    status: "for-sale",
+    availability: "on-site",
+    brand: "SEAT",
+    model: "Arona",
+    version: "1.0 EcoTSI 110 Style Business DSG7",
+    productionDate: null,
+    firstRegistrationDate: "2022-09",
+    mileageKm: 204417,
+    fuelType: "petrol",
+    engineCapacityCc: 999,
+    powerKw: 81,
+    powerHp: 110,
+    transmission: "automatic",
+    driveType: "Передний",
+    bodyType: "Кроссовер",
+    color: "Candy White",
+    doors: 5,
+    seats: 5,
+    registrationNumber: "GJ342TY",
+    registrationCountry: null,
+    vehicleSource: null,
+    keysCount: 2,
+    emissionStandard: null,
+    co2GKm: 135,
+    price: 42900,
+    currency: "PLN",
+    description: {
+      pl: "SEAT Arona Style Business, po raz pierwszy zarejestrowany we wrześniu 2022 roku, jest dostępny na placu Atlant Auto. Benzynowy silnik 1.0 EcoTSI o mocy 110 KM współpracuje z siedmiobiegową automatyczną skrzynią DSG. Samochód ma przebieg 204 417 km, lakier Candy White, dwa kluczyki i 11 wpisów w historii serwisowej, obejmujących między innymi obsługę hamulców, wymianę płynu hamulcowego i serwis ogumienia.",
+      en: "This SEAT Arona Style Business, first registered in September 2022, is available at the Atlant Auto site. Its 110 hp 1.0 EcoTSI petrol engine is paired with a seven-speed DSG automatic transmission. The car has covered 204,417 km, is finished in Candy White, comes with two keys and has 11 service-history entries, including brake work, brake-fluid replacement and tyre servicing."
+    },
+    mainImage: "../assets/cars/seat-arona-style-business-2022-204417/photo-04.jpg",
+    images: [
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-04.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-03.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-02.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-05.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-06.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-08.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-09.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-10.jpg",
+      "../assets/cars/seat-arona-style-business-2022-204417/photo-12.jpg"
+    ],
+    equipment: {
+      interior: ["Шторка багажного отделения"]
+    },
+    serviceHistory: [
+      { date: "2026-04", mileageKm: 191771 },
+      { date: "2026-02", mileageKm: 180319 },
+      { date: "2026-01", mileageKm: null },
+      { date: "2025-06", mileageKm: 152239 },
+      { date: "2024-11", mileageKm: 117103 },
+      { date: "2024-09", mileageKm: 102816 },
+      { date: "2024-07", mileageKm: 102815 },
+      { date: "2024-04", mileageKm: 88549 },
+      { date: "2023-11", mileageKm: 64599 },
+      { date: "2023-09", mileageKm: 59754 },
+      { date: "2023-03", mileageKm: 27739 }
+    ],
+    condition: {
+      "Местонахождение": "В наличии на площадке Atlant Auto",
+      "Пробег": "204 417 км",
+      "Ключи": "2",
+      "Сервисная история": "11 записей в отчёте продавца"
+    }
+  },
+  {
     id: "peugeot-408-gt-2023-127024-on-site",
     slug: "peugeot-408-gt-2023-127024",
     status: "for-sale",

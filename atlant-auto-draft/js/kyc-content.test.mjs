@@ -56,6 +56,7 @@ test("new on-site vehicle VINs are absent from every public page", () => {
     "WBA7M710707M02404",
     "VF1RFB00X70267513"
     ,"VR3FPHNSTPY557022"
+    ,"VSSZZZKJ8PR014353"
   ];
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
