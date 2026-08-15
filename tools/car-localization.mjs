@@ -77,6 +77,11 @@ export const carLocalizationMessages = {
   "vehicle.feature.smartphoneIntegration": entry("Интеграция смартфона", "Integracja ze smartfonem", "Smartphone integration"),
   "vehicle.feature.touchscreen7": entry("Сенсорный экран 7 дюймов", "Ekran dotykowy 7 cali", "7-inch touchscreen"),
   "vehicle.feature.particulateFilter": entry("Сажевый фильтр", "Filtr cząstek stałych", "Particulate filter"),
+  "vehicle.feature.sunroof": entry("Электрический люк", "Elektryczny szyberdach", "Electric sunroof"),
+  "vehicle.feature.powerFoldingMirrors": entry("Электроскладывание зеркал", "Elektrycznie składane lusterka", "Power-folding mirrors"),
+  "vehicle.feature.trafficSignRecognition": entry("Распознавание дорожных знаков", "Rozpoznawanie znaków drogowych", "Traffic-sign recognition"),
+  "vehicle.feature.nightVision": entry("Система ночного видения", "System Night Vision", "Night Vision system"),
+  "vehicle.feature.towBar": entry("Съёмный фаркоп", "Demontowany hak holowniczy", "Removable tow bar"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -195,6 +200,15 @@ export const carLocalizationMessages = {
   "vehicle.newCars.service.peugeotRear": entry("Плановое обслуживание: задние амортизаторы и тормозные колодки, тормозная жидкость, салонный фильтр, лампа, левый задний фонарь и щётки стеклоочистителя.", "Przegląd: tylne amortyzatory i klocki hamulcowe, płyn hamulcowy, filtr kabinowy, żarówka, lewa lampa tylna i pióra wycieraczek.", "Scheduled service: rear dampers and brake pads, brake fluid, cabin filter, bulb, left rear lamp and wiper blades."),
   "vehicle.newCars.service.peugeotBasic": entry("Плановое обслуживание с заменой лампы, щёток стеклоочистителя, свечей зажигания, воздушного и салонного фильтров.", "Przegląd z wymianą żarówki, piór wycieraczek, świec zapłonowych oraz filtrów powietrza i kabinowego.", "Scheduled service with bulb, wiper-blade, spark-plug, air-filter and cabin-filter replacement."),
   "vehicle.newCars.service.cabinService": entry("Плановое обслуживание и замена салонного фильтра.", "Przegląd i wymiana filtra kabinowego.", "Scheduled service and cabin-filter replacement."),
+  "vehicle.peugeot408gt.service.tyreChange": entry("Сезонная замена шин.", "Sezonowa wymiana opon.", "Seasonal tyre change."),
+  "vehicle.peugeot408gt.service.timing": entry("Плановое обслуживание с заменой приводного ремня, ремня ГРМ, салонного фильтра и тормозной жидкости.", "Przegląd z wymianą paska osprzętu, paska rozrządu, filtra kabinowego i płynu hamulcowego.", "Scheduled service with accessory-belt, timing-belt, cabin-filter and brake-fluid replacement."),
+  "vehicle.peugeot408gt.service.assistance": entry("Дополнительная сервисная помощь.", "Dodatkowa usługa assistance.", "Additional assistance service."),
+  "vehicle.peugeot408gt.service.full": entry("Плановое обслуживание с заменой щёток стеклоочистителя, свечей зажигания, воздушного и салонного фильтров и тормозной жидкости.", "Przegląd z wymianą piór wycieraczek, świec zapłonowych, filtrów powietrza i kabinowego oraz płynu hamulcowego.", "Scheduled service with wiper-blade, spark-plug, air-filter, cabin-filter and brake-fluid replacement."),
+  "vehicle.peugeot408gt.service.tyreStorageChange": entry("Сезонная замена и хранение шин.", "Sezonowa wymiana i przechowywanie opon.", "Seasonal tyre change and storage."),
+  "vehicle.peugeot408gt.service.tyreStorage": entry("Продление хранения сезонных шин.", "Przedłużenie przechowywania opon sezonowych.", "Seasonal tyre-storage extension."),
+  "vehicle.peugeot408gt.service.cabinWipers": entry("Плановое обслуживание с заменой щёток стеклоочистителя и салонного фильтра.", "Przegląd z wymianą piór wycieraczek i filtra kabinowego.", "Scheduled service with wiper-blade and cabin-filter replacement."),
+  "vehicle.peugeot408gt.service.basicFull": entry("Плановое обслуживание с заменой щёток стеклоочистителя, свечей зажигания, воздушного и салонного фильтров.", "Przegląd z wymianą piór wycieraczek, świec zapłonowych oraz filtrów powietrza i kabinowego.", "Scheduled service with wiper-blade, spark-plug, air-filter and cabin-filter replacement."),
+  "vehicle.peugeot408gt.service.winterTyres": entry("Зимние шины и сезонное хранение.", "Opony zimowe i przechowywanie sezonowe.", "Winter tyres and seasonal storage."),
   "vehicle.condition.cosmeticClass": entry("Косметический класс", "Klasa kosmetyczna", "Cosmetic grade"),
   "vehicle.condition.general": entry("Состояние", "Stan", "Condition"),
   "vehicle.condition.odometer": entry("Одометр", "Drogomierz", "Odometer"),
@@ -355,11 +369,43 @@ const rawFeaturePairs = [
   ,["Интеграция смартфона", "vehicle.feature.smartphoneIntegration"]
   ,["Сенсорный экран 7 дюймов", "vehicle.feature.touchscreen7"]
   ,["Сажевый фильтр", "vehicle.feature.particulateFilter"]
+  ,["Электрический люк", "vehicle.feature.sunroof"]
+  ,["Электроскладывание зеркал", "vehicle.feature.powerFoldingMirrors"]
+  ,["Распознавание дорожных знаков", "vehicle.feature.trafficSignRecognition"]
+  ,["Система ночного видения", "vehicle.feature.nightVision"]
+  ,["Съёмный фаркоп", "vehicle.feature.towBar"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
 
 export const localizedCarDetails = {
+  "peugeot-408-gt-2023-127024": {
+    bodyKey: "vehicle.body.fastbackCrossover",
+    color: { ru: "Красный Rouge Elixir", pl: "Czerwony Rouge Elixir", en: "Rouge Elixir red" },
+    serviceKeys: [
+      "vehicle.peugeot408gt.service.tyreChange",
+      "vehicle.peugeot408gt.service.timing",
+      "vehicle.peugeot408gt.service.assistance",
+      "vehicle.peugeot408gt.service.full",
+      "vehicle.peugeot408gt.service.tyreStorageChange",
+      "vehicle.peugeot408gt.service.tyreStorage",
+      "vehicle.peugeot408gt.service.assistance",
+      "vehicle.peugeot408gt.service.cabinWipers",
+      "vehicle.peugeot408gt.service.tyreStorageChange",
+      "vehicle.peugeot408gt.service.tyreStorage",
+      "vehicle.peugeot408gt.service.basicFull",
+      "vehicle.peugeot408gt.service.tyreStorageChange",
+      "vehicle.newCars.service.cabinService",
+      "vehicle.peugeot408gt.service.winterTyres"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "127 024 км", pl: "127 024 km", en: "127,024 km" }],
+      ["vehicle.condition.keys", { ru: "2", pl: "2", en: "2" }],
+      ["vehicle.condition.serviceHistory", "vehicle.newCars.condition.serviceConfirmed"]
+    ],
+    documentKeys: []
+  },
   "peugeot-408-allure-2023-157570": {
     bodyKey: "vehicle.body.fastbackCrossover",
     color: { ru: "Серый Artense", pl: "Szary Artense", en: "Artense Grey" },

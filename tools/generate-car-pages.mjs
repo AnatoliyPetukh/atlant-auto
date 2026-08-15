@@ -196,7 +196,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${statusLabel}</p><h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p><h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p><a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a></div>
     </section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>

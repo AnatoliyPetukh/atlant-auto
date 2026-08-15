@@ -106,6 +106,7 @@ function pageHtml(page, localeCode) {
   const vehicleSuffix = "/";
   const linkedVehicleSlugs = key === "cars"
     ? [
+        "peugeot-408-gt-2023-127024",
         "peugeot-408-allure-2023-157570",
         "bmw-116d-business-advantage-2022",
         "renault-megane-sporter-equilibre-2022",

@@ -55,12 +55,22 @@ test("new on-site vehicle VINs are absent from every public page", () => {
     "VR3FPHNSTPY601376",
     "WBA7M710707M02404",
     "VF1RFB00X70267513"
+    ,"VR3FPHNSTPY557022"
   ];
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
     for (const identifier of privateIdentifiers) {
       assert.doesNotMatch(html, new RegExp(identifier, "i"), path.relative(root, file));
     }
+  }
+});
+
+test("every generated vehicle detail page includes the condition limitation", () => {
+  const vehiclePages = htmlFiles.filter((file) => /\/(?:pl\/samochody|en\/cars)\/[^/]+\/index\.html$/.test(file));
+  assert.ok(vehiclePages.length > 0);
+  for (const file of vehiclePages) {
+    const html = fs.readFileSync(file, "utf8");
+    assert.match(html, /class="condition-disclaimer"/, path.relative(root, file));
   }
 });
 

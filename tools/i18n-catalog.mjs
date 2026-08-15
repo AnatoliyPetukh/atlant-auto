@@ -107,6 +107,11 @@ const common = {
   "vehicle.section.service": entry("История обслуживания", "Historia serwisowa", "Service history"),
   "vehicle.section.condition": entry("Состояние автомобиля", "Stan samochodu", "Vehicle condition"),
   "vehicle.section.documents": entry("Документы", "Dokumenty", "Documents"),
+  "vehicle.condition.reportLimitations": entry(
+    "Исходный отчёт не содержит полной диагностики кузова и салона или подтверждения отсутствия ДТП. Состояние автомобиля следует проверить при осмотре.",
+    "Raport źródłowy nie zawiera pełnej diagnostyki nadwozia i wnętrza ani potwierdzenia bezwypadkowości. Stan samochodu należy zweryfikować podczas oględzin.",
+    "The source report does not include a complete body and interior inspection or confirmation of accident-free history. The vehicle's condition should be verified during an inspection."
+  ),
   "vehicle.field.firstRegistration": entry("Первая регистрация", "Pierwsza rejestracja", "First registration"),
   "vehicle.field.productionYear": entry("Год выпуска", "Rok produkcji", "Production year"),
   "vehicle.field.mileage": entry("Пробег", "Przebieg", "Mileage"),
