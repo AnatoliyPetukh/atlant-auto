@@ -80,7 +80,7 @@ function specs(car, locale) {
     ["vehicle.field.engineCapacity", `${number(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}`],
     ["vehicle.field.power", car.powerHp == null ? null : `${car.powerHp} ${t(locale, "vehicle.unit.horsepower")}`],
     ["vehicle.field.transmission", t(locale, `vehicle.transmission.${car.transmission}`)],
-    ["vehicle.field.drive", t(locale, "vehicle.drive.front")],
+    ["vehicle.field.drive", t(locale, car.driveType === "Полный" ? "vehicle.drive.all" : "vehicle.drive.front")],
     ["vehicle.field.emissionStandard", car.emissionStandard]
   ];
   return rows.filter(([, value]) => value !== null && value !== undefined && value !== "").map(([label, value]) => `<div><dt>${t(locale, label)}</dt><dd>${esc(value)}</dd></div>`).join("");

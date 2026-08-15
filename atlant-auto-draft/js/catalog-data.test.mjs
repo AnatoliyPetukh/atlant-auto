@@ -40,6 +40,6 @@ test("structured values do not contain display sentinels", () => {
 
 test("on-site vehicles do not store VIN values", () => {
   const onSiteCars = cars.filter((car) => car.availability === "on-site");
-  assert.equal(onSiteCars.length, 5);
+  assert.equal(onSiteCars.length, 6);
   for (const car of onSiteCars) assert.equal(Object.hasOwn(car, "vin"), false, car.slug);
 });

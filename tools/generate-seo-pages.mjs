@@ -105,7 +105,8 @@ function pageHtml(page, localeCode) {
   const vehiclePrefix = localeCode === "pl" ? "/pl/samochody/" : "/en/cars/";
   const vehicleSuffix = "/";
   const linkedVehicleSlugs = key === "cars"
-    ? [
+      ? [
+        "kia-sportage-gt-line-4wd-2022-68234",
         "seat-arona-style-business-2022-204417",
         "peugeot-408-gt-2023-127024",
         "peugeot-408-allure-2023-157570",

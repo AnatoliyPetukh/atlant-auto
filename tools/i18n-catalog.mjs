@@ -94,6 +94,7 @@ const common = {
   "vehicle.transmission.manual": entry("Механическая", "Manualna", "Manual"),
   "vehicle.transmission.automatic": entry("Автоматическая", "Automatyczna", "Automatic"),
   "vehicle.drive.front": entry("Передний", "Przedni", "Front-wheel drive"),
+  "vehicle.drive.all": entry("Полный", "Na wszystkie koła", "All-wheel drive"),
   "vehicle.body.wagon": entry("Универсал", "Kombi", "Estate"),
   "vehicle.body.hatchback": entry("Хэтчбек", "Hatchback", "Hatchback"),
   "vehicle.body.compactVan": entry("Компактвэн", "Minivan kompaktowy", "Compact MPV"),
