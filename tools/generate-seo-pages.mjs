@@ -17,7 +17,7 @@ function alternates(key) {
 
 function organizationSchema() {
   return {
-    "@type": ["Organization", "AutoDealer"],
+    "@type": "Organization",
     "@id": `${site.origin}/#organization`,
     name: site.name,
     legalName: site.legalName,
@@ -27,12 +27,31 @@ function organizationSchema() {
     taxID: site.nip,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Wielkiego Dębu 6",
-      postalCode: "03-262",
+      streetAddress: "Zygmunta Vogla 28 lok. 02.42",
+      postalCode: "02-963",
       addressLocality: "Warszawa",
       addressCountry: "PL"
     },
     sameAs: [site.telegram]
+  };
+}
+
+function dealerSchema() {
+  return {
+    "@type": "AutoDealer",
+    "@id": `${site.origin}/#dealer`,
+    name: site.name,
+    url: site.origin,
+    telephone: site.phone,
+    email: site.email,
+    parentOrganization: { "@id": `${site.origin}/#organization` },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Wielkiego Dębu 6",
+      postalCode: "03-262",
+      addressLocality: "Warszawa",
+      addressCountry: "PL"
+    }
   };
 }
 
@@ -42,6 +61,7 @@ function schema(page, locale) {
   const h1 = t(localeCode, `page.${key}.h1`);
   const graph = [
     organizationSchema(),
+    dealerSchema(),
     {
       "@type": "WebSite",
       "@id": `${site.origin}/#website`,
@@ -123,9 +143,30 @@ function pageHtml(page, localeCode) {
       ? ["bmw-216d-gran-tourer-2022", "bmw-x1-sdrive16d-2021", "ford-focus-wagon-1-0-ecoboost-st-line-x-business-2022"]
       : null;
   const cardLinks = linkedVehicleSlugs?.map((slug) => `${vehiclePrefix}${slug}${vehicleSuffix}`) || null;
-  const cardsHtml = localizedCards.map((card, index) => `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(intro)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${t(localeCode, "topic.cards.viewVehicle")}</a>` : ""}</article>`).join("");
+  const cardsHtml = localizedCards.map((card, index) => {
+    const cardText = key === "about" ? t(localeCode, `company.about.cardText${index + 1}`) : intro;
+    return `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(cardText)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${t(localeCode, "topic.cards.viewVehicle")}</a>` : ""}</article>`;
+  }).join("");
   const faqAnswers = ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"];
   const faq = key === "faq" ? `<section class="content-section faq">${localizedCards.map((q, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${t(localeCode, faqAnswers[index])}</p></details>`).join("")}</section>` : "";
+  const about = key === "about" ? `<section class="content-section company-details" aria-labelledby="official-company-heading">
+      <div class="official-panel">
+        <div><p class="eyebrow">${t(localeCode, "company.official.heading")}</p><h2 id="official-company-heading">${site.legalName}</h2><p>${t(localeCode, "company.official.intro")}</p></div>
+        <dl class="official-data">
+          <div><dt>${t(localeCode, "company.official.legalName")}</dt><dd>${site.legalName}</dd></div>
+          <div><dt>NIP</dt><dd>${site.nip}</dd></div>
+          <div><dt>KRS</dt><dd>${site.krs}</dd></div>
+          <div><dt>REGON</dt><dd>${site.regon}</dd></div>
+        </dl>
+        <a class="text-link" href="${site.krsSearch}" target="_blank" rel="noopener noreferrer">${t(localeCode, "company.official.registryLink")}</a>
+      </div>
+      <div class="locations-heading"><p class="eyebrow">Atlant Auto · Warszawa</p><h2>${t(localeCode, "company.locations.heading")}</h2><p>${t(localeCode, "company.locations.intro")}</p></div>
+      <div class="location-grid">
+        <article class="location-card"><span class="location-label">01</span><h3>${t(localeCode, "company.location.office")}</h3><address>${site.registeredAddress}</address><p>${t(localeCode, "company.location.officeNote")}</p><a class="button ghost dark" href="${site.officeMap}" target="_blank" rel="noopener noreferrer">${t(localeCode, "company.location.openMap")}</a></article>
+        <article class="location-card"><span class="location-label">02</span><h3>${t(localeCode, "company.location.lot")}</h3><address>${site.vehicleLotAddress}</address><p>${t(localeCode, "company.location.lotNote")}</p><a class="button ghost dark" href="${site.vehicleLotMap}" target="_blank" rel="noopener noreferrer">${t(localeCode, "company.location.openMap")}</a></article>
+      </div>
+      <div class="company-contact"><div><h2>${t(localeCode, "company.contact.heading")}</h2><p>${t(localeCode, "company.contact.intro")}</p></div><div><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a></div></div>
+    </section>` : "";
   return `<!doctype html>
 <html lang="${locale.lang}">
 <head>
@@ -163,7 +204,8 @@ function pageHtml(page, localeCode) {
       <div class="hero-actions"><a class="button primary" href="${contactAction}">${t(localeCode, "action.discussCar")}</a><a class="button ghost dark" href="${catalogue}">${t(localeCode, "navigation.catalog")}</a></div>
     </section>
     <section class="content-section topic-grid">${cardsHtml}</section>
-    ${faq}
+${about}
+${faq}
     <section class="content-section seo-copy">
       <h2>${t(localeCode, "topic.proof.heading")}</h2>
       <p>${esc(intro)} ${t(localeCode, "topic.proof.disclaimer")}</p>
@@ -172,7 +214,7 @@ function pageHtml(page, localeCode) {
   </main>
   <footer class="footer">
     <div><a class="brand footer-brand" href="${locale.home}"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>${site.legalName}</small></span></a><p>${t(localeCode, "footer.tagline")}</p><p>NIP ${site.nip}</p></div>
-    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">${t(localeCode, "common.telegram")}</a><span>${site.address}</span><a href="${localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
+    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">${t(localeCode, "common.telegram")}</a><span>${site.vehicleLotAddress}</span><a href="${locale.routes[3]}">${t(localeCode, "footer.companyInfo")}</a><a href="${localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
   </footer>
   <aside class="cookie-banner" data-cookie-banner hidden>
     <div><strong>${t(localeCode, "cookie.banner.title")}</strong><p>${t(localeCode, "cookie.banner.description")}</p></div>

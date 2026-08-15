@@ -62,6 +62,18 @@ test("public company data uses the canonical NIP", () => {
   }
 });
 
+test("company pages publish registration data and both Warsaw locations", () => {
+  for (const relative of ["pl/o-nas/index.html", "en/about/index.html"]) {
+    const html = fs.readFileSync(path.join(root, relative), "utf8");
+    assert.match(html, /9512563774/, relative);
+    assert.match(html, /0001024667/, relative);
+    assert.match(html, /524709974/, relative);
+    assert.match(html, /Zygmunta Vogla 28/, relative);
+    assert.match(html, /Wielkiego Dębu 6/, relative);
+    assert.equal((html.match(/google\.com\/maps\/search/g) || []).length, 2, relative);
+  }
+});
+
 test("vehicle VINs are absent from every public page", () => {
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");

@@ -13,6 +13,7 @@ const routes = { pl: "/pl/", en: "/en/" };
 const catalogue = { pl: "/pl/samochody/", en: "/en/cars/" };
 const process = { pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
 const contact = { pl: "/pl/kontakt/", en: "/en/contact/" };
+const about = { pl: "/pl/o-nas/", en: "/en/about/" };
 const privacy = { pl: "/pl/polityka-prywatnosci/", en: "/en/privacy/" };
 const carRoute = (locale, slug) => locale === "pl" ? `/pl/samochody/${slug}/` : `/en/cars/${slug}/`;
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
@@ -50,6 +51,10 @@ function html(locale) {
   const languageNav = Object.entries(routes).map(([code, route]) => `<a href="${route}" lang="${code}"${code === locale ? ' aria-current="page"' : ""}>${code.toUpperCase()}</a>`).join("");
   const processSteps = [1,2,3,4].map((index) => `<li><span>0${index}</span><strong>${t(locale, `home.process.step${index}.title`)}</strong><p>${t(locale, `home.process.step${index}.text`)}</p></li>`).join("");
   const faq = [1,2,3,4].map((index) => `<details${index === 1 ? " open" : ""}><summary>${t(locale, `home.faq.q${index}`)}</summary><p>${t(locale, `home.faq.a${index}`)}</p></details>`).join("");
+  const companySchema = {"@context":"https://schema.org","@graph":[
+    {"@type":"Organization","@id":`${site.origin}/#organization`,name:site.name,legalName:site.legalName,url:site.origin,telephone:site.phone,email:site.email,taxID:site.nip,address:{"@type":"PostalAddress",streetAddress:"Zygmunta Vogla 28 lok. 02.42",postalCode:"02-963",addressLocality:"Warszawa",addressCountry:"PL"}},
+    {"@type":"AutoDealer","@id":`${site.origin}/#dealer`,name:site.name,url:site.origin,telephone:site.phone,email:site.email,parentOrganization:{"@id":`${site.origin}/#organization`},address:{"@type":"PostalAddress",streetAddress:"Wielkiego Dębu 6",postalCode:"03-262",addressLocality:"Warszawa",addressCountry:"PL"}}
+  ]};
   return `<!doctype html>
 <html lang="${locale}">
 <head>
@@ -58,10 +63,10 @@ function html(locale) {
   <link rel="canonical" href="${site.origin}${routes[locale]}">${alternates}
   <meta property="og:type" content="website"><meta property="og:site_name" content="${site.name}"><meta property="og:title" content="${t(locale, "home.seo.title")}"><meta property="og:description" content="${t(locale, "home.seo.description")}"><meta property="og:url" content="${site.origin}${routes[locale]}">
   <link rel="stylesheet" href="/styles.css?v=20260719-2">
-  <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":["Organization","AutoDealer"],name:site.name,legalName:site.legalName,url:site.origin,telephone:site.phone,email:site.email,address:{"@type":"PostalAddress",streetAddress:"Wielkiego Dębu 6",postalCode:"03-262",addressLocality:"Warszawa",addressCountry:"PL"}}).replaceAll("<","\\u003c")}</script>
+  <script type="application/ld+json">${JSON.stringify(companySchema).replaceAll("<","\\u003c")}</script>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="${routes[locale]}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a><nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${catalogue[locale]}">${t(locale, "navigation.catalog")}</a><a href="${process[locale]}">${t(locale, "navigation.process")}</a><a href="${contact[locale]}">${t(locale, "navigation.contact")}</a></nav><div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav}</div></header>
+  <header class="topbar"><a class="brand" href="${routes[locale]}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a><nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${catalogue[locale]}">${t(locale, "navigation.catalog")}</a><a href="${process[locale]}">${t(locale, "navigation.process")}</a><a href="${about[locale]}">${t(locale, "navigation.about")}</a><a href="${contact[locale]}">${t(locale, "navigation.contact")}</a></nav><div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav}</div></header>
   <main>
     <section class="hero"><div class="hero-bg" role="img" aria-label="${t(locale, "home.hero.imageAlt")}"></div><div class="hero-overlay"></div><div class="hero-content"><p class="eyebrow">${t(locale, "home.hero.eyebrow")}</p><h1>${t(locale, "home.hero.title")}</h1><p class="lead">${t(locale, "home.hero.subtitle")}</p><div class="hero-actions"><a class="button primary" href="#request">${t(locale, "home.hero.cta")}</a><a class="button ghost" href="#cars">${t(locale, "home.hero.secondaryCta")}</a></div><dl class="hero-stats"><div><dt>500+</dt><dd>${t(locale, "home.stats.delivered")}</dd></div><div><dt>${t(locale, "home.stats.experienceValue")}</dt><dd>${t(locale, "home.stats.experience")}</dd></div><div><dt>30%</dt><dd>${t(locale, "home.stats.savings")}</dd></div></dl></div></section>
     <section class="section trust-band"><div><strong>${t(locale, "home.trust.companyTitle")}</strong><span>${t(locale, "home.trust.companyText")}</span></div><div><strong>${t(locale, "home.trust.checkTitle")}</strong><span>${t(locale, "home.trust.checkText")}</span></div><div><strong>${t(locale, "home.trust.supportTitle")}</strong><span>${t(locale, "home.trust.supportText")}</span></div></section>
@@ -72,7 +77,7 @@ function html(locale) {
     <section class="section split faq-section" id="faq"><div><p class="eyebrow">FAQ</p><h2>${t(locale, "home.faq.title")}</h2></div><div class="faq">${faq}</div></section>
     <section class="section request" id="request"><div><p class="eyebrow">${t(locale, "home.form.eyebrow")}</p><h2>${t(locale, "home.form.title")}</h2><p class="section-text">${t(locale, "home.form.intro")}</p></div><form class="request-form" data-success="${t(locale, "notifications.requestSent")}"><label>${t(locale, "home.form.name")}<input name="name" autocomplete="name" placeholder="${t(locale, "home.form.namePlaceholder")}"></label><label>${t(locale, "home.form.contact")}<input name="contact" placeholder="${t(locale, "home.form.contactPlaceholder")}" required></label><label>${t(locale, "home.form.budget")}<input name="budget" placeholder="${t(locale, "home.form.budgetPlaceholder")}"></label><label class="wide">${t(locale, "home.form.message")}<textarea name="message" rows="4" placeholder="${t(locale, "home.form.messagePlaceholder")}"></textarea></label><button class="button primary" type="submit">${t(locale, "home.form.submit")}</button><p class="form-note" aria-live="polite"></p></form></section>
   </main>
-  <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">Telegram</a><span>${site.address}</span><a href="${privacy[locale]}">${t(locale, "footer.privacy")}</a></address></footer>
+  <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p><p>${site.legalName} · NIP ${site.nip}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">Telegram</a><span>${site.vehicleLotAddress}</span><a href="${about[locale]}">${t(locale, "footer.companyInfo")}</a><a href="${privacy[locale]}">${t(locale, "footer.privacy")}</a></address></footer>
   <aside class="cookie-banner" data-cookie-banner hidden><div><strong>${t(locale, "cookie.banner.title")}</strong><p>${t(locale, "cookie.banner.description")}</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">${t(locale, "cookie.banner.acceptEssential")}</button><button class="button primary" type="button" data-cookie-choice="all">${t(locale, "cookie.banner.acceptAll")}</button></div></aside>
   <script src="/app.js?v=20260719-2" defer></script><script src="/js/cookie-consent.js?v=20260719-2" defer></script>
 </body></html>`;

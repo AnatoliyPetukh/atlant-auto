@@ -686,6 +686,54 @@ address a:hover { color: white; }
   color: var(--muted);
   line-height: 1.6;
 }
+.company-details { display: grid; gap: 52px; }
+.official-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
+  gap: 28px 48px;
+  padding: clamp(26px, 4vw, 42px);
+  border-radius: 10px;
+  background: var(--dark);
+  color: white;
+}
+.official-panel h2 { color: white; }
+.official-panel p { max-width: 620px; color: rgba(255,255,255,.7); }
+.official-panel > .text-link { grid-column: 2; color: #d8b87c; }
+.official-data {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 8px;
+  background: rgba(255,255,255,.16);
+}
+.official-data div { padding: 17px; background: rgba(255,255,255,.07); }
+.official-data dt { color: rgba(255,255,255,.6); font-size: 12px; }
+.official-data dd { margin: 5px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.locations-heading { max-width: 760px; }
+.locations-heading > p:last-child { color: var(--muted); }
+.location-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.location-card { padding: 30px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.location-label { color: var(--gold); font-size: 13px; font-weight: 700; }
+.location-card h3 { margin-top: 14px; }
+.location-card address { margin: 14px 0 0; color: var(--heading); font-size: 18px; font-weight: 600; }
+.location-card p { min-height: 50px; color: var(--muted); }
+.company-contact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr);
+  gap: 26px;
+  align-items: center;
+  padding: 30px;
+  border-left: 4px solid var(--green);
+  border-radius: 8px;
+  background: white;
+}
+.company-contact h2 { font-size: clamp(26px, 4vw, 36px); }
+.company-contact p { margin-bottom: 0; color: var(--muted); }
+.company-contact > div:last-child { display: grid; gap: 8px; font-weight: 600; }
+.company-contact a { color: var(--green); overflow-wrap: anywhere; }
 .cookie-banner {
   position: fixed;
   z-index: 30;
@@ -713,7 +761,8 @@ address a:hover { color: white; }
   .nav { display: none; }
   .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cars-grid, .reviews { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .split, .request, .calc-layout { grid-template-columns: 1fr; }
+  .split, .request, .calc-layout, .official-panel { grid-template-columns: 1fr; }
+  .official-panel > .text-link { grid-column: auto; }
   .car-hero { grid-template-columns: 1fr; }
   .car-summary { position: static; }
   .detail-grid, .equipment-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -735,6 +784,8 @@ address a:hover { color: white; }
     grid-template-columns: 1fr;
   }
   .topic-grid { grid-template-columns: 1fr; }
+  .location-grid, .company-contact, .official-data { grid-template-columns: 1fr; }
+  .location-card p { min-height: 0; }
   .content-hero { padding: 44px 0 28px; }
   .content-section { padding-bottom: 44px; }
   .seo-copy { padding: 24px; }

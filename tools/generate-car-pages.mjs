@@ -12,8 +12,8 @@ vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), con
 const cars = context.window.ATLANT_CARS;
 const localeCodes = ["pl", "en"];
 const localeMeta = {
-  pl: { lang: "pl", home: "/pl/", catalogue: "/pl/samochody/", contact: "/pl/kontakt/" },
-  en: { lang: "en", home: "/en/", catalogue: "/en/cars/", contact: "/en/contact/" }
+  pl: { lang: "pl", home: "/pl/", catalogue: "/pl/samochody/", about: "/pl/o-nas/", contact: "/pl/kontakt/" },
+  en: { lang: "en", home: "/en/", catalogue: "/en/cars/", about: "/en/about/", contact: "/en/contact/" }
 };
 const carRoutes = {
   pl: (slug) => `/pl/samochody/${slug}/`,
@@ -203,7 +203,7 @@ function html(car, locale) {
 <body class="car-page">
   <header class="topbar">
     <a class="brand" href="${meta.home}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
-    <nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
+    <nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.about}">${t(locale, "navigation.about")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
     <div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav(car, locale)}</div>
   </header>
   <main class="car-page-main">
@@ -219,7 +219,7 @@ function html(car, locale) {
     <section class="car-section"><h2>${t(locale, "vehicle.section.documents")}</h2>${documents(car, locale)}</section>
     <p class="catalogue-back"><a class="text-link" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a></p>
   </main>
-  <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.address}</span></address></footer>
+  <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p><p>${site.legalName} · NIP ${site.nip}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.vehicleLotAddress}</span><a href="${meta.about}">${t(locale, "footer.companyInfo")}</a></address></footer>
   ${cookieBanner(locale)}
   <script src="/js/cookie-consent.js?v=20260719-2" defer></script>
   <script>document.querySelectorAll("[data-image]").forEach((button) => button.addEventListener("click", () => { const image = document.querySelector("#mainCarImage"); if (image) image.src = button.dataset.image; }));</script>
