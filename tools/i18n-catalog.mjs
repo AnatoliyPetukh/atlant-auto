@@ -105,7 +105,7 @@ const common = {
   "vehicle.status.onSite": entry("В наличии на площадке", "Dostępny na placu", "Available on site"),
   "vehicle.status.sold": entry("Продано", "Sprzedany", "Sold"),
   "vehicle.status.recentlySold": entry("Недавно продано", "Niedawno sprzedany", "Recently sold"),
-  "vehicle.status.inTransit": entry("В пути — скоро в наличии", "W drodze — wkrótce dostępny", "In transit — arriving soon"),
+  "vehicle.status.inTransit": entry("Скоро в наличии", "Wkrótce dostępny", "Coming soon"),
   "vehicle.source.arvalAuction": entry("Аукцион Arval", "Aukcja Arval", "Arval auction"),
   "vehicle.sold.priceNote": entry("Показана ориентировочная рыночная цена, а не подтверждённая сумма сделки.", "Podana kwota jest orientacyjną ceną rynkową, a nie potwierdzoną ceną transakcyjną.", "The amount shown is an indicative market price, not a confirmed transaction price."),
   "vehicle.seo.offerSuffix": entry("в продаже в Варшаве", "na sprzedaż w Warszawie", "for sale in Warsaw"),

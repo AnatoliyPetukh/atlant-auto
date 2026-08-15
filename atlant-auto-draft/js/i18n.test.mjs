@@ -82,6 +82,10 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /class="numbers-grid"/, `${relative} lost the catalogue figures`);
     assert.equal((html.match(/class="number-card"/g) || []).length, 4, `${relative} must show four catalogue figures`);
     assert.deepEqual([...html.matchAll(/class="number-card"><strong>(\d+)<\/strong>/g)].map((match) => match[1]), ["14", "8", "24", "11"], `${relative} has incorrect business figures`);
+    assert.doesNotMatch(html, /Aktualne dane dotyczące oferty|Current figures for Atlant Auto/, `${relative} still shows the removed figures description`);
+    assert.match(html, relative.startsWith("pl/") ? /11<\/strong><span>samochodów sprzedanych w tym miesiącu/ : /11<\/strong><span>vehicles sold this month/, `${relative} must label monthly sales`);
+    assert.match(html, relative.startsWith("pl/") ? /Wkrótce dostępny/ : /Coming soon/, `${relative} must use the shortened in-transit label`);
+    assert.match(html, relative.startsWith("pl/") ? /3 lata działalności w branży motoryzacyjnej/ : /3 years in the automotive market/, `${relative} lost the company experience statement`);
     assert.doesNotMatch(html, /<dt>500\+<\/dt>|<dt>30%<\/dt>/, `${relative} exposes unverified hero figures`);
     assert.match(html, /class="pricing-grid"/, `${relative} lost the service pricing section`);
     assert.equal((html.match(/class="pricing-card(?: featured)?"/g) || []).length, 2, `${relative} must show two service packages`);
