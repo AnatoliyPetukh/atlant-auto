@@ -88,6 +88,8 @@ export const carLocalizationMessages = {
   "vehicle.feature.nightVision": entry("Система ночного видения", "System Night Vision", "Night Vision system"),
   "vehicle.feature.towBar": entry("Съёмный фаркоп", "Demontowany hak holowniczy", "Removable tow bar"),
   "vehicle.feature.luggageCover": entry("Шторка багажного отделения", "Roleta przestrzeni bagażowej", "Luggage-compartment cover"),
+  "vehicle.feature.wirelessPhoneCharging": entry("Беспроводная зарядка телефона", "Bezprzewodowe ładowanie telefonu", "Wireless phone charging"),
+  "vehicle.feature.blackPack": entry("Пакет Black Pack", "Pakiet Black Pack", "Black Pack"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -222,6 +224,16 @@ export const carLocalizationMessages = {
   "vehicle.seatArona.service.revision": entry("Плановое обслуживание.", "Przegląd okresowy.", "Scheduled service."),
   "vehicle.seatArona.service.brakes": entry("Плановое обслуживание: передние тормозные диски, задние колодки и щётки стеклоочистителя.", "Przegląd: przednie tarcze hamulcowe, tylne klocki i pióra wycieraczek.", "Scheduled service: front brake discs, rear pads and wiper blades."),
   "vehicle.seatArona.service.frontPads": entry("Плановое обслуживание: передние тормозные колодки и щётки стеклоочистителя.", "Przegląd: przednie klocki hamulcowe i pióra wycieraczek.", "Scheduled service: front brake pads and wiper blades."),
+  "vehicle.peugeot5008.service.scheduled": entry("Плановое техническое обслуживание.", "Planowy przegląd techniczny.", "Scheduled maintenance."),
+  "vehicle.peugeot5008.service.filtersPlugs": entry("Плановое обслуживание с заменой фильтров и свечей зажигания.", "Planowy przegląd z wymianą filtrów i świec zapłonowych.", "Scheduled service with filter and spark-plug replacement."),
+  "vehicle.peugeot5008.service.coolantPlugs": entry("Плановое обслуживание с заменой охлаждающей жидкости и свечей зажигания.", "Planowy przegląd z wymianą płynu chłodniczego i świec zapłonowych.", "Scheduled service with coolant and spark-plug replacement."),
+  "vehicle.peugeot5008.service.rearBrakes": entry("Работы с задними тормозами: диски, колодки и суппорт.", "Prace przy tylnych hamulcach: tarcze, klocki i zacisk.", "Rear-brake work: discs, pads and caliper."),
+  "vehicle.peugeot5008.service.timing": entry("Плановое обслуживание, замена тормозной жидкости, фильтров и ремня ГРМ.", "Planowy przegląd, wymiana płynu hamulcowego, filtrów i paska rozrządu.", "Scheduled service with brake-fluid, filter and timing-belt replacement."),
+  "vehicle.peugeot5008.service.engineControl": entry("Работы по системе управления двигателем и замена моторного масла.", "Prace przy układzie sterowania silnikiem i wymiana oleju silnikowego.", "Engine-management work and engine-oil replacement."),
+  "vehicle.peugeot5008.service.exhaustEngine": entry("Работы по системе управления двигателем и элементам выпускной системы.", "Prace przy układzie sterowania silnikiem i elementach układu wydechowego.", "Engine-management and exhaust-system work."),
+  "vehicle.peugeot5008.service.frontPads": entry("Плановое обслуживание с заменой передних тормозных колодок, свечей зажигания и охлаждающей жидкости.", "Planowy przegląd z wymianą przednich klocków hamulcowych, świec zapłonowych i płynu chłodniczego.", "Scheduled service with front brake pads, spark plugs and coolant replacement."),
+  "vehicle.peugeot5008.service.tyres": entry("Плановое обслуживание, работы с шинами, моторным маслом и охлаждающей жидкостью.", "Planowy przegląd, prace przy oponach, oleju silnikowym i płynie chłodniczym.", "Scheduled service with tyre, engine-oil and coolant work."),
+  "vehicle.peugeot5008.service.lambdaComputer": entry("Замена лямбда-зонда и работы с блоком управления двигателем.", "Wymiana sondy lambda i prace przy sterowniku silnika.", "Lambda-sensor replacement and engine-control-unit work."),
   "vehicle.condition.cosmeticClass": entry("Косметический класс", "Klasa kosmetyczna", "Cosmetic grade"),
   "vehicle.condition.general": entry("Состояние", "Stan", "Condition"),
   "vehicle.condition.odometer": entry("Одометр", "Drogomierz", "Odometer"),
@@ -395,11 +407,41 @@ const rawFeaturePairs = [
   ,["Система ночного видения", "vehicle.feature.nightVision"]
   ,["Съёмный фаркоп", "vehicle.feature.towBar"]
   ,["Шторка багажного отделения", "vehicle.feature.luggageCover"]
+  ,["Беспроводная зарядка телефона", "vehicle.feature.wirelessPhoneCharging"]
+  ,["Пакет Black Pack", "vehicle.feature.blackPack"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
 
 export const localizedCarDetails = {
+  "peugeot-5008-gt-pack-business-2023-147291": {
+    bodyKey: "vehicle.body.crossover",
+    color: { ru: "Чёрный металлик", pl: "Czarny metalik", en: "Metallic black" },
+    registrationCountryKey: "vehicle.country.netherlands",
+    serviceKeys: [
+      "vehicle.peugeot5008.service.scheduled",
+      "vehicle.peugeot5008.service.filtersPlugs",
+      "vehicle.peugeot5008.service.scheduled",
+      "vehicle.peugeot5008.service.coolantPlugs",
+      "vehicle.peugeot5008.service.rearBrakes",
+      "vehicle.peugeot5008.service.timing",
+      "vehicle.peugeot5008.service.engineControl",
+      "vehicle.peugeot5008.service.exhaustEngine",
+      "vehicle.peugeot5008.service.frontPads",
+      "vehicle.peugeot5008.service.exhaustEngine",
+      "vehicle.peugeot5008.service.engineControl",
+      "vehicle.peugeot5008.service.tyres",
+      "vehicle.peugeot5008.service.lambdaComputer"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "147 291 км", pl: "147 291 km", en: "147,291 km" }],
+      ["vehicle.field.seats", { ru: "7", pl: "7", en: "7" }],
+      ["vehicle.condition.registrationCountry", "vehicle.country.netherlands"],
+      ["vehicle.condition.serviceHistory", "vehicle.mercedesCla.condition.serviceHistory"]
+    ],
+    documentKeys: ["vehicle.document.automotiveTradeCenterReport"]
+  },
   "kia-sportage-gt-line-4wd-2022-68234": {
     bodyKey: "vehicle.body.crossover",
     color: { ru: "Серебристый Lunar Silver Metallic", pl: "Srebrny Lunar Silver Metallic", en: "Lunar Silver Metallic" },

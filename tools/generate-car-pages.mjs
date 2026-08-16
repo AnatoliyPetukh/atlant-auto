@@ -48,6 +48,16 @@ function languageNav(car, current) {
   ).join("");
 }
 
+function auctionSourceBadge(car) {
+  if (car.auctionSource === "Arval") {
+    return `<p><span class="badge static source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span></p>`;
+  }
+  if (car.auctionSource === "Automotive Trade Center") {
+    return `<p><span class="badge static source atc-badge"><img src="/assets/brands/automotive-trade-center.png" alt="Automotive Trade Center" width="858" height="123"></span></p>`;
+  }
+  return "";
+}
+
 function price(car, locale) {
   if (car.priceOnRequest || car.price == null) return t(locale, "common.priceOnRequest");
   const formatted = new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB", {
@@ -210,7 +220,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${car.auctionSource === "Arval" ? `<p><span class="badge static source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span></p>` : ""}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a>`}</div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${auctionSourceBadge(car)}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a>`}</div>
     </section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>
