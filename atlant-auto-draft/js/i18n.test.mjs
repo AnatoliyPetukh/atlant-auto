@@ -78,6 +78,8 @@ test("generated pages keep the responsive layout contract", () => {
     "vehicle-transport.jpg",
     "dealership-lot-wide.jpg",
     "dealership-selection.jpg",
+    "dealership-auction-stock.jpg",
+    "dealership-range.jpg",
     "dealership-delivery.jpg",
     "dealership-lineup.jpg",
   ]) {

@@ -978,11 +978,17 @@ address a:hover { color: white; }
 .content-hero .button.ghost.dark { border-color: rgba(255,255,255,.6); color: white; }
 .content-hero .button.ghost.dark:hover { border-color: white; background: rgba(255,255,255,.09); }
 .content-hero-home { padding-top: 92px; }
-.page-europe,
-.page-auction,
-.page-cars {
+.page-europe {
   --content-hero-image: url("/assets/site/dealership-selection.jpg");
   --content-hero-position: center 52%;
+}
+.page-auction {
+  --content-hero-image: url("/assets/site/dealership-auction-stock.jpg");
+  --content-hero-position: center 48%;
+}
+.page-cars {
+  --content-hero-image: url("/assets/site/dealership-range.jpg");
+  --content-hero-position: center 54%;
 }
 .page-process {
   --content-hero-image: url("/assets/site/dealership-delivery.jpg");
