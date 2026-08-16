@@ -693,6 +693,13 @@ blockquote {
 cite { display: block; margin-top: 16px; color: var(--muted); font-style: normal; font-weight: 600; }
 .text-link { color: var(--green); font-weight: 600; }
 .faq { display: grid; gap: 10px; }
+.faq-page {
+  width: min(100% - 36px, 920px);
+  padding-top: 18px;
+}
+.faq-page details { overflow: hidden; box-shadow: 0 8px 24px rgba(16, 20, 24, .04); }
+.faq-page summary { padding: 22px 24px; font-size: 18px; line-height: 1.4; }
+.faq-page details p { max-width: 78ch; padding: 0 24px 24px; font-size: 16px; }
 details {
   border: 1px solid var(--line);
   border-radius: 8px;

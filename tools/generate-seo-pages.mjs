@@ -79,15 +79,18 @@ function schema(page, locale) {
     }
   ];
   if (key === "faq") {
-    const questions = page[6];
+    const questions = Array.from({ length: 10 }, (_, index) => ({
+      question: t(localeCode, `faq.item${index + 1}.question`),
+      answer: t(localeCode, `faq.item${index + 1}.answer`)
+    }));
     graph.push({
       "@type": "FAQPage",
-      mainEntity: questions.map((question, index) => ({
+      mainEntity: questions.map(({ question, answer }) => ({
         "@type": "Question",
         name: question,
         acceptedAnswer: {
           "@type": "Answer",
-          text: t(localeCode, ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"][index])
+          text: answer
         }
       }))
     });
@@ -148,8 +151,8 @@ function pageHtml(page, localeCode) {
     const cardText = key === "about" ? t(localeCode, `company.about.cardText${index + 1}`) : intro;
     return `<article class="topic-card"><span>0${index + 1}</span><h2>${esc(card)}</h2><p>${esc(cardText)}</p>${cardLinks ? `<a class="text-link" href="${cardLinks[index]}">${t(localeCode, "topic.cards.viewVehicle")}</a>` : ""}</article>`;
   }).join("");
-  const faqAnswers = ["faq.answer.check", "faq.answer.cost", "faq.answer.documents"];
-  const faq = key === "faq" ? `<section class="content-section faq">${localizedCards.map((q, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${t(localeCode, faqAnswers[index])}</p></details>`).join("")}</section>` : "";
+  const cardsSection = key === "faq" ? "" : `<section class="content-section topic-grid">${cardsHtml}</section>`;
+  const faq = key === "faq" ? `<section class="content-section faq faq-page">${Array.from({ length: 10 }, (_, index) => `<details${index === 0 ? " open" : ""}><summary>${esc(t(localeCode, `faq.item${index + 1}.question`))}</summary><p>${esc(t(localeCode, `faq.item${index + 1}.answer`))}</p></details>`).join("")}</section>` : "";
   const about = key === "about" ? `<section class="content-section company-details" aria-labelledby="official-company-heading">
       <div class="official-panel">
         <div><p class="eyebrow">${t(localeCode, "company.official.heading")}</p><h2 id="official-company-heading">${site.legalName}</h2><p>${t(localeCode, "company.official.intro")}</p></div>
@@ -204,7 +207,7 @@ function pageHtml(page, localeCode) {
       <p class="lead">${esc(intro)}</p>
       <div class="hero-actions"><a class="button primary" href="${contactAction}">${t(localeCode, "action.discussCar")}</a><a class="button ghost dark" href="${catalogue}">${t(localeCode, "navigation.catalog")}</a></div>
     </section>
-    <section class="content-section topic-grid">${cardsHtml}</section>
+${cardsSection}
 ${about}
 ${faq}
     <section class="content-section seo-copy">

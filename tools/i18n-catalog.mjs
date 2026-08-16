@@ -203,6 +203,66 @@ const common = {
     "Zakres dokumentów zależy od kraju sprzedawcy i miejsca rejestracji.",
     "The document set depends on the seller country and registration destination."
   ),
+  "faq.item1.question": entry("Как начинается подбор автомобиля?", "Jak rozpoczyna się wyszukiwanie samochodu?", "How does the vehicle search begin?"),
+  "faq.item1.answer": entry(
+    "Сначала мы уточняем бюджет, назначение автомобиля и обязательные требования. После этого согласовываем формат работы и начинаем поиск подходящих предложений.",
+    "Najpierw ustalamy budżet, przeznaczenie samochodu i najważniejsze wymagania. Następnie uzgadniamy zakres współpracy i rozpoczynamy wyszukiwanie odpowiednich ofert.",
+    "We first confirm your budget, intended use and essential requirements. We then agree the scope of work and begin searching for suitable offers."
+  ),
+  "faq.item2.question": entry("Можно ли проверить автомобиль до покупки?", "Czy samochód można sprawdzić przed zakupem?", "Can the vehicle be checked before purchase?"),
+  "faq.item2.answer": entry(
+    "Да, в объёме, который допускает источник предложения. Мы анализируем фотографии, описание, доступные отчёты, документы и сервисную историю, если она предоставлена.",
+    "Tak, w zakresie dostępnym dla danego źródła oferty. Analizujemy zdjęcia, opis, dostępne raporty, dokumenty oraz historię serwisową, jeżeli została udostępniona.",
+    "Yes, to the extent allowed by the listing source. We review photos, the description, available reports, documents and service history when provided."
+  ),
+  "faq.item3.question": entry("Что я получу перед решением о покупке?", "Jakie informacje otrzymam przed decyzją o zakupie?", "What information will I receive before deciding?"),
+  "faq.item3.answer": entry(
+    "Мы передаём доступные данные по конкретному автомобилю, отмечаем обнаруженные риски и заранее показываем структуру расходов. Финансовое решение остаётся за клиентом.",
+    "Przekazujemy dostępne dane konkretnego samochodu, wskazujemy zauważone ryzyka i przedstawiamy strukturę kosztów przed zakupem. Decyzja finansowa należy do klienta.",
+    "We provide the available information for the specific vehicle, highlight identified risks and show the cost structure before purchase. The financial decision remains with the client."
+  ),
+  "faq.item4.question": entry("Из чего складывается итоговая стоимость?", "Co składa się na całkowity koszt?", "What makes up the total cost?"),
+  "faq.item4.answer": entry(
+    "Итоговая сумма включает цену автомобиля, комиссии продавца или площадки, услугу Atlant Auto, транспорт и согласованные формальности. Точную смету фиксируем для выбранного автомобиля.",
+    "Całkowita kwota obejmuje cenę samochodu, opłaty sprzedawcy lub platformy, usługę Atlant Auto, transport i uzgodnione formalności. Dokładny kosztorys przygotowujemy dla wybranego auta.",
+    "The total includes the vehicle price, seller or platform fees, the Atlant Auto service, transport and agreed formalities. We prepare an exact estimate for the selected vehicle."
+  ),
+  "faq.item5.question": entry("Как проходит покупка на аукционе?", "Jak przebiega zakup na aukcji?", "How does an auction purchase work?"),
+  "faq.item5.answer": entry(
+    "До торгов мы согласовываем автомобиль и максимальный бюджет. Ставка не превышает утверждённый лимит, а покупка подтверждается документами площадки или продавца.",
+    "Przed licytacją uzgadniamy samochód i maksymalny budżet. Oferta nie przekracza zaakceptowanego limitu, a zakup jest potwierdzony dokumentami platformy lub sprzedawcy.",
+    "Before bidding, we agree the vehicle and maximum budget. The bid does not exceed the approved limit, and the purchase is confirmed by the platform or seller documentation."
+  ),
+  "faq.item6.question": entry("Сколько занимает доставка автомобиля?", "Ile trwa dostawa samochodu?", "How long does vehicle delivery take?"),
+  "faq.item6.answer": entry(
+    "Срок зависит от страны, местонахождения автомобиля, готовности документов и перевозчика. Ориентировочную дату сообщаем после подтверждения покупки и возможности забора.",
+    "Termin zależy od kraju, lokalizacji samochodu, gotowości dokumentów i przewoźnika. Przewidywaną datę podajemy po potwierdzeniu zakupu i możliwości odbioru auta.",
+    "Timing depends on the country, vehicle location, document readiness and carrier. We provide an estimate after the purchase and collection availability are confirmed."
+  ),
+  "faq.item7.question": entry("Можно ли заказать проверку автомобиля в сервисе?", "Czy można zamówić kontrolę samochodu w serwisie?", "Can I order a workshop inspection?"),
+  "faq.item7.answer": entry(
+    "Да. В расширенном пакете мы организуем стандартную проверку в согласованном сервисе. Углублённая диагностика и ремонт выполняются только после отдельного согласования.",
+    "Tak. W rozszerzonym pakiecie organizujemy standardową kontrolę w uzgodnionym serwisie. Diagnostyka rozszerzona i naprawy wymagają osobnej akceptacji.",
+    "Yes. Our extended package includes a standard check at an agreed workshop. Advanced diagnostics and repairs require separate approval."
+  ),
+  "faq.item8.question": entry("Какие документы получает клиент?", "Jakie dokumenty otrzymuje klient?", "Which documents does the client receive?"),
+  "faq.item8.answer": entry(
+    "Комплект зависит от страны и продавца. Мы передаём документы покупки и доступные документы автомобиля, необходимые для дальнейших формальностей в Польше.",
+    "Zakres zależy od kraju i sprzedawcy. Przekazujemy dokumenty zakupu oraz dostępne dokumenty pojazdu potrzebne do dalszych formalności w Polsce.",
+    "The document set depends on the country and seller. We provide the purchase documents and available vehicle documents needed for subsequent formalities in Poland."
+  ),
+  "faq.item9.question": entry("Можно ли зарегистрировать автомобиль в Польше?", "Czy samochód można zarejestrować w Polsce?", "Can the vehicle be registered in Poland?"),
+  "faq.item9.answer": entry(
+    "Мы помогаем подготовить документы и пройти согласованные формальности, связанные с регистрацией автомобиля в Польше. Точный перечень зависит от происхождения автомобиля.",
+    "Pomagamy przygotować dokumenty i przejść uzgodnione formalności związane z rejestracją samochodu w Polsce. Dokładny zakres zależy od pochodzenia pojazdu.",
+    "We help prepare the documents and handle agreed formalities connected with registering the vehicle in Poland. The exact requirements depend on the vehicle's origin."
+  ),
+  "faq.item10.question": entry("Что происходит, если состояние отличается от описания?", "Co się dzieje, gdy stan auta różni się od opisu?", "What happens if the condition differs from the description?"),
+  "faq.item10.answer": entry(
+    "Мы фиксируем расхождения и сравниваем их с исходным описанием и документами. Дальнейшие действия зависят от условий конкретного продавца или аукционной площадки.",
+    "Dokumentujemy różnice i porównujemy je z pierwotnym opisem oraz dokumentami. Dalsze działania zależą od warunków konkretnego sprzedawcy lub platformy aukcyjnej.",
+    "We document the differences and compare them with the original description and records. The next steps depend on the terms of the specific seller or auction platform."
+  ),
   "email.request.subject": entry(
     "Запрос на подбор автомобиля — Atlant Auto",
     "Zapytanie o wyszukanie samochodu — Atlant Auto",
