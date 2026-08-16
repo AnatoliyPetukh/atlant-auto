@@ -25,6 +25,8 @@ const common = {
   "action.discussCar": entry("Обсудить подбор автомобиля", "Porozmawiajmy o samochodzie", "Discuss your car search"),
   "action.viewCars": entry("Смотреть автомобили", "Zobacz samochody", "View cars"),
   "action.viewVehicle": entry("Смотреть автомобиль", "Zobacz samochód", "View vehicle"),
+  "action.checkOffer": entry("Проверить предложение", "Sprawdź ofertę", "View offer"),
+  "action.viewDetails": entry("Посмотреть детали", "Zobacz szczegóły", "View details"),
   "action.requestQuote": entry("Запросить расчёт", "Poproś o wycenę", "Request a quote"),
   "action.open": entry("Открыть", "Otwórz", "Open"),
   "action.download": entry("Скачать", "Pobierz", "Download"),

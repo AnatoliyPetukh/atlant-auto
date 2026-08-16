@@ -295,6 +295,32 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .price-block { display: grid; gap: 3px; }
 .price-note { color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.35; }
 .detail-price-note { max-width: 58ch; margin-top: -10px; font-size: 14px; }
+.car-cta {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 17px;
+  border: 1px solid var(--green);
+  border-radius: 9px;
+  background: var(--green);
+  color: white;
+  box-shadow: 0 8px 18px rgba(29, 122, 82, .18);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.car-cta-arrow { font-size: 19px; line-height: 1; transition: transform .18s ease; }
+.car-card-link:hover .car-cta {
+  border-color: #146b47;
+  background: #146b47;
+  box-shadow: 0 10px 22px rgba(20, 107, 71, .24);
+  transform: translateY(-1px);
+}
+.car-card-link:hover .car-cta-arrow { transform: translateX(3px); }
+.car-card-link:focus-visible .car-cta { outline: 3px solid rgba(29, 122, 82, .28); outline-offset: 3px; }
 .small-button {
   display: inline-flex;
   align-items: center;

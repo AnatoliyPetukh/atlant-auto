@@ -46,10 +46,11 @@ function carCards(locale) {
     const detailUrl = carRoute(locale, car.slug);
     const sold = car.status === "sold";
     const statusLabel = t(locale, statusKey(car));
+    const ctaLabel = t(locale, sold ? "action.viewDetails" : "action.checkOffer");
     const sourceBadge = car.auctionSource === "Arval" ? `<span class="badge source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span>` : "";
     return `<article class="car-card" data-status="${sold ? "sold" : "available"}"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
       <div class="car-media"><img src="/${car.mainImage.replace(/^(\.\.\/)+/, "")}" alt="${esc(t(locale, "vehicle.gallery.mainAlt", { vehicle: name }))}" width="1280" height="960" loading="lazy"><div class="car-badges"><span class="badge${sold ? " sold" : ""}">${statusLabel}</span>${sourceBadge}</div></div>
-      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price-block"><span class="price">${esc(price)}</span></span><span class="small-button">${t(locale, "action.viewVehicle")}</span></div></div>
+      <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price-block"><span class="price">${esc(price)}</span></span><span class="car-cta"><span>${ctaLabel}</span><span class="car-cta-arrow" aria-hidden="true">→</span></span></div></div>
     </a></article>`;
   }).join("");
 }
