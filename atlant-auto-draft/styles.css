@@ -701,20 +701,6 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .pricing-card .button { align-self: flex-start; }
 .button.secondary { border: 1px solid var(--dark); background: transparent; color: var(--dark); }
 .button.secondary:hover { background: var(--dark); color: white; }
-.audience {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-.audience article {
-  min-height: 220px;
-  padding: 30px;
-  border-radius: 8px;
-  color: white;
-  background: linear-gradient(135deg, var(--dark), var(--blue));
-}
-.audience article:nth-child(2) { background: linear-gradient(135deg, #163828, #1f6b4a); }
-.audience p:not(.eyebrow) { color: rgba(255,255,255,.78); line-height: 1.55; }
 .reviews {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -957,7 +943,11 @@ address a:hover { color: white; }
   font-size: 13px;
 }
 .breadcrumbs a { color: var(--green); font-weight: 600; }
-.content-page { background: #f6f7f8; }
+.content-page {
+  --content-hero-image: url("/assets/site/lot-lineup.jpg");
+  --content-hero-position: center 54%;
+  background: #f6f7f8;
+}
 .content-hero {
   position: relative;
   z-index: 0;
@@ -973,7 +963,7 @@ address a:hover { color: white; }
   inset: 0 calc(50% - 50vw);
   background:
     linear-gradient(90deg, rgba(11,18,24,.92), rgba(11,18,24,.67) 56%, rgba(11,18,24,.45)),
-    url("/assets/site/lot-lineup.jpg") center 54% / cover;
+    var(--content-hero-image) var(--content-hero-position) / cover;
   box-shadow: inset 0 -1px rgba(255,255,255,.08);
   content: "";
 }
@@ -988,6 +978,26 @@ address a:hover { color: white; }
 .content-hero .button.ghost.dark { border-color: rgba(255,255,255,.6); color: white; }
 .content-hero .button.ghost.dark:hover { border-color: white; background: rgba(255,255,255,.09); }
 .content-hero-home { padding-top: 92px; }
+.page-europe,
+.page-auction,
+.page-cars {
+  --content-hero-image: url("/assets/site/dealership-selection.jpg");
+  --content-hero-position: center 52%;
+}
+.page-process {
+  --content-hero-image: url("/assets/site/dealership-delivery.jpg");
+  --content-hero-position: center 58%;
+}
+.page-about,
+.page-contact {
+  --content-hero-image: url("/assets/site/dealership-lot-wide.jpg");
+  --content-hero-position: center 51%;
+}
+.page-cases,
+.page-faq {
+  --content-hero-image: url("/assets/site/dealership-lineup.jpg");
+  --content-hero-position: center 54%;
+}
 .button.ghost.dark {
   border-color: var(--dark);
   color: var(--dark);

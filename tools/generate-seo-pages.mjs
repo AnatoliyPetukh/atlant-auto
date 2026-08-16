@@ -193,7 +193,7 @@ function pageHtml(page, localeCode) {
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">${schema(page, locale)}</script>
 </head>
-<body class="content-page">
+<body class="content-page page-${key}">
   <header class="topbar">
     <a class="brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
     <nav class="nav" aria-label="${t(localeCode, "navigation.primary.label")}">${nav(locale)}</nav>
