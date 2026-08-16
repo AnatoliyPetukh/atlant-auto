@@ -120,7 +120,9 @@ test("generated pages keep the responsive layout contract", () => {
     assert.doesNotMatch(html, /Aktualne dane dotyczące oferty|Current figures for Atlant Auto/, `${relative} still shows the removed figures description`);
     assert.match(html, relative.startsWith("pl/") ? /11<\/strong>.*zadowolonych klientów w tym miesiącu/ : /11<\/strong>.*happy clients this month/, `${relative} must label monthly clients`);
     assert.match(html, relative.startsWith("pl/") ? /Wkrótce dostępny/ : /Coming soon/, `${relative} must use the shortened in-transit label`);
-    assert.match(html, relative.startsWith("pl/") ? /3 lata działalności w branży motoryzacyjnej/ : /3 years in the automotive market/, `${relative} lost the company experience statement`);
+    assert.match(html, relative.startsWith("pl/") ? /4 lata na rynku.*Ponad 500 zadowolonych klientów/s : /4 years on the market.*More than 500 satisfied customers/s, `${relative} lost the company experience statement`);
+    assert.match(html, relative.startsWith("pl/") ? /Samochód na zamówienie — do 3 tygodni/ : /A car to order — within 3 weeks/, `${relative} lost the three-week order promise`);
+    assert.match(html, relative.startsWith("pl/") ? /Pracujemy z każdym budżetem/ : /We work with every budget/, `${relative} lost the budget statement`);
     assert.match(html, /class="platforms-section" id="platforms"/, `${relative} lost the vehicle sourcing platforms section`);
     assert.equal((html.match(/class="platform-card"/g) || []).length, 6, `${relative} must show six sourcing platforms`);
     assert.equal((html.match(/\/assets\/auctions\//g) || []).length, 6, `${relative} must show six platform logos`);
