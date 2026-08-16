@@ -79,6 +79,10 @@ test("every branded page uses the Atlant Auto wordmark", () => {
     }
   };
   walk(siteRoot);
+
+  const styles = fs.readFileSync(path.join(siteRoot, "styles.css"), "utf8");
+  assert.match(styles, /\.brand\s*\{[\s\S]*?width:\s*168px;/, "desktop wordmark must use a compact standard width");
+  assert.match(styles, /@media \(max-width: 680px\)[\s\S]*?\.brand\s*\{[^}]*width:\s*132px;/, "mobile wordmark must use a compact width");
 });
 
 test("generated pages keep the responsive layout contract", () => {
