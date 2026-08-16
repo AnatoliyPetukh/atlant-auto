@@ -40,7 +40,7 @@ function html(locale) {
   <meta property="og:title" content="${t(locale, "calculator.seo.title")}">
   <meta property="og:description" content="${t(locale, "calculator.seo.description")}">
   <meta property="og:url" content="${site.origin}${routes[locale]}">
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles.css?v=20260816-1">
 </head>
 <body>
   <header class="topbar">
