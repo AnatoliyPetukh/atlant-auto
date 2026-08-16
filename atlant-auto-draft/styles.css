@@ -913,7 +913,13 @@ textarea { resize: vertical; line-height: 1.5; }
 .footer p { max-width: 520px; color: rgba(255,255,255,.68); line-height: 1.55; }
 address { display: grid; gap: 9px; color: rgba(255,255,255,.78); font-style: normal; }
 address a:hover { color: white; }
-.footer .brand { width: 180px; flex-basis: 180px; }
+.footer .brand {
+  width: 180px;
+  flex-basis: 180px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .94);
+}
 .footer-languages { justify-content: flex-start; margin-bottom: 8px; }
 .footer-languages a { color: rgba(255,255,255,.72); }
 .footer-languages a[aria-current="page"] { color: var(--dark); background: white; }

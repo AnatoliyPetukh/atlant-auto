@@ -65,6 +65,9 @@ test("user-facing strings are absent from interactive browser components", () =>
 test("every branded page uses the Atlant Auto wordmark", () => {
   const wordmark = path.join(siteRoot, "assets/site/atlant-auto-wordmark.svg");
   assert.ok(fs.existsSync(wordmark), "missing Atlant Auto wordmark asset");
+  const wordmarkSource = fs.readFileSync(wordmark, "utf8");
+  assert.match(wordmarkSource, /data-country-badge="AA"/, "wordmark must use the oval AA country badge");
+  assert.doesNotMatch(wordmarkSource, /linearGradient|feDropShadow/, "wordmark must stay clean and free of chrome effects");
 
   const walk = (directory) => {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
