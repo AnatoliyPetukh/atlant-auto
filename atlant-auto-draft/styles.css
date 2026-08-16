@@ -75,20 +75,35 @@ button, input, select, textarea { font: inherit; }
   overflow: hidden;
   background: var(--dark);
 }
-.hero-bg, .hero-shade, .hero-overlay { position: absolute; inset: 0; }
+.hero-bg, .hero-video, .hero-shade, .hero-overlay { position: absolute; inset: 0; }
 .hero-bg {
   background:
     linear-gradient(90deg, rgba(10, 15, 18, .92) 0%, rgba(10, 15, 18, .62) 38%, rgba(10, 15, 18, .18) 100%),
     url("/assets/site/hero-atlant-auto.jpg") center 58% / cover;
   transform: scale(1.02);
 }
-.hero-shade, .hero-overlay { background: linear-gradient(0deg, rgba(17, 24, 32, .92), rgba(17, 24, 32, 0) 42%); }
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+  transform: scale(1.02);
+}
+.hero-shade, .hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(10, 15, 18, .92) 0%, rgba(10, 15, 18, .62) 38%, rgba(10, 15, 18, .18) 100%),
+    linear-gradient(0deg, rgba(17, 24, 32, .92), rgba(17, 24, 32, 0) 42%);
+}
 .hero-content {
   position: relative;
   width: min(1180px, calc(100% - 36px));
   margin: 0 auto;
   padding: 80px 0 42px;
   color: white;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-video { display: none; }
 }
 .eyebrow {
   margin: 0 0 10px;
