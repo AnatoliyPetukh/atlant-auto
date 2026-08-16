@@ -219,6 +219,7 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   box-shadow: var(--shadow-card);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
+.car-card[hidden] { display: none; }
 .car-card:hover { transform: translateY(-2px); border-color: #d5dbe2; box-shadow: var(--shadow-card-hover); }
 .car-card[data-status="sold"] { border-color: #d7dbde; background: #f1f3f3; box-shadow: none; }
 .car-card[data-status="sold"]:hover { transform: none; border-color: #cbd0d3; box-shadow: 0 5px 16px rgba(17,24,39,.045); }

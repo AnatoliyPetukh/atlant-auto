@@ -1,7 +1,11 @@
 document.querySelectorAll("[data-filter]").forEach((button) => {
   button.addEventListener("click", () => {
     const filter = button.dataset.filter;
-    document.querySelectorAll("[data-filter]").forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-filter]").forEach((item) => {
+      const selected = item === button;
+      item.classList.toggle("active", selected);
+      item.setAttribute("aria-pressed", String(selected));
+    });
     let visible = 0;
     document.querySelectorAll(".car-card[data-status]").forEach((card) => {
       const show = filter === "all" || card.dataset.status === filter;
