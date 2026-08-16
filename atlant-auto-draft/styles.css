@@ -79,7 +79,7 @@ button, input, select, textarea { font: inherit; }
 .hero-bg {
   background:
     linear-gradient(90deg, rgba(10, 15, 18, .92) 0%, rgba(10, 15, 18, .62) 38%, rgba(10, 15, 18, .18) 100%),
-    url("/assets/site/lot-lineup.jpg") center 58% / cover;
+    url("/assets/site/hero-atlant-auto.jpg") center 58% / cover;
   transform: scale(1.02);
 }
 .hero-shade, .hero-overlay { background: linear-gradient(0deg, rgba(17, 24, 32, .92), rgba(17, 24, 32, 0) 42%); }
