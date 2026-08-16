@@ -9,7 +9,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atla
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
 const cars = context.window.ATLANT_CARS;
-const catalogueCounts = { available: 14, onSite: 8, inTransit: 24, sold: 11 };
+const catalogueCounts = { available: 12, inTransit: 8, happyClients: 11, yearCars: 98 };
 const routes = { pl: "/pl/", en: "/en/" };
 const catalogue = { pl: "/pl/samochody/", en: "/en/cars/" };
 const process = { pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
@@ -61,7 +61,7 @@ function html(locale) {
   const languageNav = Object.entries(routes).map(([code, route]) => `<a href="${route}" lang="${code}"${code === locale ? ' aria-current="page"' : ""}>${code.toUpperCase()}</a>`).join("");
   const processSteps = [1,2,3,4,5].map((index) => `<li${index === 3 ? ' class="featured"' : ""}><span class="process-marker">0${index}</span><article class="process-card"><small>${t(locale, `home.process.step${index}.tag`)}</small><h3>${t(locale, `home.process.step${index}.title`)}</h3><p>${t(locale, `home.process.step${index}.text`)}</p></article></li>`).join("");
   const advantages = [1,2,3,4,5,6].map((index) => `<article class="advantage-card"><span class="advantage-number">0${index}</span><h3>${t(locale, `home.advantages.item${index}.title`)}</h3><p>${t(locale, `home.advantages.item${index}.text`)}</p></article>`).join("");
-  const numberCards = Object.entries(catalogueCounts).map(([key, value]) => `<div class="number-card"><strong>${value}</strong><span>${t(locale, `home.numbers.${key}`)}</span></div>`).join("");
+  const numberCards = Object.entries(catalogueCounts).map(([key, value], index) => `<div class="number-card"><strong>${value}</strong><span class="number-gauge" aria-hidden="true"><i style="--gauge-angle:${-54 + index * 38}deg"></i></span><span class="number-label">${t(locale, `home.numbers.${key}`)}</span></div>`).join("");
   const platformCards = platforms.map(({ name, logo, url, type, square = false }) => `<a class="platform-card" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(t(locale, "home.platforms.visit"))}: ${esc(name)}"><span class="platform-logo${square ? " square" : ""}"><img src="/assets/auctions/${logo}" alt="${esc(name)}" loading="lazy"></span><span class="platform-type ${type}">${t(locale, `home.platforms.${type}`)}</span><span class="platform-link">${t(locale, "home.platforms.visit")} <span aria-hidden="true">↗</span></span></a>`).join("");
   const pricingItems = (packageName, count) => Array.from({ length: count }, (_, index) => `<li>${t(locale, `home.pricing.${packageName}.item${index + 1}`)}</li>`).join("");
   const pricingCards = [
