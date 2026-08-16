@@ -625,9 +625,10 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .platform-card { display: flex; min-width: 0; min-height: 222px; padding: 24px 18px 18px; border: 1px solid #d9e0e4; border-radius: 12px; background: white; box-shadow: 0 5px 18px rgba(17,24,39,.04); flex-direction: column; align-items: center; justify-content: space-between; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
 .platform-card:hover { border-color: #b9c7c0; box-shadow: var(--shadow-card-hover); transform: translateY(-3px); }
 .platform-card:focus-visible { outline: 3px solid rgba(31,107,74,.26); outline-offset: 3px; }
-.platform-logo { display: grid; place-items: center; width: 100%; height: 92px; }
-.platform-logo img { display: block; max-width: 156px; max-height: 62px; width: auto; height: auto; object-fit: contain; }
+.platform-logo { display: grid; place-items: center; width: 100%; height: 92px; padding-inline: 4px; overflow: hidden; }
+.platform-logo img { display: block; max-width: min(156px, 100%); max-height: 62px; width: auto; height: auto; object-fit: contain; }
 .platform-logo.square img { max-width: 118px; max-height: 76px; }
+.platform-logo.arval-platform-logo img { transform: scale(2.3); }
 .platform-type { padding: 7px 11px; border-radius: 999px; background: #edf1f2; color: #596973; font-size: 11px; font-weight: 800; letter-spacing: .05em; line-height: 1.2; text-align: center; text-transform: uppercase; }
 .platform-type.direct { background: #e6f3eb; color: var(--green); }
 .platform-link { margin-top: 12px; color: var(--muted); font-size: 12px; font-weight: 600; text-align: center; }
@@ -1167,6 +1168,10 @@ address a:hover { color: white; }
   .route-inner { grid-template-columns: 1fr; }
   h1 { font-size: clamp(38px, 7vw, 56px); }
   h2 { font-size: clamp(32px, 5vw, 40px); }
+}
+
+@media (max-width: 1180px) and (min-width: 681px) {
+  .platforms-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 680px) {

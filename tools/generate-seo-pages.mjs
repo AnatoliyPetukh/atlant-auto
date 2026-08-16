@@ -190,7 +190,7 @@ function pageHtml(page, localeCode) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=20260816-1">
+  <link rel="stylesheet" href="/styles.css?v=20260816-2">
   <script type="application/ld+json">${schema(page, locale)}</script>
 </head>
 <body class="content-page page-${key}">

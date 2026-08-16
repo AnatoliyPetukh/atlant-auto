@@ -72,7 +72,7 @@ function html(locale) {
   const processSteps = [1,2,3,4,5].map((index) => `<li${index === 3 ? ' class="featured"' : ""}><span class="process-marker">0${index}</span><article class="process-card"><small>${t(locale, `home.process.step${index}.tag`)}</small><h3>${t(locale, `home.process.step${index}.title`)}</h3><p>${t(locale, `home.process.step${index}.text`)}</p></article></li>`).join("");
   const advantages = [1,2,3,4,5,6].map((index) => `<article class="advantage-card"><span class="advantage-number">0${index}</span><h3>${t(locale, `home.advantages.item${index}.title`)}</h3><p>${t(locale, `home.advantages.item${index}.text`)}</p></article>`).join("");
   const numberCards = Object.entries(catalogueCounts).map(([key, value], index) => `<div class="number-card"><strong>${value}</strong><span class="number-gauge" aria-hidden="true"><i style="--gauge-angle:${-54 + index * 38}deg"></i></span><span class="number-label">${t(locale, `home.numbers.${key}`)}</span></div>`).join("");
-  const platformCards = platforms.map(({ name, logo, url, type, square = false }) => `<a class="platform-card" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(t(locale, "home.platforms.visit"))}: ${esc(name)}"><span class="platform-logo${square ? " square" : ""}"><img src="/assets/auctions/${logo}" alt="${esc(name)}" loading="lazy"></span><span class="platform-type ${type}">${t(locale, `home.platforms.${type}`)}</span><span class="platform-link">${t(locale, "home.platforms.visit")} <span aria-hidden="true">↗</span></span></a>`).join("");
+  const platformCards = platforms.map(({ name, logo, url, type, square = false }) => `<a class="platform-card" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${esc(t(locale, "home.platforms.visit"))}: ${esc(name)}"><span class="platform-logo${square ? " square" : ""}${name === "Arval MotorTrade" ? " arval-platform-logo" : ""}"><img src="/assets/auctions/${logo}" alt="${esc(name)}" loading="lazy"></span><span class="platform-type ${type}">${t(locale, `home.platforms.${type}`)}</span><span class="platform-link">${t(locale, "home.platforms.visit")} <span aria-hidden="true">↗</span></span></a>`).join("");
   const pricingItems = (packageName, count) => Array.from({ length: count }, (_, index) => `<li>${t(locale, `home.pricing.${packageName}.item${index + 1}`)}</li>`).join("");
   const pricingCards = [
     { key: "base", price: "500 €", items: 6 },
@@ -89,7 +89,7 @@ function html(locale) {
   <title>${t(locale, "home.seo.title")}</title><meta name="description" content="${t(locale, "home.seo.description")}">
   <link rel="canonical" href="${site.origin}${routes[locale]}">${alternates}
   <meta property="og:type" content="website"><meta property="og:site_name" content="${site.name}"><meta property="og:title" content="${t(locale, "home.seo.title")}"><meta property="og:description" content="${t(locale, "home.seo.description")}"><meta property="og:url" content="${site.origin}${routes[locale]}">
-  <link rel="stylesheet" href="/styles.css?v=20260816-1">
+  <link rel="stylesheet" href="/styles.css?v=20260816-2">
   <script type="application/ld+json">${JSON.stringify(companySchema).replaceAll("<","\\u003c")}</script>
 </head>
 <body>
