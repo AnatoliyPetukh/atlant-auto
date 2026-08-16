@@ -43,9 +43,9 @@ button, input, select, textarea { font: inherit; }
 
 .brand {
   display: inline-flex;
-  flex: 0 0 168px;
+  flex: 0 0 224px;
   align-items: center;
-  width: 168px;
+  width: 224px;
   min-width: 0;
 }
 .brand-wordmark { display: block; width: 100%; min-width: 0; line-height: 0; }
@@ -54,7 +54,7 @@ button, input, select, textarea { font: inherit; }
   width: 100%;
   max-width: 100%;
   height: auto;
-  max-height: 36px;
+  max-height: 47px;
   object-fit: contain;
   object-position: left center;
 }
@@ -1161,8 +1161,8 @@ address a:hover { color: white; }
 @media (max-width: 680px) {
   .topbar { min-height: 64px; padding-inline: 14px; }
   .top-action { padding: 10px 12px; font-size: 13px; }
-  .brand { width: 132px; flex-basis: 132px; }
-  .brand-wordmark img { max-height: 30px; }
+  .brand { width: 168px; flex-basis: 168px; }
+  .brand-wordmark img { max-height: 35px; }
   .hero { min-height: 760px; }
   .hero-content { width: min(100% - 28px, 1180px); padding-bottom: 28px; }
   .lead { font-size: 16px; }
