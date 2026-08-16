@@ -44,7 +44,7 @@ function html(locale) {
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="${homes[locale]}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
+    <a class="brand" href="${homes[locale]}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a>
     <nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${catalogues[locale]}">${t(locale, "navigation.catalog")}</a><a href="${routes[locale]}" aria-current="page">${t(locale, "navigation.calculator")}</a><a href="${contacts[locale]}">${t(locale, "navigation.contact")}</a></nav>
     <div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${Object.entries(routes).map(([code, route]) => `<a href="${route}" lang="${code}"${code === locale ? ' aria-current="page"' : ""}>${code.toUpperCase()}</a>`).join("")}</div>
   </header>
@@ -69,7 +69,7 @@ function html(locale) {
       <aside class="calc-result" id="customsCalculatorResult" aria-live="polite"></aside>
     </div></section>
   </main>
-  <footer class="footer"><div><strong>Atlant Auto</strong><p>${t(locale, "footer.tagline")}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.address}</span></address></footer>
+  <footer class="footer"><div><a class="brand footer-brand" href="${homes[locale]}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a><p>${t(locale, "footer.tagline")}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.address}</span></address></footer>
   <aside class="cookie-banner" data-cookie-banner hidden><div><strong>${t(locale, "cookie.banner.title")}</strong><p>${t(locale, "cookie.banner.description")}</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">${t(locale, "cookie.banner.acceptEssential")}</button><button class="button primary" type="button" data-cookie-choice="all">${t(locale, "cookie.banner.acceptAll")}</button></div></aside>
   <script id="calculatorMessages" type="application/json">${JSON.stringify({ locale, messages: runtime }).replaceAll("<", "\\u003c")}</script>
   <script src="/js/cookie-consent.js" defer></script>

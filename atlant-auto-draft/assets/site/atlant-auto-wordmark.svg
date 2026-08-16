@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 150" role="img" aria-labelledby="title">
+  <title id="title">Atlant Auto</title>
+  <defs>
+    <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".14" stop-color="#a7b2b9"/>
+      <stop offset=".33" stop-color="#f8ffff"/>
+      <stop offset=".55" stop-color="#74818a"/>
+      <stop offset=".78" stop-color="#dce6e9"/>
+      <stop offset="1" stop-color="#59666f"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#69767e"/><stop offset="1" stop-color="#1c252b"/></linearGradient>
+    <filter id="shadow" x="-10%" y="-18%" width="130%" height="155%"><feDropShadow dx="5" dy="7" stdDeviation="2.3" flood-color="#0d151a" flood-opacity=".55"/></filter>
+  </defs>
+  <g transform="translate(14 3) skewX(-10)" filter="url(#shadow)">
+    <text x="9" y="111" textLength="680" lengthAdjust="spacingAndGlyphs" fill="url(#edge)" style="font-family:Arial,sans-serif;font-size:104px;font-weight:800;font-style:italic;letter-spacing:-15px">atlantauto</text>
+    <text x="3" y="102" textLength="680" lengthAdjust="spacingAndGlyphs" fill="url(#chrome)" style="font-family:Arial,sans-serif;font-size:104px;font-weight:800;font-style:italic;letter-spacing:-15px">atlantauto</text>
+    <path d="M31 93h646" stroke="#fff" stroke-opacity=".46" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+</svg>

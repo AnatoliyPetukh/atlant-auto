@@ -195,7 +195,7 @@ function pageHtml(page, localeCode) {
 </head>
 <body class="content-page page-${key}">
   <header class="topbar">
-    <a class="brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>Warszawa</small></span></a>
+    <a class="brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a>
     <nav class="nav" aria-label="${t(localeCode, "navigation.primary.label")}">${nav(locale)}</nav>
     <div class="language-nav" aria-label="${t(localeCode, "language.selector.label")}">${languageNav(localeCode)}</div>
   </header>
@@ -217,7 +217,7 @@ ${faq}
     </section>
   </main>
   <footer class="footer">
-    <div><a class="brand footer-brand" href="${locale.home}"><span class="brand-mark">AA</span><span><strong>Atlant Auto</strong><small>${site.legalName}</small></span></a><p>${t(localeCode, "footer.tagline")}</p><p>NIP ${site.nip}</p></div>
+    <div><a class="brand footer-brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a><p>${t(localeCode, "footer.tagline")}</p><p>NIP ${site.nip}</p></div>
     <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">${t(localeCode, "common.telegram")}</a><span>${site.vehicleLotAddress}</span><a href="${locale.routes[3]}">${t(localeCode, "footer.companyInfo")}</a><a href="${localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
   </footer>
   <aside class="cookie-banner" data-cookie-banner hidden>

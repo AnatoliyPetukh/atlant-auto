@@ -21,6 +21,8 @@ const obsoletePublicPaths = [
   "customs-calculator.html",
   "pl/kalkulator",
   "pl/customs-calculator.html",
+  "pl/404",
+  "pl/500",
   "en/calculator",
   "en/customs-calculator.html",
   "js/customs-calculator-page.mjs",

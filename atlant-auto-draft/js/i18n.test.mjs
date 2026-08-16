@@ -62,6 +62,25 @@ test("user-facing strings are absent from interactive browser components", () =>
   assert.ok(fs.existsSync(path.join(projectRoot, "tools/i18n-catalog.mjs")));
 });
 
+test("every branded page uses the Atlant Auto wordmark", () => {
+  const wordmark = path.join(siteRoot, "assets/site/atlant-auto-wordmark.svg");
+  assert.ok(fs.existsSync(wordmark), "missing Atlant Auto wordmark asset");
+
+  const walk = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const full = path.join(directory, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith(".html")) {
+        const html = fs.readFileSync(full, "utf8");
+        if (!html.includes('class="topbar"')) continue;
+        assert.match(html, /class="brand-wordmark"[^>]*><img src="\/assets\/site\/atlant-auto-wordmark\.svg"/, `${path.relative(siteRoot, full)} does not use the wordmark`);
+        assert.doesNotMatch(html, /class="brand-mark"/, `${path.relative(siteRoot, full)} still uses the legacy AA mark`);
+      }
+    }
+  };
+  walk(siteRoot);
+});
+
 test("generated pages keep the responsive layout contract", () => {
   const styles = fs.readFileSync(path.join(siteRoot, "styles.css"), "utf8");
   for (const selector of [
