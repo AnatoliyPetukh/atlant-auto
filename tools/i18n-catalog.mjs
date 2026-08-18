@@ -33,7 +33,6 @@ const common = {
   "action.calculate": entry("Рассчитать", "Oblicz", "Calculate"),
   "action.submitRequest": entry("Отправить заявку", "Wyślij zapytanie", "Send request"),
   "action.backHome": entry("На главную", "Na stronę główną", "Go home"),
-  "common.telegram": entry("Telegram", "Telegram", "Telegram"),
   "common.email": entry("Email", "Email", "Email"),
   "common.phone": entry("Телефон", "Telefon", "Phone"),
   "common.address": entry("Адрес", "Adres", "Address"),
@@ -75,9 +74,9 @@ const common = {
   "cookie.banner.acceptAll": entry("Разрешить все", "Zezwól na wszystkie", "Allow all"),
   "validation.required": entry("Заполните обязательное поле.", "Wypełnij wymagane pole.", "Complete this required field."),
   "validation.contactRequired": entry(
-    "Укажите телефон, email или Telegram.",
-    "Podaj telefon, email lub Telegram.",
-    "Enter a phone number, email address or Telegram."
+    "Укажите телефон или email.",
+    "Podaj telefon lub email.",
+    "Enter a phone number or email address."
   ),
   "notifications.requestSent": entry(
     "Черновик письма подготовлен. Проверьте его и нажмите «Отправить» в почтовом приложении.",

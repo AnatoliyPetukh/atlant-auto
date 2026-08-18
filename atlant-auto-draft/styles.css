@@ -1154,6 +1154,11 @@ address a:hover { color: white; }
   color: white;
 }
 .official-panel h2 { color: white; }
+#official-company-heading {
+  white-space: nowrap;
+  font-size: clamp(22px, 3vw, 40px);
+  letter-spacing: -.04em;
+}
 .official-panel p { max-width: 620px; color: rgba(255,255,255,.7); }
 .official-panel > .text-link { grid-column: 2; color: #d8b87c; }
 .official-data {

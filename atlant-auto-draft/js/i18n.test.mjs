@@ -89,6 +89,7 @@ test("every branded page uses the Atlant Auto wordmark", () => {
   walk(siteRoot);
 
   const styles = fs.readFileSync(path.join(siteRoot, "styles.css"), "utf8");
+  assert.match(styles, /#official-company-heading\s*\{[^}]*white-space:\s*nowrap;/, "official company name must stay on one line");
   assert.match(styles, /\.brand\s*\{[\s\S]*?width:\s*188px;/, "desktop wordmark must remain readable in the header");
   assert.match(styles, /@media \(max-width: 680px\)[\s\S]*?\.brand\s*\{[^}]*width:\s*148px;/, "mobile wordmark must remain readable without crowding the language switcher");
 });
@@ -120,6 +121,7 @@ test("generated pages keep the responsive layout contract", () => {
 
   for (const relative of ["pl/index.html", "en/index.html"]) {
     const html = fs.readFileSync(path.join(siteRoot, relative), "utf8");
+    assert.doesNotMatch(html, /Telegram|t\.me\/atlantautopl/i, `${relative} must not publish Telegram contact details`);
     assert.match(html, /class="cars-grid"/, `${relative} lost the catalogue grid`);
     assert.match(html, /class="car-card-link"/, `${relative} lost clickable vehicle cards`);
     assert.match(html, /data-filter="all"[\s\S]*data-filter="on-site"[\s\S]*data-filter="in-transit"[\s\S]*data-filter="sold"/, `${relative} must expose all four catalogue filters in order`);
