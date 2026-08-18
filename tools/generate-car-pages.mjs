@@ -74,18 +74,17 @@ function localizedValue(value, locale) {
 function specs(car, locale) {
   const localized = localizedCarDetails[car.slug];
   const rows = [
-    car.firstRegistrationDate
-      ? ["vehicle.field.firstRegistration", date(car.firstRegistrationDate, locale)]
-      : ["vehicle.field.productionYear", car.productionDate],
-    ["vehicle.field.mileage", car.mileageKm == null ? null : `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}`],
+    ["vehicle.field.productionYear", car.productionDate || t(locale, "common.notConfirmed")],
+    ["vehicle.field.firstRegistration", car.firstRegistrationDate ? date(car.firstRegistrationDate, locale) : t(locale, "common.notConfirmed")],
+    ["vehicle.field.mileage", car.mileageKm == null ? t(locale, "common.notConfirmed") : `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}`],
     ["vehicle.field.body", t(locale, localized.bodyKey)],
     ["vehicle.field.color", localized.color[locale]],
     ["vehicle.field.doors", car.doors],
     ["vehicle.field.seats", car.seats],
     ["vehicle.field.registrationNumber", car.registrationNumber],
-    ["vehicle.field.registrationCountry", localized.registrationCountryKey ? t(locale, localized.registrationCountryKey) : car.registrationCountry],
-    ["vehicle.field.keys", car.keysCount],
-    ["vehicle.field.source", localized.sourceKey ? t(locale, localized.sourceKey) : car.vehicleSource],
+    ["vehicle.field.registrationCountry", localized.registrationCountryKey ? t(locale, localized.registrationCountryKey) : car.registrationCountry || t(locale, "common.notConfirmed")],
+    ["vehicle.field.keys", car.keysCount ?? t(locale, "common.notConfirmed")],
+    ["vehicle.field.source", localized.sourceKey ? t(locale, localized.sourceKey) : car.vehicleSource || t(locale, "common.notConfirmed")],
     ["vehicle.field.fuel", t(locale, `vehicle.fuel.${car.fuelType}`)],
     ["vehicle.field.engineCapacity", `${number(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}`],
     ["vehicle.field.power", car.powerHp == null ? null : `${car.powerHp} ${t(locale, "vehicle.unit.horsepower")}`],
@@ -94,6 +93,17 @@ function specs(car, locale) {
     ["vehicle.field.emissionStandard", car.emissionStandard]
   ];
   return rows.filter(([, value]) => value !== null && value !== undefined && value !== "").map(([label, value]) => `<div><dt>${t(locale, label)}</dt><dd>${esc(value)}</dd></div>`).join("");
+}
+
+function transparency(car, locale) {
+  const history = car.serviceHistory?.length ? t(locale, "vehicle.transparency.historyKnown") : t(locale, "vehicle.transparency.historyUnknown");
+  const viewing = car.availability === "in-transit" ? t(locale, "vehicle.transparency.viewingTransit") : t(locale, "vehicle.transparency.viewingOnSite");
+  return `<dl class="detail-grid transparency-grid">
+    <div><dt>${t(locale, "vehicle.field.mileage")}</dt><dd>${car.mileageKm == null ? t(locale, "common.notConfirmed") : `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}`}</dd></div>
+    <div><dt>${t(locale, "vehicle.transparency.history")}</dt><dd>${history}</dd></div>
+    <div><dt>${t(locale, "vehicle.transparency.saleDocument")}</dt><dd>${t(locale, "vehicle.transparency.saleDocumentValue")}</dd></div>
+    <div><dt>${t(locale, "vehicle.transparency.viewing")}</dt><dd>${viewing}</dd></div>
+  </dl>`;
 }
 
 function equipment(car, locale) {
@@ -194,6 +204,8 @@ function html(car, locale) {
         : t(locale, "vehicle.seo.offerSuffix");
   const title = `${name} — ${titleDetail} | Atlant Auto`;
   const description = car.description[locale];
+  const inquiryUrl = `${meta.contact}?car=${encodeURIComponent(name)}`;
+  const primaryAction = car.availability === "in-transit" ? t(locale, "action.askDelivery") : t(locale, "action.bookViewing");
   return `<!doctype html>
 <html lang="${meta.lang}">
 <head>
@@ -210,30 +222,35 @@ function html(car, locale) {
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url(route)}">
   <meta property="og:image" content="${url(publicPath(car.mainImage))}">
-  <link rel="stylesheet" href="/styles.css?v=20260818-2">
+  <link rel="stylesheet" href="/styles.css?v=20260818-3">
   <script type="application/ld+json">${schema(car, locale)}</script>
 </head>
 <body class="car-page">
   <header class="topbar">
     <a class="brand" href="${meta.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a>
-    <nav class="nav" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.home}#pricing">${t(locale, "navigation.services")}</a><a href="${meta.about}">${t(locale, "navigation.about")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">Menu</span></button>
+    <nav class="nav" id="primary-navigation" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.home}#pricing">${t(locale, "navigation.services")}</a><a href="${meta.about}">${t(locale, "navigation.about")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
     <div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav(car, locale)}</div>
   </header>
   <main class="car-page-main">
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${auctionSourceBadge(car)}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<a class="button primary" href="${meta.contact}">${t(locale, "action.requestQuote")}</a>`}</div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${auctionSourceBadge(car)}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<div class="car-summary-actions"><a class="button primary" href="${inquiryUrl}">${primaryAction}</a><a class="button ghost dark" href="tel:+48515392420">${t(locale, "action.callAboutCar")}</a></div>`}</div>
     </section>
+    <section class="car-section transparency-section"><h2>${t(locale, "vehicle.transparency.heading")}</h2>${transparency(car, locale)}</section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.equipment")}</h2><div class="equipment-grid">${equipment(car, locale)}</div></section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.service")}</h2>${service(car, locale)}</section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.condition")}</h2>${condition(car, locale)}</section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.documents")}</h2>${documents(car, locale)}</section>
+    ${car.status === "sold" ? "" : `<section class="car-contact-cta"><div><h2>${t(locale, "vehicle.cta.heading")}</h2><p>${t(locale, "vehicle.cta.text")}</p></div><div><a class="button primary" href="${inquiryUrl}">${t(locale, "action.writeAboutCar")}</a><a class="button ghost dark" href="tel:+48515392420">${t(locale, "action.callAboutCar")}</a></div></section>`}
     <p class="catalogue-back"><a class="text-link" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a></p>
   </main>
   <footer class="footer"><div><a class="brand footer-brand" href="${meta.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a><p>${t(locale, "footer.tagline")}</p><p>${site.legalName} · NIP ${site.nip}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.vehicleLotAddress}</span><a href="${meta.about}">${t(locale, "footer.companyInfo")}</a></address></footer>
   ${cookieBanner(locale)}
+  <a class="mobile-call-bar" href="tel:+48515392420"><span aria-hidden="true">☎</span>${t(locale, "action.callNow")} · ${site.phone}</a>
+  <script src="/js/site-navigation.js?v=20260818-1" defer></script>
   <script src="/js/cookie-consent.js?v=20260719-2" defer></script>
   <script>document.querySelectorAll("[data-image]").forEach((button) => button.addEventListener("click", () => { const image = document.querySelector("#mainCarImage"); if (image) image.src = button.dataset.image; }));</script>
 </body>

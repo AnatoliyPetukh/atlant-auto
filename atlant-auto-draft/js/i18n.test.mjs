@@ -176,3 +176,25 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /class="detail-grid spec-grid"/, `${route} lost the specification grid`);
   }
 });
+
+test("standalone customer pages contain the complete conversion journey", () => {
+  for (const locale of ["pl", "en"]) {
+    const catalogue = fs.readFileSync(path.join(siteRoot, locale, locale === "pl" ? "samochody/index.html" : "cars/index.html"), "utf8");
+    assert.equal((catalogue.match(/class="car-card" data-status=/g) || []).length, 15, `${locale} catalogue must show every vehicle`);
+    assert.match(catalogue, /data-filter="all"[\s\S]*data-filter="on-site"[\s\S]*data-filter="in-transit"[\s\S]*data-filter="sold"/, `${locale} catalogue filters are incomplete`);
+
+    const processPage = fs.readFileSync(path.join(siteRoot, locale, locale === "pl" ? "jak-dzialamy/index.html" : "how-it-works/index.html"), "utf8");
+    assert.equal((processPage.match(/class="process-card"/g) || []).length, 5, `${locale} process page must show five stages`);
+    assert.equal((processPage.match(/<article><span>0\d<\/span>/g) || []).length, 4, `${locale} process page must explain agreement and payment`);
+
+    const contactPage = fs.readFileSync(path.join(siteRoot, locale, "contact/index.html".replace("contact", locale === "pl" ? "kontakt" : "contact")), "utf8");
+    assert.match(contactPage, /class="request-form"/, `${locale} contact page lost the enquiry form`);
+    assert.match(contactPage, /google\.com\/maps\?q=Wielkiego%20D%C4%99bu%206/, `${locale} contact page lost the lot map`);
+    assert.match(contactPage, /href="tel:\+48515392420"/, `${locale} contact page lost the direct phone action`);
+  }
+
+  const styles = fs.readFileSync(path.join(siteRoot, "styles.css"), "utf8");
+  assert.match(styles, /\.topbar\.nav-open > \.nav\s*\{\s*display:\s*flex;/, "mobile menu must be expandable");
+  assert.match(styles, /\.mobile-call-bar\s*\{[^}]*position:\s*fixed;/, "mobile call action must stay visible");
+  assert.ok(fs.existsSync(path.join(siteRoot, "js/site-navigation.js")), "mobile navigation script is missing");
+});

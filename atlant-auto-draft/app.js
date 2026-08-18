@@ -35,6 +35,15 @@ document.querySelectorAll("[data-service-package]").forEach((link) => {
   });
 });
 
+const requestedVehicle = new URLSearchParams(window.location.search).get("car");
+if (requestedVehicle) {
+  const message = document.querySelector('.request-form textarea[name="message"]');
+  if (message && !message.value) {
+    const prefix = document.documentElement.lang === "pl" ? "Interesuje mnie samochód:" : "I am interested in:";
+    message.value = `${prefix} ${requestedVehicle}`;
+  }
+}
+
 document.querySelector(".request-form")?.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!event.currentTarget.reportValidity()) return;
