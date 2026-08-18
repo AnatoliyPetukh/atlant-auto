@@ -9,7 +9,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atla
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
 const cars = context.window.ATLANT_CARS;
-const catalogueCounts = { available: 12, inTransit: 8, happyClients: 11, yearCars: 98 };
+const catalogueCounts = { available: 12, inTransit: 8, happyClients: 11, yearCars: 119 };
 const routes = { pl: "/pl/", en: "/en/" };
 const catalogue = { pl: "/pl/samochody/", en: "/en/cars/" };
 const process = { pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };

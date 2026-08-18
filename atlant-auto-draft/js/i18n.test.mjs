@@ -138,7 +138,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/class="advantage-card"/g) || []).length, 6, `${relative} must show six advantages`);
     assert.match(html, /class="numbers-grid"/, `${relative} lost the catalogue figures`);
     assert.equal((html.match(/class="number-card"/g) || []).length, 4, `${relative} must show four catalogue figures`);
-    assert.deepEqual([...html.matchAll(/class="number-card"><strong>(\d+)<\/strong>/g)].map((match) => match[1]), ["12", "8", "11", "98"], `${relative} has incorrect business figures`);
+    assert.deepEqual([...html.matchAll(/class="number-card"><strong>(\d+)<\/strong>/g)].map((match) => match[1]), ["12", "8", "11", "119"], `${relative} has incorrect business figures`);
     assert.doesNotMatch(html, /Aktualne dane dotyczące oferty|Current figures for Atlant Auto/, `${relative} still shows the removed figures description`);
     assert.match(html, relative.startsWith("pl/") ? /11<\/strong>.*zadowolonych klientów w tym miesiącu/ : /11<\/strong>.*happy clients this month/, `${relative} must label monthly clients`);
     assert.match(html, relative.startsWith("pl/") ? /Wkrótce dostępny/ : /Coming soon/, `${relative} must use the shortened in-transit label`);
