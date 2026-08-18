@@ -306,8 +306,16 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .compact-specs div { display: flex; flex-wrap: wrap; gap: 0; }
 .compact-specs span { white-space: nowrap; }
 .compact-specs span + span::before { content: " · "; white-space: pre; }
-.price-row { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 18px; }
-.price { max-width: 100%; font-size: 26px; font-weight: 700; color: var(--heading); overflow-wrap: anywhere; }
+.price-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+.price { max-width: 100%; color: var(--heading); font-size: clamp(21px, 2vw, 26px); font-weight: 700; white-space: nowrap; }
 .price-block { display: grid; gap: 3px; }
 .price-note { color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.35; }
 .detail-price-note { max-width: 58ch; margin-top: -10px; font-size: 14px; }
@@ -316,14 +324,14 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   min-height: 46px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px 17px;
+  gap: 8px;
+  padding: 12px 11px;
   border: 1px solid var(--green);
   border-radius: 9px;
   background: var(--green);
   color: white;
   box-shadow: 0 8px 18px rgba(29, 122, 82, .18);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
   transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;

@@ -103,6 +103,8 @@ test("generated pages keep the responsive layout contract", () => {
     assert.ok(styles.includes(selector), `missing responsive style: ${selector}`);
   }
   assert.match(styles, /\.car-card\[hidden\]\s*\{\s*display:\s*none;/, "catalogue filters must be able to hide vehicle cards");
+  assert.match(styles, /\.price-row\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) max-content;/, "card price and CTA must keep a stable two-column layout");
+  assert.match(styles, /\.price\s*\{[^}]*white-space:\s*nowrap;/, "vehicle prices must not wrap independently of the CTA");
   assert.match(styles, /\.car-card\[data-status="sold"\][\s\S]*?grayscale\(1\)/, "sold vehicle cards must have a visually inactive grayscale treatment");
   for (const image of [
     "lot-lineup.jpg",
