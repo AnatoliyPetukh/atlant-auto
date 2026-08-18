@@ -92,6 +92,7 @@ function html(locale) {
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${t(locale, "home.seo.title")}</title><meta name="description" content="${t(locale, "home.seo.description")}">
   <link rel="canonical" href="${site.origin}${routes[locale]}">${alternates}
+  <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/site/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/site/apple-touch-icon.png">
   <meta property="og:type" content="website"><meta property="og:site_name" content="${site.name}"><meta property="og:title" content="${t(locale, "home.seo.title")}"><meta property="og:description" content="${t(locale, "home.seo.description")}"><meta property="og:url" content="${site.origin}${routes[locale]}">
   <link rel="stylesheet" href="/styles.css?v=20260818-1">
   <script type="application/ld+json">${JSON.stringify(companySchema).replaceAll("<","\\u003c")}</script>
@@ -121,6 +122,6 @@ for (const locale of Object.keys(routes)) fs.writeFileSync(output(locale), html(
 fs.writeFileSync(path.join(root, "index.html"), `<!doctype html>
 <html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlant Auto — Warszawa</title><meta name="description" content="Atlant Auto — samochody dostępne w Warszawie.">
-<meta name="robots" content="noindex,follow"><link rel="canonical" href="${site.origin}/pl/"><meta http-equiv="refresh" content="0; url=/pl/">
+<meta name="robots" content="noindex,follow"><link rel="canonical" href="${site.origin}/pl/"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/site/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/site/apple-touch-icon.png"><meta http-equiv="refresh" content="0; url=/pl/">
 </head><body><p><a href="/pl/">Przejdź do polskiej wersji Atlant Auto</a></p></body></html>`, "utf8");
 console.log("Generated Polish and English home pages plus Polish root redirect.");

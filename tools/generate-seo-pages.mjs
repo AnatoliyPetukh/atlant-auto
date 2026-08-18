@@ -180,6 +180,7 @@ function pageHtml(page, localeCode) {
   <meta name="description" content="${esc(description)}">
   <link rel="canonical" href="${absolute(route)}">
   ${alternates(key)}
+  <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/site/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/site/apple-touch-icon.png">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${site.name}">
   <meta property="og:title" content="${esc(title)}">

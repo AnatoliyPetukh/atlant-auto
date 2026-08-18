@@ -65,6 +65,9 @@ test("user-facing strings are absent from interactive browser components", () =>
 test("every branded page uses the Atlant Auto wordmark", () => {
   const wordmark = path.join(siteRoot, "assets/site/atlant-auto-wordmark.svg");
   assert.ok(fs.existsSync(wordmark), "missing Atlant Auto wordmark asset");
+  assert.ok(fs.existsSync(path.join(siteRoot, "favicon.ico")), "missing browser favicon");
+  assert.ok(fs.existsSync(path.join(siteRoot, "assets/site/favicon-32.png")), "missing 32px favicon");
+  assert.ok(fs.existsSync(path.join(siteRoot, "assets/site/apple-touch-icon.png")), "missing Apple touch icon");
   const wordmarkSource = fs.readFileSync(wordmark, "utf8");
   assert.match(wordmarkSource, /data-country-badge="AA"/, "wordmark must use the oval AA country badge");
   assert.doesNotMatch(wordmarkSource, /linearGradient|feDropShadow/, "wordmark must stay clean and free of chrome effects");
@@ -76,6 +79,8 @@ test("every branded page uses the Atlant Auto wordmark", () => {
       else if (entry.name.endsWith(".html")) {
         const html = fs.readFileSync(full, "utf8");
         if (!html.includes('class="topbar"')) continue;
+        assert.match(html, /rel="icon" href="\/favicon\.ico"/, `${path.relative(siteRoot, full)} does not link the favicon`);
+        assert.match(html, /rel="apple-touch-icon"[^>]*href="\/assets\/site\/apple-touch-icon\.png"/, `${path.relative(siteRoot, full)} does not link the Apple touch icon`);
         assert.match(html, /class="brand-wordmark"[^>]*><img src="\/assets\/site\/atlant-auto-wordmark\.svg"/, `${path.relative(siteRoot, full)} does not use the wordmark`);
         assert.doesNotMatch(html, /class="brand-mark"/, `${path.relative(siteRoot, full)} still uses the legacy AA mark`);
       }
