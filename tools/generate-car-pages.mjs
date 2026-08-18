@@ -210,7 +210,7 @@ function html(car, locale) {
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url(route)}">
   <meta property="og:image" content="${url(publicPath(car.mainImage))}">
-  <link rel="stylesheet" href="/styles.css?v=20260818-1">
+  <link rel="stylesheet" href="/styles.css?v=20260818-2">
   <script type="application/ld+json">${schema(car, locale)}</script>
 </head>
 <body class="car-page">

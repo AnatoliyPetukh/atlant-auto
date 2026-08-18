@@ -94,7 +94,7 @@ function html(locale) {
   <link rel="canonical" href="${site.origin}${routes[locale]}">${alternates}
   <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/site/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/site/apple-touch-icon.png">
   <meta property="og:type" content="website"><meta property="og:site_name" content="${site.name}"><meta property="og:title" content="${t(locale, "home.seo.title")}"><meta property="og:description" content="${t(locale, "home.seo.description")}"><meta property="og:url" content="${site.origin}${routes[locale]}">
-  <link rel="stylesheet" href="/styles.css?v=20260818-1">
+  <link rel="stylesheet" href="/styles.css?v=20260818-2">
   <script type="application/ld+json">${JSON.stringify(companySchema).replaceAll("<","\\u003c")}</script>
 </head>
 <body>
