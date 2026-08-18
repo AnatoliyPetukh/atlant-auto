@@ -289,44 +289,19 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 }
 .car-badges .badge { position: static; }
 .badge.sold { background: rgba(68, 72, 76, .92); }
-.badge.source { background: rgba(11, 91, 145, .92); }
-.badge.arval-badge {
-  display: block;
-  width: 112px;
-  height: 32px;
-  padding: 0;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.8);
-  background: white;
-}
-.arval-badge img { display: block; width: 108px; max-width: none; height: auto; transform: translate(1px, -18px); }
-.badge.atc-badge {
-  display: flex;
-  width: 180px;
-  height: 34px;
-  align-items: center;
-  padding: 0 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.8);
-  background: white;
-}
-.atc-badge img { display: block; width: 164px; max-width: none; height: auto; }
-.badge.mobilede-badge {
+.badge.source-text {
   display: inline-flex;
-  min-width: 108px;
-  height: 34px;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 0 10px;
-  border: 1px solid rgba(255,255,255,.86);
-  background: white;
-  color: #133f75;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -.04em;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, .82);
+  background: rgba(255, 255, 255, .93);
+  color: #26313d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  line-height: 1.2;
 }
-.mobilede-badge b { color: #e4b400; font: inherit; }
 .car-body { display: flex; flex: 1; min-width: 0; flex-direction: column; padding: 20px; }
 .car-body h3 { min-height: 55px; font-size: 21px; font-weight: 600; line-height: 1.3; }
 .specs { display: grid; gap: 7px; margin: 14px 0; color: var(--muted); font-size: 14px; }

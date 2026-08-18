@@ -48,15 +48,15 @@ function languageNav(car, current) {
   ).join("");
 }
 
-function auctionSourceBadge(car) {
+function auctionSourceBadge(car, locale) {
   if (car.auctionSource === "Arval") {
-    return `<p><span class="badge static source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span></p>`;
+    return `<p><span class="badge static source source-text">${t(locale, "vehicle.sourceBadge.arval")}</span></p>`;
   }
   if (car.auctionSource === "Automotive Trade Center") {
-    return `<p><span class="badge static source atc-badge"><img src="/assets/brands/automotive-trade-center.png" alt="Automotive Trade Center" width="858" height="123"></span></p>`;
+    return `<p><span class="badge static source source-text">${t(locale, "vehicle.sourceBadge.atc")}</span></p>`;
   }
   if (car.auctionSource === "mobile.de") {
-    return `<p><span class="badge static source mobilede-badge" aria-label="mobile.de"><span>mobile</span><b>.de</b></span></p>`;
+    return `<p><span class="badge static source source-text">${t(locale, "vehicle.sourceBadge.mobilede")}</span></p>`;
   }
   return "";
 }
@@ -225,7 +225,7 @@ function html(car, locale) {
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url(route)}">
   <meta property="og:image" content="${url(publicPath(car.mainImage))}">
-  <link rel="stylesheet" href="/styles.css?v=20260818-4">
+  <link rel="stylesheet" href="/styles.css?v=20260818-5">
   <script type="application/ld+json">${schema(car, locale)}</script>
 </head>
 <body class="car-page">
@@ -239,7 +239,7 @@ function html(car, locale) {
     <nav class="breadcrumbs" aria-label="${t(locale, "navigation.breadcrumb.label")}"><a href="${meta.home}">${t(locale, "navigation.home")}</a><span>/</span><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><span>/</span><span>${esc(name)}</span></nav>
     <section class="car-hero">
       ${gallery(car, locale)}
-      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${auctionSourceBadge(car)}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<div class="car-summary-actions"><a class="button primary" href="${inquiryUrl}">${primaryAction}</a><a class="button ghost dark" href="tel:+48515392420">${t(locale, "action.callAboutCar")}</a></div>`}</div>
+      <div class="car-summary"><p class="eyebrow">${statusLabel}</p>${auctionSourceBadge(car, locale)}<h1>${esc(name)}</h1><p class="detail-price">${esc(price(car, locale))}</p><p>${esc(description)}</p><p class="condition-disclaimer">${t(locale, "vehicle.condition.reportLimitations")}</p>${car.status === "sold" ? `<a class="button primary" href="${meta.catalogue}">${t(locale, "navigation.backToCatalog")}</a>` : `<div class="car-summary-actions"><a class="button primary" href="${inquiryUrl}">${primaryAction}</a><a class="button ghost dark" href="tel:+48515392420">${t(locale, "action.callAboutCar")}</a></div>`}</div>
     </section>
     <section class="car-section transparency-section"><h2>${t(locale, "vehicle.transparency.heading")}</h2>${transparency(car, locale)}</section>
     <section class="car-section"><h2>${t(locale, "vehicle.section.specifications")}</h2><dl class="detail-grid spec-grid">${specs(car, locale)}</dl></section>
