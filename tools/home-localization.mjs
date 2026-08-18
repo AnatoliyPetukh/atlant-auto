@@ -53,7 +53,7 @@ export const homeLocalizationMessages = {
   "home.platforms.direct": entry("Лизинговые автомобили", "Samochody poleasingowe", "Ex-lease vehicles"),
   "home.platforms.marketplace": entry("B2B-аукцион", "Aukcja B2B", "B2B auction"),
   "home.platforms.visit": entry("Открыть официальный сайт", "Otwórz oficjalną stronę", "Open the official website"),
-  "home.platforms.note": entry("Логотипы используются только для обозначения источников предложений и не означают эксклюзивного партнёрства.", "Logotypy służą wyłącznie do identyfikacji źródeł ofert i nie oznaczają wyłącznego partnerstwa.", "Logos are used solely to identify offer sources and do not imply an exclusive partnership."),
+  "home.platforms.note": entry("Показываем площадки, на которых покупаем автомобили. Логотипы не означают официального партнёрства.", "Pokazujemy platformy, na których kupujemy samochody. Logotypy nie oznaczają formalnego partnerstwa.", "We show the platforms where we buy vehicles. The logos do not imply a formal partnership."),
   "home.advantages.eyebrow": entry("Преимущества", "Dlaczego Atlant Auto", "Why Atlant Auto"),
   "home.advantages.title": entry("Почему выбирают Atlant Auto?", "Dlaczego warto wybrać Atlant Auto?", "Why choose Atlant Auto?"),
   "home.advantages.intro": entry("Без универсальных обещаний: показываем данные конкретного автомобиля, заранее согласуем бюджет и не принимаем финансовых решений без клиента.", "Bez uniwersalnych obietnic: pokazujemy dane konkretnego samochodu, uzgadniamy budżet z góry i nie podejmujemy decyzji finansowych bez klienta.", "No blanket promises: we show the information available for the specific vehicle, agree the budget in advance and make no financial decision without the client."),

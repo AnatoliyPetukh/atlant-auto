@@ -149,7 +149,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/class="platform-card"/g) || []).length, 6, `${relative} must show six sourcing platforms`);
     assert.equal((html.match(/\/assets\/auctions\//g) || []).length, 6, `${relative} must show six platform logos`);
     assert.match(html, relative.startsWith("pl/") ? /Aukcje i platformy leasingowe/ : /Auctions and leasing platforms/, `${relative} lost the localized platforms heading`);
-    assert.match(html, relative.startsWith("pl/") ? /nie oznaczają wyłącznego partnerstwa/ : /do not imply an exclusive partnership/, `${relative} lost the platform relationship disclaimer`);
+    assert.match(html, relative.startsWith("pl/") ? /Logotypy nie oznaczają formalnego partnerstwa/ : /logos do not imply a formal partnership/i, `${relative} lost the platform relationship disclaimer`);
     assert.doesNotMatch(html, /<dt>500\+<\/dt>|<dt>30%<\/dt>/, `${relative} exposes unverified hero figures`);
     assert.match(html, /class="pricing-grid"/, `${relative} lost the service pricing section`);
     assert.equal((html.match(/class="pricing-card(?: featured)?"/g) || []).length, 2, `${relative} must show two service packages`);
@@ -158,7 +158,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /href="#pricing"[^>]*>[^<]+<\/a>/, `${relative} lost the service navigation link`);
     assert.equal((html.match(/data-service-package=/g) || []).length, 2, `${relative} must connect both packages to the request form`);
     assert.match(html, /select name="service"/, `${relative} lost the service selector`);
-    assert.match(html, /data-recipient="autoatlantcapital@gmail\.com"/, `${relative} lost the request email recipient`);
+    assert.match(html, /data-recipient="biuro@atlantauto\.pl"/, `${relative} lost the request email recipient`);
     assert.equal((html.match(/class="badge source arval-badge"/g) || []).length, 6, `${relative} must show the Arval logo for six current vehicles`);
     assert.equal((html.match(/class="badge source mobilede-badge"/g) || []).length, 2, `${relative} must show mobile.de for the two corresponding vehicles`);
     assert.doesNotMatch(html, /Aukcja Arval|Arval auction|Orientacyjna cena rynkowa|Indicative market price/, `${relative} exposes superseded badge or price text`);
