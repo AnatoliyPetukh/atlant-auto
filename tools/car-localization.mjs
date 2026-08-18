@@ -90,6 +90,10 @@ export const carLocalizationMessages = {
   "vehicle.feature.luggageCover": entry("Шторка багажного отделения", "Roleta przestrzeni bagażowej", "Luggage-compartment cover"),
   "vehicle.feature.wirelessPhoneCharging": entry("Беспроводная зарядка телефона", "Bezprzewodowe ładowanie telefonu", "Wireless phone charging"),
   "vehicle.feature.blackPack": entry("Пакет Black Pack", "Pakiet Black Pack", "Black Pack"),
+  "vehicle.feature.alarmSystem": entry("Сигнализация", "Alarm", "Alarm system"),
+  "vehicle.feature.mWheels19": entry("Легкосплавные диски M R19", "19-calowe felgi aluminiowe M", "19-inch M alloy wheels"),
+  "vehicle.feature.mSportPackage": entry("Пакет M Sport", "Pakiet M Sport", "M Sport package"),
+  "vehicle.feature.adaptiveMSuspension": entry("Адаптивная подвеска M", "Adaptacyjne zawieszenie M", "Adaptive M suspension"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -409,11 +413,27 @@ const rawFeaturePairs = [
   ,["Шторка багажного отделения", "vehicle.feature.luggageCover"]
   ,["Беспроводная зарядка телефона", "vehicle.feature.wirelessPhoneCharging"]
   ,["Пакет Black Pack", "vehicle.feature.blackPack"]
+  ,["Сигнализация", "vehicle.feature.alarmSystem"]
+  ,["Легкосплавные диски M R19", "vehicle.feature.mWheels19"]
+  ,["Пакет M Sport", "vehicle.feature.mSportPackage"]
+  ,["Адаптивная подвеска M", "vehicle.feature.adaptiveMSuspension"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
 
 export const localizedCarDetails = {
+  "bmw-x1-sdrive18i-m-sport-2023": {
+    bodyKey: "vehicle.body.crossover",
+    color: { ru: "Чёрный Black Sapphire Metallic", pl: "Czarny Black Sapphire Metallic", en: "Black Sapphire Metallic" },
+    serviceKeys: [],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.condition.body", { ru: "Состояние показано на актуальных фотографиях с площадки", pl: "Stan pokazano na aktualnych zdjęciach wykonanych na placu", en: "Condition is shown in the current photos taken at the site" }],
+      ["vehicle.condition.interior", { ru: "Состояние показано на актуальных фотографиях с площадки", pl: "Stan pokazano na aktualnych zdjęciach wykonanych na placu", en: "Condition is shown in the current photos taken at the site" }],
+      ["vehicle.condition.vehicleSource", { ru: "Комплектация подтверждена расшифровкой заводской спецификации", pl: "Wyposażenie potwierdzone na podstawie fabrycznej specyfikacji", en: "Equipment confirmed from the factory specification" }]
+    ],
+    documentKeys: []
+  },
   "peugeot-5008-gt-pack-business-2023-147291": {
     bodyKey: "vehicle.body.crossover",
     color: { ru: "Чёрный металлик", pl: "Czarny metalik", en: "Metallic black" },

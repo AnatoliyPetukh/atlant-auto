@@ -77,7 +77,7 @@ function specs(car, locale) {
     car.firstRegistrationDate
       ? ["vehicle.field.firstRegistration", date(car.firstRegistrationDate, locale)]
       : ["vehicle.field.productionYear", car.productionDate],
-    ["vehicle.field.mileage", `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}`],
+    ["vehicle.field.mileage", car.mileageKm == null ? null : `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}`],
     ["vehicle.field.body", t(locale, localized.bodyKey)],
     ["vehicle.field.color", localized.color[locale]],
     ["vehicle.field.doors", car.doors],
@@ -151,7 +151,7 @@ function schema(car, locale) {
     description: car.description[locale],
     image: car.images.map((image) => url(publicPath(image))),
     url: url(route),
-    mileageFromOdometer: { "@type": "QuantitativeValue", value: car.mileageKm, unitCode: "KMT" },
+    ...(car.mileageKm == null ? {} : { mileageFromOdometer: { "@type": "QuantitativeValue", value: car.mileageKm, unitCode: "KMT" } }),
     fuelType: t(locale, `vehicle.fuel.${car.fuelType}`),
     vehicleTransmission: t(locale, `vehicle.transmission.${car.transmission}`),
     ...(car.status === "sold" ? {} : { offers: {
@@ -188,7 +188,9 @@ function html(car, locale) {
     : car.availability === "in-transit"
       ? t(locale, "vehicle.seo.inTransitSuffix")
       : car.availability === "on-site"
-        ? `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")} · ${statusLabel}`
+        ? car.mileageKm == null
+          ? statusLabel
+          : `${number(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")} · ${statusLabel}`
         : t(locale, "vehicle.seo.offerSuffix");
   const title = `${name} — ${titleDetail} | Atlant Auto`;
   const description = car.description[locale];
