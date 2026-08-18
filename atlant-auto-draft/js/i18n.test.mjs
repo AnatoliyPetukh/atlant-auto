@@ -160,6 +160,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /select name="service"/, `${relative} lost the service selector`);
     assert.match(html, /data-recipient="autoatlantcapital@gmail\.com"/, `${relative} lost the request email recipient`);
     assert.equal((html.match(/class="badge source arval-badge"/g) || []).length, 6, `${relative} must show the Arval logo for six current vehicles`);
+    assert.equal((html.match(/class="badge source mobilede-badge"/g) || []).length, 2, `${relative} must show mobile.de for the two corresponding vehicles`);
     assert.doesNotMatch(html, /Aukcja Arval|Arval auction|Orientacyjna cena rynkowa|Indicative market price/, `${relative} exposes superseded badge or price text`);
     assert.doesNotMatch(html, /PLN (?:brutto|gross)/, `${relative} must show only the price and currency`);
     assert.match(html, /class="route-section" id="route"/, `${relative} lost the route map section`);

@@ -23,6 +23,7 @@ function statusKey(car) {
 function sourceBadge(car) {
   if (car.auctionSource === "Arval") return `<span class="badge source arval-badge"><img src="/assets/brands/arval.png" alt="Arval" width="108" height="69"></span>`;
   if (car.auctionSource === "Automotive Trade Center") return `<span class="badge source atc-badge"><img src="/assets/brands/automotive-trade-center.png" alt="Automotive Trade Center" width="858" height="123"></span>`;
+  if (car.auctionSource === "mobile.de") return `<span class="badge source mobilede-badge" aria-label="mobile.de"><span>mobile</span><b>.de</b></span>`;
   return "";
 }
 

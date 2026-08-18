@@ -45,9 +45,10 @@ test("catalog vehicles do not store VIN values", () => {
   assert.equal(currentCars.length, 9);
   assert.equal(currentCars.filter((car) => car.availability === "in-transit").length, 3);
   for (const car of currentCars.filter((car) => car.auctionSource)) {
-    assert.ok(["Arval", "Automotive Trade Center"].includes(car.auctionSource), car.slug);
+    assert.ok(["Arval", "Automotive Trade Center", "mobile.de"].includes(car.auctionSource), car.slug);
   }
   assert.equal(currentCars.filter((car) => car.auctionSource === "Automotive Trade Center").length, 1);
+  assert.equal(currentCars.filter((car) => car.auctionSource === "mobile.de").length, 2);
 });
 
 test("historic vehicles are marked as recently sold with transparent estimates", () => {

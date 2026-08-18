@@ -55,6 +55,9 @@ function auctionSourceBadge(car) {
   if (car.auctionSource === "Automotive Trade Center") {
     return `<p><span class="badge static source atc-badge"><img src="/assets/brands/automotive-trade-center.png" alt="Automotive Trade Center" width="858" height="123"></span></p>`;
   }
+  if (car.auctionSource === "mobile.de") {
+    return `<p><span class="badge static source mobilede-badge" aria-label="mobile.de"><span>mobile</span><b>.de</b></span></p>`;
+  }
   return "";
 }
 
@@ -222,7 +225,7 @@ function html(car, locale) {
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url(route)}">
   <meta property="og:image" content="${url(publicPath(car.mainImage))}">
-  <link rel="stylesheet" href="/styles.css?v=20260818-3">
+  <link rel="stylesheet" href="/styles.css?v=20260818-4">
   <script type="application/ld+json">${schema(car, locale)}</script>
 </head>
 <body class="car-page">
