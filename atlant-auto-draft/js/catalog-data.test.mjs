@@ -42,7 +42,7 @@ test("catalog vehicles do not store VIN values", () => {
   for (const car of cars) assert.equal(Object.hasOwn(car, "vin"), false, car.slug);
 
   const currentCars = cars.filter((car) => ["on-site", "in-transit"].includes(car.availability));
-  assert.equal(currentCars.length, 8);
+  assert.equal(currentCars.length, 9);
   assert.equal(currentCars.filter((car) => car.availability === "in-transit").length, 3);
   for (const car of currentCars.filter((car) => car.auctionSource)) {
     assert.ok(["Arval", "Automotive Trade Center"].includes(car.auctionSource), car.slug);

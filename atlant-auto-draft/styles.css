@@ -588,6 +588,7 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .number-card:nth-child(1) { --gauge-progress: 31%; }
 .number-card:nth-child(2) { --gauge-progress: 43%; }
 .number-card:nth-child(3) { --gauge-progress: 57%; }
+.number-card:nth-child(4) { --gauge-progress: 69%; }
 .number-gauge {
   position: absolute;
   top: 18px;
@@ -656,39 +657,7 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
 .number-card:nth-child(1) .number-gauge::after { content: "STOCK"; }
 .number-card:nth-child(2) .number-gauge::after { content: "ROUTE"; }
 .number-card:nth-child(3) .number-gauge::after { content: "CLIENT"; }
-.number-card:nth-child(4) .number-gauge {
-  top: 26px;
-  width: 108px;
-  height: 62px;
-  border: 1px solid rgba(255,255,255,.13);
-  border-radius: 9px;
-  background: linear-gradient(180deg, #080c11, #111923);
-  box-shadow: inset 0 0 18px rgba(0,0,0,.9), 0 7px 18px rgba(0,0,0,.3);
-}
-.number-card:nth-child(4) .number-gauge::before {
-  content: "00098";
-  inset: 10px 8px auto;
-  height: 27px;
-  -webkit-mask: none;
-  mask: none;
-  border: 1px solid rgba(202,161,90,.22);
-  border-radius: 4px;
-  background: repeating-linear-gradient(90deg, transparent 0 17px, rgba(255,255,255,.07) 17px 18px);
-  color: #f0d493;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  line-height: 25px;
-  text-align: center;
-  text-shadow: 0 0 8px rgba(202,161,90,.45);
-}
-.number-card:nth-child(4) .number-gauge::after {
-  content: "ODO  /  YEAR";
-  bottom: 7px;
-  font-size: 6px;
-}
-.number-card:nth-child(4) .number-gauge i { display: none; }
+.number-card:nth-child(4) .number-gauge::after { content: "YEAR"; }
 .number-card strong {
   position: relative;
   z-index: 1;

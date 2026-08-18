@@ -94,6 +94,12 @@ export const carLocalizationMessages = {
   "vehicle.feature.mWheels19": entry("Легкосплавные диски M R19", "19-calowe felgi aluminiowe M", "19-inch M alloy wheels"),
   "vehicle.feature.mSportPackage": entry("Пакет M Sport", "Pakiet M Sport", "M Sport package"),
   "vehicle.feature.adaptiveMSuspension": entry("Адаптивная подвеска M", "Adaptacyjne zawieszenie M", "Adaptive M suspension"),
+  "vehicle.feature.distanceWarning": entry("Система предупреждения о дистанции", "System ostrzegania o odległości", "Distance warning system"),
+  "vehicle.feature.garminNavigation": entry("Навигация Garmin MAP Pilot", "Nawigacja Garmin MAP Pilot", "Garmin MAP Pilot navigation"),
+  "vehicle.feature.audio20": entry("Аудиосистема Audio 20", "System audio Audio 20", "Audio 20 sound system"),
+  "vehicle.feature.touchscreen8": entry("Сенсорный экран 8 дюймов", "Ekran dotykowy 8 cali", "8-inch touchscreen"),
+  "vehicle.feature.activeParkingAssist": entry("Активный парковочный ассистент", "Aktywny asystent parkowania", "Active Parking Assist"),
+  "vehicle.feature.luggagePackage": entry("Пакет багажного отделения", "Pakiet bagażowy", "Luggage package"),
   "vehicle.equipmentGroup.comfort": entry("Комфорт", "Komfort", "Comfort"),
   "vehicle.equipmentGroup.safety": entry("Безопасность", "Bezpieczeństwo", "Safety"),
   "vehicle.equipmentGroup.multimedia": entry("Мультимедиа", "Multimedia", "Multimedia"),
@@ -258,6 +264,15 @@ export const carLocalizationMessages = {
   "vehicle.condition.runningCondition": entry("Состояние на площадке", "Stan na placu", "Condition at the facility"),
   "vehicle.condition.taxStatus": entry("Налоговый статус", "Status podatkowy", "Tax status"),
   "vehicle.condition.serviceHistory": entry("Сервисная история", "Historia serwisowa", "Service history"),
+  "vehicle.condition.owners": entry("Владельцы", "Właściciele", "Owners"),
+  "vehicle.country.germany": entry("Германия", "Niemcy", "Germany"),
+  "vehicle.source.germanDealer": entry("Немецкий дилер", "Niemiecki dealer", "German dealer"),
+  "vehicle.gla.service.transmissionOil": entry("Замена масла в автоматической коробке передач.", "Wymiana oleju w automatycznej skrzyni biegów.", "Automatic-transmission oil replacement."),
+  "vehicle.gla.service.battery": entry("Замена пускового аккумулятора.", "Wymiana akumulatora rozruchowego.", "Starter-battery replacement."),
+  "vehicle.gla.service.brakeFluid": entry("Замена тормозной жидкости.", "Wymiana płynu hamulcowego.", "Brake-fluid replacement."),
+  "vehicle.gla.service.oilFilters": entry("Замена моторного масла, воздушного и салонного фильтров.", "Wymiana oleju silnikowego oraz filtrów powietrza i kabinowego.", "Engine-oil, air-filter and cabin-filter replacement."),
+  "vehicle.gla.service.frontBrakes": entry("Замена передних тормозных дисков, колодок и датчика износа.", "Wymiana przednich tarcz i klocków hamulcowych oraz czujnika zużycia.", "Front brake discs, pads and wear sensor replaced."),
+  "vehicle.gla.service.full": entry("Замена моторного масла и фильтра, воздушного и салонного фильтров, а также свечей зажигания.", "Wymiana oleju i filtra silnika, filtrów powietrza i kabinowego oraz świec zapłonowych.", "Engine oil and filter, air and cabin filters, and spark plugs replaced."),
   "vehicle.location.dealershipStock": entry("В наличии на площадке Atlant Auto", "Dostępny na placu Atlant Auto", "Available at the Atlant Auto site"),
   "vehicle.location.inTransit": entry("В пути в Atlant Auto", "W drodze do Atlant Auto", "In transit to Atlant Auto"),
   "vehicle.location.recentlySold": entry("Недавно продано", "Niedawno sprzedany", "Recently sold"),
@@ -417,11 +432,40 @@ const rawFeaturePairs = [
   ,["Легкосплавные диски M R19", "vehicle.feature.mWheels19"]
   ,["Пакет M Sport", "vehicle.feature.mSportPackage"]
   ,["Адаптивная подвеска M", "vehicle.feature.adaptiveMSuspension"]
+  ,["Система предупреждения о дистанции", "vehicle.feature.distanceWarning"]
+  ,["Навигация Garmin MAP Pilot", "vehicle.feature.garminNavigation"]
+  ,["Аудиосистема Audio 20", "vehicle.feature.audio20"]
+  ,["Сенсорный экран 8 дюймов", "vehicle.feature.touchscreen8"]
+  ,["Активный парковочный ассистент", "vehicle.feature.activeParkingAssist"]
+  ,["Пакет багажного отделения", "vehicle.feature.luggagePackage"]
 ];
 
 export const featureKeyByRussian = new Map(rawFeaturePairs);
 
 export const localizedCarDetails = {
+  "mercedes-benz-gla-200-urban-2018-101662": {
+    bodyKey: "vehicle.body.crossover",
+    color: { ru: "Серый Mountain Grey Metallic", pl: "Szary Mountain Grey Metallic", en: "Mountain Grey Metallic" },
+    registrationCountryKey: "vehicle.country.germany",
+    sourceKey: "vehicle.source.germanDealer",
+    serviceKeys: [
+      "vehicle.gla.service.transmissionOil",
+      "vehicle.gla.service.battery",
+      "vehicle.gla.service.brakeFluid",
+      "vehicle.gla.service.oilFilters",
+      "vehicle.gla.service.frontBrakes",
+      "vehicle.gla.service.full"
+    ],
+    condition: [
+      ["vehicle.condition.location", "vehicle.location.dealershipStock"],
+      ["vehicle.field.mileage", { ru: "101 662 км", pl: "101 662 km", en: "101,662 km" }],
+      ["vehicle.condition.body", { ru: "Карта замеров содержит значения примерно 43–80 мкм без отметок ремонта или повторной окраски", pl: "Karta pomiarów zawiera wartości około 43–80 µm, bez oznaczeń napraw lub ponownego lakierowania", en: "The measurement sheet records approximately 43–80 µm, with no repair or repaint markings" }],
+      ["vehicle.condition.interior", { ru: "Светлый салон в ухоженном состоянии по актуальным фотографиям", pl: "Jasne wnętrze w zadbanym stanie na aktualnych zdjęciach", en: "The light interior appears well cared for in the current photos" }],
+      ["vehicle.condition.serviceHistory", { ru: "Подтверждена документами до 100 300 км", pl: "Potwierdzona dokumentami do przebiegu 100 300 km", en: "Documented through 100,300 km" }],
+      ["vehicle.condition.owners", { ru: "2 по исходному объявлению", pl: "2 według ogłoszenia źródłowego", en: "2 according to the source listing" }]
+    ],
+    documentKeys: []
+  },
   "bmw-x1-sdrive18i-m-sport-2023": {
     bodyKey: "vehicle.body.crossover",
     color: { ru: "Чёрный Black Sapphire Metallic", pl: "Czarny Black Sapphire Metallic", en: "Black Sapphire Metallic" },

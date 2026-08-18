@@ -120,7 +120,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.match(html, /data-filter="all"[\s\S]*data-filter="on-site"[\s\S]*data-filter="in-transit"[\s\S]*data-filter="sold"/, `${relative} must expose all four catalogue filters in order`);
     assert.deepEqual(
       [...html.matchAll(/class="car-card" data-status="([^"]+)"/g)].map((match) => match[1]),
-      ["on-site", "on-site", "on-site", "on-site", "on-site", "in-transit", "in-transit", "in-transit", "sold", "sold", "sold", "sold", "sold", "sold"],
+      ["on-site", "on-site", "on-site", "on-site", "on-site", "on-site", "in-transit", "in-transit", "in-transit", "sold", "sold", "sold", "sold", "sold", "sold"],
       `${relative} must sort on-site vehicles before incoming and sold vehicles`
     );
     assert.match(html, /class="process-roadmap"/, `${relative} lost the purchase roadmap`);
