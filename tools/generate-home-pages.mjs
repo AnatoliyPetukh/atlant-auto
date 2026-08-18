@@ -48,7 +48,10 @@ function auctionSourceBadge(car) {
 }
 
 function carCards(locale) {
-  return cars.map((car) => {
+  const availabilityOrder = { "on-site": 0, "in-transit": 1, sold: 2 };
+  return [...cars].sort((first, second) =>
+    (availabilityOrder[first.availability] ?? 99) - (availabilityOrder[second.availability] ?? 99)
+  ).map((car) => {
     const name = `${car.brand} ${car.model} ${car.version}`;
     const basePrice = car.price == null ? t(locale, "common.priceOnRequest") : `${format(car.price, locale)} ${car.currency}`;
     const price = basePrice;
@@ -59,7 +62,8 @@ function carCards(locale) {
     const statusLabel = t(locale, statusKey(car));
     const ctaLabel = t(locale, sold ? "action.viewDetails" : "action.checkOffer");
     const sourceBadge = auctionSourceBadge(car);
-    return `<article class="car-card" data-status="${sold ? "sold" : "available"}"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
+    const filterStatus = sold ? "sold" : car.availability === "in-transit" ? "in-transit" : "on-site";
+    return `<article class="car-card" data-status="${filterStatus}"><a class="car-card-link" href="${detailUrl}" aria-label="${esc(t(locale, "action.viewVehicle"))}: ${esc(name)}">
       <div class="car-media"><img src="/${car.mainImage.replace(/^(\.\.\/)+/, "")}" alt="${esc(t(locale, "vehicle.gallery.mainAlt", { vehicle: name }))}" width="1280" height="960" loading="lazy"><div class="car-badges"><span class="badge${sold ? " sold" : ""}">${statusLabel}</span>${sourceBadge}</div></div>
       <div class="car-body"><h3>${esc(name)}</h3><div class="compact-specs"><div><span>${year}</span><span>${t(locale, `vehicle.fuel.${car.fuelType}`)}</span><span>${transmission}</span></div><div><span>${format(car.mileageKm, locale)} ${t(locale, "vehicle.unit.kilometres")}</span><span>${format(car.engineCapacityCc, locale)} ${t(locale, "vehicle.unit.cubicCentimetres")}</span></div></div><div class="price-row"><span class="price-block"><span class="price">${esc(price)}</span></span><span class="car-cta"><span>${ctaLabel}</span><span class="car-cta-arrow" aria-hidden="true">→</span></span></div></div>
     </a></article>`;
@@ -89,7 +93,7 @@ function html(locale) {
   <title>${t(locale, "home.seo.title")}</title><meta name="description" content="${t(locale, "home.seo.description")}">
   <link rel="canonical" href="${site.origin}${routes[locale]}">${alternates}
   <meta property="og:type" content="website"><meta property="og:site_name" content="${site.name}"><meta property="og:title" content="${t(locale, "home.seo.title")}"><meta property="og:description" content="${t(locale, "home.seo.description")}"><meta property="og:url" content="${site.origin}${routes[locale]}">
-  <link rel="stylesheet" href="/styles.css?v=20260816-2">
+  <link rel="stylesheet" href="/styles.css?v=20260818-1">
   <script type="application/ld+json">${JSON.stringify(companySchema).replaceAll("<","\\u003c")}</script>
 </head>
 <body>
@@ -98,7 +102,7 @@ function html(locale) {
     <section class="hero"><div class="hero-bg" role="img" aria-label="${t(locale, "home.hero.imageAlt")}"></div><video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/site/hero-atlant-auto.jpg" aria-hidden="true"><source src="/assets/site/hero-atlant-auto.mp4" type="video/mp4"></video><div class="hero-overlay"></div><div class="hero-content"><p class="eyebrow">${t(locale, "home.hero.eyebrow")}</p><h1>${t(locale, "home.hero.title")}</h1><p class="lead">${t(locale, "home.hero.subtitle")}</p><div class="hero-actions"><a class="button primary" href="#request">${t(locale, "home.hero.cta")}</a><a class="button ghost" href="#cars">${t(locale, "home.hero.secondaryCta")}</a></div></div></section>
     <section class="section trust-band"><div><strong>${t(locale, "home.trust.companyTitle")}</strong><span>${t(locale, "home.trust.companyText")}</span></div><div><strong>${t(locale, "home.trust.checkTitle")}</strong><span>${t(locale, "home.trust.checkText")}</span></div><div><strong>${t(locale, "home.trust.supportTitle")}</strong><span>${t(locale, "home.trust.supportText")}</span></div></section>
     <section class="section numbers-section" id="numbers"><header class="numbers-head"><p class="eyebrow">${t(locale, "home.numbers.eyebrow")}</p><h2>${t(locale, "home.numbers.title")}</h2></header><div class="numbers-grid">${numberCards}</div></section>
-    <section class="section cars-section" id="cars"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.catalog.eyebrow")}</p><h2>${t(locale, "home.catalog.title")}</h2></div><div class="filters" aria-label="${t(locale, "home.catalog.filterLabel")}"><button class="filter active" type="button" data-filter="all" aria-pressed="true">${t(locale, "home.catalog.filterAll")}</button><button class="filter" type="button" data-filter="available" aria-pressed="false">${t(locale, "home.catalog.filterAvailable")}</button><button class="filter" type="button" data-filter="sold" aria-pressed="false">${t(locale, "home.catalog.filterSold")}</button></div></div><div class="cars-grid" id="carsGrid">${carCards(locale)}</div><p class="empty-state" data-empty-state hidden>${t(locale, "empty.cars")}</p></section>
+    <section class="section cars-section" id="cars"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.catalog.eyebrow")}</p><h2>${t(locale, "home.catalog.title")}</h2></div><div class="filters" aria-label="${t(locale, "home.catalog.filterLabel")}"><button class="filter active" type="button" data-filter="all" aria-pressed="true">${t(locale, "home.catalog.filterAll")}</button><button class="filter" type="button" data-filter="on-site" aria-pressed="false">${t(locale, "home.catalog.filterAvailable")}</button><button class="filter" type="button" data-filter="in-transit" aria-pressed="false">${t(locale, "home.catalog.filterIncoming")}</button><button class="filter" type="button" data-filter="sold" aria-pressed="false">${t(locale, "home.catalog.filterSold")}</button></div></div><div class="cars-grid" id="carsGrid">${carCards(locale)}</div><p class="empty-state" data-empty-state hidden>${t(locale, "empty.cars")}</p></section>
     <section class="section process-showcase" id="process"><header class="process-intro"><div><p class="eyebrow">${t(locale, "home.process.eyebrow")}</p><h2>${t(locale, "home.process.title")}</h2></div><div><p class="section-text">${t(locale, "home.process.intro")}</p><a class="text-link" href="${process[locale]}">${t(locale, "home.process.more")}</a></div></header><ol class="process-roadmap">${processSteps}</ol></section>
     <section class="platforms-section" id="platforms"><div class="platforms-inner"><header class="platforms-head"><div><p class="eyebrow">${t(locale, "home.platforms.eyebrow")}</p><h2>${t(locale, "home.platforms.title")}</h2></div><p>${t(locale, "home.platforms.intro")}</p></header><div class="platforms-grid">${platformCards}</div><p class="platforms-note">${t(locale, "home.platforms.note")}</p></div></section>
     <section class="advantages-section" id="advantages"><div class="advantages-inner"><header class="advantages-head"><p class="eyebrow">${t(locale, "home.advantages.eyebrow")}</p><h2>${t(locale, "home.advantages.title")}</h2><p>${t(locale, "home.advantages.intro")}</p></header><div class="advantages-grid">${advantages}</div></div></section>
@@ -109,7 +113,7 @@ function html(locale) {
   </main>
   <footer class="footer"><div><a class="brand footer-brand" href="${routes[locale]}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a><p>${t(locale, "footer.tagline")}</p><p>${site.legalName} · NIP ${site.nip}</p></div><address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><a href="${site.telegram}">Telegram</a><span>${site.vehicleLotAddress}</span><a href="${about[locale]}">${t(locale, "footer.companyInfo")}</a><a href="${faqRoute[locale]}">${t(locale, "navigation.faq")}</a><a href="${privacy[locale]}">${t(locale, "footer.privacy")}</a></address></footer>
   <aside class="cookie-banner" data-cookie-banner hidden><div><strong>${t(locale, "cookie.banner.title")}</strong><p>${t(locale, "cookie.banner.description")}</p></div><div class="cookie-actions"><button class="small-button" type="button" data-cookie-choice="essential">${t(locale, "cookie.banner.acceptEssential")}</button><button class="button primary" type="button" data-cookie-choice="all">${t(locale, "cookie.banner.acceptAll")}</button></div></aside>
-  <script src="/app.js?v=20260719-2" defer></script><script src="/js/cookie-consent.js?v=20260719-2" defer></script>
+  <script src="/app.js?v=20260818-1" defer></script><script src="/js/cookie-consent.js?v=20260719-2" defer></script>
 </body></html>`;
 }
 

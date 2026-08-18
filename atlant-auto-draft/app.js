@@ -1,3 +1,14 @@
+const catalogueStatusOrder = { "on-site": 0, "in-transit": 1, sold: 2 };
+
+document.querySelectorAll(".cars-grid").forEach((grid) => {
+  [...grid.querySelectorAll(":scope > .car-card[data-status]")]
+    .sort((first, second) =>
+      (catalogueStatusOrder[first.dataset.status] ?? 99) -
+      (catalogueStatusOrder[second.dataset.status] ?? 99)
+    )
+    .forEach((card) => grid.append(card));
+});
+
 document.querySelectorAll("[data-filter]").forEach((button) => {
   button.addEventListener("click", () => {
     const filter = button.dataset.filter;

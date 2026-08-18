@@ -84,8 +84,8 @@ test("every branded page uses the Atlant Auto wordmark", () => {
   walk(siteRoot);
 
   const styles = fs.readFileSync(path.join(siteRoot, "styles.css"), "utf8");
-  assert.match(styles, /\.brand\s*\{[\s\S]*?width:\s*224px;/, "desktop wordmark must remain readable in the header");
-  assert.match(styles, /@media \(max-width: 680px\)[\s\S]*?\.brand\s*\{[^}]*width:\s*168px;/, "mobile wordmark must remain readable without crowding the language switcher");
+  assert.match(styles, /\.brand\s*\{[\s\S]*?width:\s*188px;/, "desktop wordmark must remain readable in the header");
+  assert.match(styles, /@media \(max-width: 680px\)[\s\S]*?\.brand\s*\{[^}]*width:\s*148px;/, "mobile wordmark must remain readable without crowding the language switcher");
 });
 
 test("generated pages keep the responsive layout contract", () => {
@@ -117,6 +117,12 @@ test("generated pages keep the responsive layout contract", () => {
     const html = fs.readFileSync(path.join(siteRoot, relative), "utf8");
     assert.match(html, /class="cars-grid"/, `${relative} lost the catalogue grid`);
     assert.match(html, /class="car-card-link"/, `${relative} lost clickable vehicle cards`);
+    assert.match(html, /data-filter="all"[\s\S]*data-filter="on-site"[\s\S]*data-filter="in-transit"[\s\S]*data-filter="sold"/, `${relative} must expose all four catalogue filters in order`);
+    assert.deepEqual(
+      [...html.matchAll(/class="car-card" data-status="([^"]+)"/g)].map((match) => match[1]),
+      ["on-site", "on-site", "on-site", "on-site", "in-transit", "in-transit", "in-transit", "sold", "sold", "sold", "sold", "sold", "sold"],
+      `${relative} must sort on-site vehicles before incoming and sold vehicles`
+    );
     assert.match(html, /class="process-roadmap"/, `${relative} lost the purchase roadmap`);
     assert.equal((html.match(/class="process-card"/g) || []).length, 5, `${relative} must show five process stages`);
     assert.match(html, /class="advantages-grid"/, `${relative} lost the advantages section`);

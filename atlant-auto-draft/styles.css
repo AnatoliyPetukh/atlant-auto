@@ -30,12 +30,12 @@ button, input, select, textarea { font: inherit; }
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(188px, 1fr) auto minmax(188px, 1fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 22px;
+  gap: 28px;
   min-height: 72px;
-  padding: 12px clamp(18px, 4vw, 56px);
+  padding: 12px max(18px, calc((100vw - 1180px) / 2));
   background: rgba(255, 255, 255, .9);
   border-bottom: 1px solid rgba(217, 222, 228, .8);
   backdrop-filter: blur(16px);
@@ -43,22 +43,24 @@ button, input, select, textarea { font: inherit; }
 
 .brand {
   display: inline-flex;
-  flex: 0 0 224px;
+  flex: 0 0 188px;
   align-items: center;
-  width: 224px;
+  width: 188px;
   min-width: 0;
 }
+.topbar > .brand { grid-column: 1; justify-self: start; }
 .brand-wordmark { display: block; width: 100%; min-width: 0; line-height: 0; }
 .brand-wordmark img {
   display: block;
   width: 100%;
   max-width: 100%;
   height: auto;
-  max-height: 47px;
+  max-height: 39px;
   object-fit: contain;
   object-position: left center;
 }
 .nav { display: flex; gap: clamp(12px, 2vw, 28px); color: #2a3138; font-size: 14px; font-weight: 500; }
+.topbar > .nav { grid-column: 2; justify-self: center; }
 .nav a:hover, .text-link:hover { color: var(--green); }
 .top-action {
   padding: 11px 16px;
@@ -548,45 +550,145 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  padding: 14px;
+  padding: 15px;
   border: 1px solid #2b3541;
   border-radius: 20px;
-  background: linear-gradient(145deg, #151d27, #090e14);
-  box-shadow: 0 22px 50px rgba(11,18,27,.22), inset 0 1px rgba(255,255,255,.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent 16%),
+    linear-gradient(145deg, #151d27, #090e14);
+  box-shadow:
+    0 22px 50px rgba(11,18,27,.22),
+    inset 0 1px rgba(255,255,255,.09),
+    inset 0 -1px rgba(0,0,0,.7);
 }
 .number-card {
+  --gauge-progress: 42%;
   position: relative;
   display: grid;
-  min-height: 176px;
-  padding: 25px 22px 22px;
+  min-height: 190px;
+  padding: 28px 22px 22px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.1);
   border-radius: 14px;
-  background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015));
-  box-shadow: inset 0 1px rgba(255,255,255,.06);
+  background:
+    radial-gradient(circle at 82% 24%, rgba(202,161,90,.09), transparent 28%),
+    linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015));
+  box-shadow: inset 0 1px rgba(255,255,255,.06), inset 0 -24px 35px rgba(0,0,0,.08);
 }
+.number-card::after {
+  content: "";
+  position: absolute;
+  right: 22px;
+  bottom: 16px;
+  left: 22px;
+  height: 1px;
+  opacity: .55;
+  background: linear-gradient(90deg, var(--gold), transparent 70%);
+}
+.number-card:nth-child(1) { --gauge-progress: 31%; }
+.number-card:nth-child(2) { --gauge-progress: 43%; }
+.number-card:nth-child(3) { --gauge-progress: 57%; }
 .number-gauge {
   position: absolute;
-  top: 19px;
-  right: 18px;
-  width: 78px;
-  height: 78px;
+  top: 18px;
+  right: 17px;
+  width: 94px;
+  height: 94px;
   border-radius: 50%;
-  background: conic-gradient(from 225deg, var(--gold) 0 58%, rgba(255,255,255,.1) 58% 75%, transparent 75%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
+  background:
+    radial-gradient(circle, #121a24 0 59%, transparent 60%),
+    conic-gradient(from 225deg, var(--gold) 0 var(--gauge-progress), rgba(255,255,255,.1) var(--gauge-progress) 75%, transparent 75% 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset 0 0 18px rgba(0,0,0,.72),
+    0 7px 18px rgba(0,0,0,.28);
+}
+.number-gauge::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  z-index: 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 225deg, rgba(255,255,255,.56) 0 1.2deg, transparent 1.2deg 10deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 0);
+}
+.number-gauge::after {
+  content: "GAUGE";
+  position: absolute;
+  right: 0;
+  bottom: 15px;
+  left: 0;
+  z-index: 3;
+  color: rgba(255,255,255,.42);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  line-height: 1;
+  text-align: center;
 }
 .number-gauge i {
   position: absolute;
   inset: 50% auto auto 50%;
-  width: 3px;
-  height: 31px;
+  z-index: 2;
+  width: 2px;
+  height: 34px;
   border-radius: 3px;
-  background: #f7f1df;
-  box-shadow: 0 0 9px rgba(255,255,255,.55);
+  background: linear-gradient(#fff8e8, var(--gold));
+  box-shadow: 0 0 8px rgba(202,161,90,.78);
   transform: translate(-50%, -100%) rotate(var(--gauge-angle));
   transform-origin: 50% 100%;
 }
+.number-gauge i::after {
+  content: "";
+  position: absolute;
+  right: 50%;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #d9b66f;
+  border-radius: 50%;
+  background: #101720;
+  box-shadow: 0 0 0 3px rgba(0,0,0,.28);
+  transform: translateX(50%);
+}
+.number-card:nth-child(1) .number-gauge::after { content: "STOCK"; }
+.number-card:nth-child(2) .number-gauge::after { content: "ROUTE"; }
+.number-card:nth-child(3) .number-gauge::after { content: "CLIENT"; }
+.number-card:nth-child(4) .number-gauge {
+  top: 26px;
+  width: 108px;
+  height: 62px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 9px;
+  background: linear-gradient(180deg, #080c11, #111923);
+  box-shadow: inset 0 0 18px rgba(0,0,0,.9), 0 7px 18px rgba(0,0,0,.3);
+}
+.number-card:nth-child(4) .number-gauge::before {
+  content: "00098";
+  inset: 10px 8px auto;
+  height: 27px;
+  -webkit-mask: none;
+  mask: none;
+  border: 1px solid rgba(202,161,90,.22);
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, transparent 0 17px, rgba(255,255,255,.07) 17px 18px);
+  color: #f0d493;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  line-height: 25px;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(202,161,90,.45);
+}
+.number-card:nth-child(4) .number-gauge::after {
+  content: "ODO  /  YEAR";
+  bottom: 7px;
+  font-size: 6px;
+}
+.number-card:nth-child(4) .number-gauge i { display: none; }
 .number-card strong {
   position: relative;
   z-index: 1;
@@ -605,7 +707,7 @@ h3 { margin: 0; color: var(--heading); font-size: 22px; font-weight: 600; line-h
   display: block;
   align-self: end;
   max-width: 220px;
-  margin-top: 17px;
+  margin-top: 20px;
   color: rgba(255,255,255,.66);
   font-size: 14px;
   font-weight: 600;
@@ -941,6 +1043,7 @@ address a:hover { color: white; }
   gap: 4px;
   align-items: center;
 }
+.topbar > .language-nav { grid-column: 3; justify-self: end; }
 .language-nav a {
   padding: 7px 8px;
   border-radius: 6px;
@@ -1175,10 +1278,10 @@ address a:hover { color: white; }
 }
 
 @media (max-width: 680px) {
-  .topbar { min-height: 64px; padding-inline: 14px; }
+  .topbar { grid-template-columns: auto 1fr auto; min-height: 64px; padding-inline: 14px; }
   .top-action { padding: 10px 12px; font-size: 13px; }
-  .brand { width: 168px; flex-basis: 168px; }
-  .brand-wordmark img { max-height: 35px; }
+  .brand { width: 148px; flex-basis: 148px; }
+  .brand-wordmark img { max-height: 31px; }
   .hero { min-height: 760px; }
   .hero-content { width: min(100% - 28px, 1180px); padding-bottom: 28px; }
   .lead { font-size: 16px; }

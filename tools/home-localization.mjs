@@ -26,6 +26,7 @@ export const homeLocalizationMessages = {
   "home.catalog.filterLabel": entry("Фильтр автомобилей", "Filtr samochodów", "Vehicle filter"),
   "home.catalog.filterAll": entry("Все", "Wszystkie", "All"),
   "home.catalog.filterAvailable": entry("В продаже", "Dostępne", "Available"),
+  "home.catalog.filterIncoming": entry("Скоро в наличии", "Wkrótce", "Coming soon"),
   "home.catalog.filterSold": entry("Продано", "Sprzedane", "Sold"),
   "home.process.eyebrow": entry("Процесс", "Proces", "Process"),
   "home.process.title": entry("От первого разговора до передачи ключей", "Od pierwszej rozmowy do odbioru auta", "From the first conversation to handover"),
