@@ -1,0 +1,13 @@
+# ERP employee session binding
+
+A viewer signs in with the existing protected ERP login, then confirms an employee key once using the `Подключить сотрудника на время сессии` panel or an existing action form. Successful confirmation rotates the PHP session ID. The server stores only employee actor, the key's SHA-256 fingerprint, and confirmation time. The original employee key is not stored in cookies, HTML, browser storage or the server session.
+
+The existing Secure/HttpOnly/SameSite=Lax, `/drafts/`-scoped session cookie is unchanged. Viewer authentication is required for every ERP action. Session remains subject to the existing 30-minute inactivity limit and eight-hour absolute viewer limit; employee binding also expires after eight hours. Current employee-key hashes are read and the binding is revalidated on each request. Removing or rotating a key invalidates the binding on the next request. Explicit disconnect removes the employee binding and rotates the session ID while retaining viewer access. Logout clears the entire session. A fresh login never inherits the prior employee identity.
+
+All ERP mutations still require CSRF; connection and disconnection are also POST+CSRF. Invalid submitted keys are rejected even when a session is already bound. Eight failed key confirmations per IP per 15 minutes are rate limited in a separate employee bucket. Owner-only publication, unpublication and changes to published vehicles remain enforced by server-side roles. Source extension endpoints continue to require Bearer employee keys and do not accept viewer cookies as replacement authorization.
+
+Forms for website/status, document/media upload, comments, description generation and ERP Telegram use the verified session identity and no longer show employee-key inputs after connection. ERP Telegram retains origin, CSRF, source/photo validation and outgoing-message idempotency. No API key, bot token or employee plaintext key is added to frontend scripts.
+
+Tests: `php tools/employee-session.test.php "$PWD/api/employee-session.php"` covers raw-key exclusion, identity, expiry, logout, disconnect, rotation, revocation, bad keys and future timestamps. Live HTTP checks used temporary authenticated sessions to confirm all six forms omit key inputs, CSRF failures do not connect, session IDs rotate, staff cannot publish, logout/relogin does not retain employee, and extension authentication is unchanged. Telegram checks used invalid photo IDs and a disallowed origin so no messages could be sent. No vehicle records were changed.
+
+Deployment rollback: private server archive `private/erp-before-employee-session.tar.gz`. The new shared helper lives in HTTP-denied `internal-api/employee-session.php`.

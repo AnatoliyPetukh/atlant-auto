@@ -3,7 +3,7 @@ declare(strict_types=1);
 // Install as /drafts/index.php; every route, including assets, requires a session.
 define('ATLANT_DRAFT_VIEWER',true);require dirname(__DIR__).'/internal-api/draft-viewer-auth.php';
 if (!$viewerSignedIn) {header('Location: /drafts/login.php?next='.rawurlencode(viewerNext((string)($_SERVER['REQUEST_URI']??'/drafts/'))),true,302);exit;}
-$viewerCsrfToken=$_SESSION['csrf'];session_write_close();
+$viewerCsrfToken=$_SESSION['csrf'];
 header('Cache-Control: no-store');header('X-Content-Type-Options: nosniff');header('Referrer-Policy: no-referrer');
 header("Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; form-action 'self'; script-src 'self'; base-uri 'none'; frame-ancestors 'none'");
 define('ATLANT_DRAFT_STORE',true);require dirname(__DIR__).'/internal-api/draft-store.php';require dirname(__DIR__).'/internal-api/product-store.php';require dirname(__DIR__).'/internal-api/erp-store.php';require dirname(__DIR__).'/internal-api/ai-store.php';
@@ -12,11 +12,16 @@ $productError='';$productNotice='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  try{
   if(!viewerCsrf())throw new InvalidArgumentException('Форма устарела. Обновите страницу.');
-  if(!defined('ATLANT_TELEGRAM_SERVER'))define('ATLANT_TELEGRAM_SERVER',true);$productConfig=require dirname(__DIR__).'/.atlant-internal/telegram-draft-config.php';
-  $key=(string)($_POST['employee_key']??'');$actor=null;
-  if(preg_match('/^[A-Za-z0-9_-]{32,128}$/D',$key))foreach(($productConfig['employee_key_hashes']??[])as$name=>$hash)if(hash_equals($hash,hash('sha256',$key)))$actor=(string)$name;
-  unset($key);if($actor===null)throw new InvalidArgumentException('Нужен действующий ключ сотрудника.');
-  $id=draftId((string)($_GET['id']??''));$action=$_POST['product_action']??'';
+  $action=(string)($_POST['product_action']??'');
+  if($action==='employee_disconnect'){
+   employeeForget($_SESSION);session_regenerate_id(true);session_write_close();header('Location: '.viewerNext((string)($_SERVER['REQUEST_URI']??'/drafts/')),true,303);exit;
+  }
+  $actor=viewerConfirmEmployee(is_string($_POST['employee_key']??null)?$_POST['employee_key']:'');
+  if($action==='employee_connect'){
+   session_write_close();header('Location: '.viewerNext((string)($_SERVER['REQUEST_URI']??'/drafts/')),true,303);exit;
+  }
+  session_write_close();
+  $id=draftId((string)($_GET['id']??''));
   if(in_array($action,['publish','unpublish'],true)&&$actor!=='owner')throw new InvalidArgumentException('Для публикации нужен ключ владельца owner.');
   if($action==='generate'){
    aiEnqueue($id,$_POST['ai_pdf_ids']??[],$actor,($_POST['ai_consent']??'')==='1');header('Location: ?id='.$id.'&section=generator&done=1',true,303);exit;
@@ -37,6 +42,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   header('Location: ?id='.rawurlencode($id).'&section=website&saved=1#product-editor',true,303);exit;
  }catch(InvalidArgumentException|DomainException|OutOfBoundsException $err){$productError=$err->getMessage();}catch(Throwable $err){$productError='Не удалось сохранить карточку. Обновите страницу и проверьте результат.';}
 }
+if(session_status()===PHP_SESSION_ACTIVE)session_write_close();
 if(isset($_GET['saved']))$productNotice='Карточка сохранена. Текущее состояние публикации указано ниже.';
 try {
     if (isset($_GET['asset'])) draftServeAsset((string)$_GET['asset']);
@@ -55,6 +61,10 @@ try {
 <style>
 :root{font:16px/1.55 system-ui,sans-serif;color:#172934;background:#f2f5f7}*{box-sizing:border-box}body{margin:0}header{background:#132e3b;color:white;padding:22px max(24px,calc((100vw - 1180px)/2));display:flex;justify-content:space-between;gap:20px}header a{color:#fff}main{max-width:1228px;padding:28px 24px;margin:auto}h1{font-size:32px;line-height:1.2;margin:12px 0}h2{font-size:21px;margin-top:32px}a{color:#087987;text-underline-offset:3px}.muted{color:#617783}.tag{display:inline-block;border-radius:20px;background:#d9eef0;color:#16626a;padding:3px 12px;font-size:13px}.panel{background:white;border:1px solid #dce5e9;border-radius:14px;padding:22px;margin:18px 0}.search{display:flex;gap:12px}input{font:inherit;padding:12px;border:1px solid #bacbd2;border-radius:8px;flex:1;min-width:0}button,.button{display:inline-block;font:inherit;background:#0b7c87;color:#fff;border:0;border-radius:8px;padding:12px 18px;text-decoration:none;cursor:pointer}table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:14px 12px;border-bottom:1px solid #e3e9ed}th{font-size:13px;color:#617783}small{font-size:13px}code{overflow-wrap:anywhere}dl{display:grid;grid-template-columns:200px 1fr;gap:8px 18px}dt{color:#617783}dd{margin:0;overflow-wrap:anywhere}.photos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.photos a{background:#fff;border:1px solid #dce5e9;border-radius:12px;padding:8px;overflow:hidden}.photos img{width:100%;height:165px;object-fit:cover;border-radius:7px}.scroll{overflow:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.5 monospace}.event{padding:12px 0;border-bottom:1px solid #e3e9ed}summary{cursor:pointer;font-weight:600}.nav{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin:20px 0}@media(max-width:800px){.photos{grid-template-columns:repeat(2,1fr)}dl{grid-template-columns:1fr}dd{margin-bottom:8px}header{padding:18px 24px}h1{font-size:26px}.photos img{height:125px}}textarea{display:block;width:100%;padding:12px;font:inherit;border:1px solid #bacbd2;border-radius:8px}select{padding:10px;font:inherit}label{display:block;margin:12px 0}.photos label{background:white;padding:10px;border:1px solid #dce5e9;border-radius:10px}.option-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}input[type=checkbox]{flex:none}fieldset{border:1px solid #dce5e9;border-radius:8px}button:disabled{opacity:.5;cursor:default}.entity-nav a[aria-current=page]{font-weight:700;color:#172934}.vin{font-size:16px;letter-spacing:.035em}</style>
 <header><b>ATLANT AUTO</b><span>ERP по VIN · <a href="./">Реестр автомобилей</a> · <a href="?view=title-corrections">Названия для робота</a> <form action="/drafts/login.php" method="post" style="display:inline"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="action" value="logout"><button style="padding:4px 10px;margin-left:10px">Выйти</button></form></span></header><main>
+<details class="panel" id="employee-session" <?=$viewerEmployee===null?'open':''?>><summary><?=$viewerEmployee===null?'Подключить сотрудника на время сессии':'Сотрудник: '.e($viewerEmployee).' · подтверждён'?></summary>
+<?php if($viewerEmployee===null):?><p>Введите ключ один раз. Сервер запомнит сотрудника и права до выхода, 30 минут бездействия или окончания сессии (не более 8 часов). Сам ключ не сохраняется в браузере или сессии.</p><form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="employee_connect"><?php viewerEmployeeField();?><button>Подтвердить сотрудника</button></form>
+<?php else:?><p>Действия выполняются от имени <b><?=e($viewerEmployee)?></b>. Доступ проверяется при каждом запросе. Для смены сотрудника отключите это подтверждение.</p><form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="employee_disconnect"><button>Отключить сотрудника</button></form><?php endif;?></details>
+<?php if($productError&&in_array($_POST['product_action']??'',['employee_connect','employee_disconnect'],true)):?><p class="panel" role="alert"><?=e($productError)?></p><?php endif;?>
 <?php if (($_GET['view']??'')==='title-corrections'): require dirname(__DIR__).'/internal-api/title-corrections-view.php'; elseif (!$detail): ?>
 <span class="tag">Внутренняя работа</span><h1>ERP · реестр автомобилей</h1><p class="muted">Одна запись по VIN: исходные данные, документы, фотографии, состояние и история. Расширение только загружает материалы. Состояние и сайт управляются здесь. Первая публикация — отдельное действие владельца.</p>
 <nav class="nav" aria-label="Состояния ERP"><a href="?">Все</a><a href="?state=incoming">Новые загрузки</a><?php foreach(productErpStates() as $key=>$label):?><a href="?state=<?=e($key)?>"><?=e($label)?></a><?php endforeach;?></nav>
@@ -78,7 +88,7 @@ try {
 
 <?php elseif(in_array($section,['documents','media'],true)):require dirname(__DIR__).'/internal-api/erp-files.php'; ?>
 <?php elseif($section==='comments'):?>
-<section class="panel"><h2>Внутренние комментарии</h2><form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="note"><label>Комментарий<textarea name="note_body" rows="4" maxlength="4000" required></textarea></label><label>Ключ сотрудника <input type="password" name="employee_key" autocomplete="off" required></label><button>Добавить комментарий</button></form><p class="muted">Комментарии не включаются в карточку сайта или сообщение бота.</p></section>
+<section class="panel"><h2>Внутренние комментарии</h2><form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="note"><label>Комментарий<textarea name="note_body" rows="4" maxlength="4000" required></textarea></label><?php viewerEmployeeField();?><button>Добавить комментарий</button></form><p class="muted">Комментарии не включаются в карточку сайта или сообщение бота.</p></section>
 <?php foreach(erpVehicleNotes($detail['id']) as $note):?><article class="panel"><small><?=e($note['actor'])?> · <?=e(erpDate($note['created_at']))?></small><p><?=nl2br(e($note['body']))?></p></article><?php endforeach;?>
 <?php elseif($section==='telegram'):require dirname(__DIR__).'/internal-api/erp-telegram-view.php'; ?>
 <?php elseif($section==='generator'):if($productError):?><p class="panel" role="alert"><?=e($productError)?></p><?php endif;require dirname(__DIR__).'/internal-api/ai-view.php'; ?>

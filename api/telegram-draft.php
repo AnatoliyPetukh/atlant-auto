@@ -26,7 +26,6 @@ $erpMode=defined('ATLANT_ERP_TELEGRAM');
 if($erpMode){
     define('ATLANT_DRAFT_VIEWER',true);require __DIR__.'/draft-viewer-auth.php';
     if(!$viewerSignedIn||!viewerCsrf())reply(403,['ok'=>false,'error'=>'Сессия или форма устарела. Откройте ERP и повторите после проверки чата.']);
-    session_write_close();
 }
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if ($origin !== '') {
@@ -38,13 +37,16 @@ if ($origin !== '') {
 }
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') reply(405, ['ok'=>false,'error'=>'POST required']);
-$auth = $erpMode?'Bearer '.(string)($_POST['employee_key']??''):($_SERVER['HTTP_AUTHORIZATION'] ?? '');
-if (!preg_match('/^Bearer ([A-Za-z0-9_-]{32,128})$/D', $auth, $m)) reply(401, ['ok'=>false,'error'=>'Нужен ключ сотрудника.']);
-$employee = null;
-foreach (($config['employee_key_hashes'] ?? []) as $name=>$hash) {
-    if (hash_equals($hash, hash('sha256', $m[1]))) $employee = (string)$name;
+if($erpMode){
+ try{$employee=viewerConfirmEmployee(is_string($_POST['employee_key']??null)?$_POST['employee_key']:'');}catch(InvalidArgumentException $e){reply(401,['ok'=>false,'error'=>$e->getMessage()]);}
+ session_write_close();
+}else{
+ $auth=$_SERVER['HTTP_AUTHORIZATION']??'';
+ if(!preg_match('/^Bearer ([A-Za-z0-9_-]{32,128})$/D',$auth,$m))reply(401,['ok'=>false,'error'=>'Нужен ключ сотрудника.']);
+ $employee=null;foreach(($config['employee_key_hashes']??[])as$name=>$hash)if(hash_equals($hash,hash('sha256',$m[1])))$employee=(string)$name;
+ if($employee===null)reply(401,['ok'=>false,'error'=>'Ключ сотрудника не принят.']);
+ unset($auth,$m);
 }
-if ($employee === null) reply(401, ['ok'=>false,'error'=>'Ключ сотрудника не принят.']);
 $token = $config['bot_token'] ?? '';
 $chat = (string)($config['chat_id'] ?? '');
 if (!preg_match('/^[0-9]+:[A-Za-z0-9_-]+$/D', $token) || !preg_match('/^-[0-9]+$/D', $chat)) reply(503, ['ok'=>false,'error'=>'Закрытый чат бота не настроен.']);
