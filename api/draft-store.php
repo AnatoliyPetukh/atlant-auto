@@ -90,10 +90,11 @@ function draftDetail(string $id): array {
 }
 function draftUpload(string $id,array $file,string $kind,string $source,string $actor): array {
     draftFind($id);
-    if (!in_array($kind,['vehicle','damage','inspection','partslink','document'],true)) throw new InvalidArgumentException('Некорректный тип файла.');
+    if (!in_array($kind,['vehicle','on_site','damage','inspection','partslink','document'],true)) throw new InvalidArgumentException('Некорректный тип файла.');
     if (strlen($source)>2048 || is_array($file['error']??null) || ($file['error']??-1)!==UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name']??'') || ($file['size']??0)<=0 || $file['size']>20*1024*1024) throw new InvalidArgumentException('Файл не загружен или больше 20 МБ.');
     $mime=(new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
     if (!in_array($mime,['image/jpeg','image/png','image/webp','application/pdf'],true)) throw new InvalidArgumentException('Разрешены JPEG, PNG, WebP и PDF.');
+    if ($kind==='on_site'&&!in_array($mime,['image/jpeg','image/png','image/webp'],true))throw new InvalidArgumentException('Для площадки нужны фотографии.');
     if (str_starts_with($mime,'image/')) {
         $size=@getimagesize($file['tmp_name']);if (!$size || $size[0]*$size[1]>50000000) throw new InvalidArgumentException('Некорректные размеры изображения.');
     }

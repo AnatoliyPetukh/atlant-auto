@@ -7,7 +7,7 @@ await import("../data/cars.js");
 const cars = global.window.ATLANT_CARS;
 
 test("catalog has unique ids and slugs", () => {
-  assert.ok(cars.length > 0);
+  assert.ok(Array.isArray(cars));
   assert.equal(new Set(cars.map((car) => car.id)).size, cars.length);
   assert.equal(new Set(cars.map((car) => car.slug)).size, cars.length);
 });
@@ -41,19 +41,12 @@ test("structured values do not contain display sentinels", () => {
 test("catalog vehicles do not store VIN values", () => {
   for (const car of cars) assert.equal(Object.hasOwn(car, "vin"), false, car.slug);
 
-  const currentCars = cars.filter((car) => ["on-site", "in-transit"].includes(car.availability));
-  assert.equal(currentCars.length, 9);
-  assert.equal(currentCars.filter((car) => car.availability === "in-transit").length, 3);
-  for (const car of currentCars.filter((car) => car.auctionSource)) {
-    assert.ok(["Arval", "Automotive Trade Center", "mobile.de"].includes(car.auctionSource), car.slug);
-  }
-  assert.equal(currentCars.filter((car) => car.auctionSource === "Automotive Trade Center").length, 1);
-  assert.equal(currentCars.filter((car) => car.auctionSource === "mobile.de").length, 2);
+
 });
 
 test("historic vehicles are marked as recently sold with transparent estimates", () => {
   const soldCars = cars.filter((car) => car.status === "sold");
-  assert.equal(soldCars.length, 6);
+
   for (const car of soldCars) {
     assert.equal(car.availability, "sold", car.slug);
     assert.equal(car.priceType, "market-estimate", car.slug);
@@ -61,4 +54,8 @@ test("historic vehicles are marked as recently sold with transparent estimates",
     assert.equal(car.currency, "PLN", car.slug);
     assert.ok(car.price > 0, car.slug);
   }
+});
+
+test("legacy vehicles are absent from the public catalogue", () => {
+ assert.equal(cars.length,0);
 });

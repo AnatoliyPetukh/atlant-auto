@@ -51,6 +51,7 @@ function auctionSourceBadge(car, locale) {
 }
 
 function carCards(locale) {
+  if (!cars.length) return `<p style="grid-column:1/-1"><a class="button primary" href="/pl/oferty/">${locale==='pl'?'Zobacz aktualne oferty':'View current offers'}</a></p>`;
   const availabilityOrder = { "on-site": 0, "in-transit": 1, sold: 2 };
   return [...cars].sort((first, second) =>
     (availabilityOrder[first.availability] ?? 99) - (availabilityOrder[second.availability] ?? 99)

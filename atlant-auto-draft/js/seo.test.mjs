@@ -87,7 +87,7 @@ test("all JSON-LD blocks parse and contain no aggregateRating", () => {
 test("sitemap contains only existing canonical indexable pages", () => {
   const sitemap = read(path.join(root, "sitemap.xml"));
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  assert.ok(locations.length > 20, "sitemap should include Polish and English SEO pages");
+  for (const route of ["/pl/", "/en/", "/pl/samochody/", "/en/cars/"]) assert.ok(locations.includes(origin+route), "Missing main localized route: "+route);
   for (const location of locations) {
     const route = new URL(location).pathname;
     const file = route === "/" ? path.join(root, "index.html")

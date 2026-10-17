@@ -83,7 +83,7 @@ test("vehicle VINs are absent from every public page", () => {
 
 test("every generated vehicle detail page includes the condition limitation", () => {
   const vehiclePages = htmlFiles.filter((file) => /\/(?:pl\/samochody|en\/cars)\/[^/]+\/index\.html$/.test(file));
-  assert.ok(vehiclePages.length > 0);
+  assert.equal(vehiclePages.length, 0, "Retired static vehicle pages must not remain public");
   for (const file of vehiclePages) {
     const html = fs.readFileSync(file, "utf8");
     assert.match(html, /class="condition-disclaimer"/, path.relative(root, file));

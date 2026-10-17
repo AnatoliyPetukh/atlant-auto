@@ -125,11 +125,11 @@ test("generated pages keep the responsive layout contract", () => {
     const html = fs.readFileSync(path.join(siteRoot, relative), "utf8");
     assert.doesNotMatch(html, /Telegram|t\.me\/atlantautopl/i, `${relative} must not publish Telegram contact details`);
     assert.match(html, /class="cars-grid"/, `${relative} lost the catalogue grid`);
-    assert.match(html, /class="car-card-link"/, `${relative} lost clickable vehicle cards`);
+    assert.match(html, /href="\/pl\/oferty\/"/, `${relative} lost current offers link`);
     assert.match(html, /data-filter="all"[\s\S]*data-filter="on-site"[\s\S]*data-filter="in-transit"[\s\S]*data-filter="sold"/, `${relative} must expose all four catalogue filters in order`);
     assert.deepEqual(
       [...html.matchAll(/class="car-card" data-status="([^"]+)"/g)].map((match) => match[1]),
-      ["on-site", "on-site", "on-site", "on-site", "on-site", "on-site", "in-transit", "in-transit", "in-transit", "sold", "sold", "sold", "sold", "sold", "sold"],
+      [],
       `${relative} must sort on-site vehicles before incoming and sold vehicles`
     );
     assert.match(html, /class="process-roadmap"/, `${relative} lost the purchase roadmap`);
@@ -141,7 +141,6 @@ test("generated pages keep the responsive layout contract", () => {
     assert.deepEqual([...html.matchAll(/class="number-card"><strong>(\d+)<\/strong>/g)].map((match) => match[1]), ["12", "8", "11", "119"], `${relative} has incorrect business figures`);
     assert.doesNotMatch(html, /Aktualne dane dotyczące oferty|Current figures for Atlant Auto/, `${relative} still shows the removed figures description`);
     assert.match(html, relative.startsWith("pl/") ? /11<\/strong>.*zadowolonych klientów w tym miesiącu/ : /11<\/strong>.*happy clients this month/, `${relative} must label monthly clients`);
-    assert.match(html, relative.startsWith("pl/") ? /Wkrótce dostępny/ : /Coming soon/, `${relative} must use the shortened in-transit label`);
     assert.match(html, relative.startsWith("pl/") ? /4 lata na rynku.*Ponad 500 zadowolonych klientów/s : /4 years on the market.*More than 500 satisfied customers/s, `${relative} lost the company experience statement`);
     assert.match(html, relative.startsWith("pl/") ? /Samochód na zamówienie — do 3 tygodni/ : /A car to order — within 3 weeks/, `${relative} lost the three-week order promise`);
     assert.match(html, relative.startsWith("pl/") ? /Pracujemy z każdym budżetem/ : /We work with every budget/, `${relative} lost the budget statement`);
@@ -159,7 +158,7 @@ test("generated pages keep the responsive layout contract", () => {
     assert.equal((html.match(/data-service-package=/g) || []).length, 2, `${relative} must connect both packages to the request form`);
     assert.match(html, /select name="service"/, `${relative} lost the service selector`);
     assert.match(html, /data-recipient="biuro@atlantauto\.pl"/, `${relative} lost the request email recipient`);
-    assert.equal((html.match(/class="badge source source-text"/g) || []).length, 9, `${relative} must show text source labels for current vehicles`);
+    assert.equal((html.match(/class="badge source source-text"/g) || []).length, 0, `${relative} must not show retired source labels`);
     assert.doesNotMatch(html, /assets\/brands\/(?:arval|automotive-trade-center)|arval-badge|atc-badge|mobilede-badge/, `${relative} must not place official source logos on vehicle photos`);
     assert.doesNotMatch(html, /Aukcja Arval|Arval auction|Orientacyjna cena rynkowa|Indicative market price/, `${relative} exposes superseded badge or price text`);
     assert.doesNotMatch(html, /PLN (?:brutto|gross)/, `${relative} must show only the price and currency`);
@@ -181,7 +180,7 @@ test("generated pages keep the responsive layout contract", () => {
 test("standalone customer pages contain the complete conversion journey", () => {
   for (const locale of ["pl", "en"]) {
     const catalogue = fs.readFileSync(path.join(siteRoot, locale, locale === "pl" ? "samochody/index.html" : "cars/index.html"), "utf8");
-    assert.equal((catalogue.match(/class="car-card" data-status=/g) || []).length, 15, `${locale} catalogue must show every vehicle`);
+    assert.equal((catalogue.match(/class="car-card" data-status=/g) || []).length, 0, `${locale} catalogue must not show retired vehicles`);
     assert.match(catalogue, /data-filter="all"[\s\S]*data-filter="on-site"[\s\S]*data-filter="in-transit"[\s\S]*data-filter="sold"/, `${locale} catalogue filters are incomplete`);
 
     const processPage = fs.readFileSync(path.join(siteRoot, locale, locale === "pl" ? "jak-dzialamy/index.html" : "how-it-works/index.html"), "utf8");

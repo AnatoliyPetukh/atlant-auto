@@ -36,3 +36,9 @@ for (const relative of obsoletePublicPaths) {
 }
 
 console.log("Prepared Polish/English public site without customs calculator routes.");
+
+// Product details now come from the reviewed server catalogue. Retire stale legacy routes.
+for (const folder of ['pl/samochody','en/cars']) {
+ const base=path.join(root,folder);
+ for (const entry of fs.readdirSync(base,{withFileTypes:true})) if(entry.isDirectory())fs.rmSync(path.join(base,entry.name),{recursive:true,force:true});
+}

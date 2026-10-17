@@ -57,7 +57,7 @@ function productValidated(array $record,array $draft):array {
  foreach(['photo_ids','document_ids'] as $key){
   $ids=$record[$key]??[];if(!is_array($ids)||count($ids)>30)throw new InvalidArgumentException('Проверьте файлы.');$record[$key]=array_values(array_unique($ids));
   foreach($record[$key] as $aid){draftId($aid);$matches=array_values(array_filter($draft['assets'],fn($a)=>$a['id']===$aid));$asset=$matches[0]??null;
-   if(!$asset||($key==='photo_ids'?($asset['kind']!=='vehicle'||!in_array($asset['mime'],['image/jpeg','image/png','image/webp'],true)):(!in_array($asset['kind'],['inspection','partslink'],true)||$asset['mime']!=='application/pdf')))throw new InvalidArgumentException('Для публикации выбраны неподходящие файлы.');
+   if(!$asset||($key==='photo_ids'?(!in_array($asset['kind'],['vehicle','on_site'],true)||!in_array($asset['mime'],['image/jpeg','image/png','image/webp'],true)):(!in_array($asset['kind'],['inspection','partslink'],true)||$asset['mime']!=='application/pdf')))throw new InvalidArgumentException('Для публикации выбраны неподходящие файлы.');
   }
  }
  return $record;

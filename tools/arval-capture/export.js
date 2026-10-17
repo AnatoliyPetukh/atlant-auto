@@ -133,18 +133,44 @@ async function saveServerPhotos(key,photos,progress){
   }
   return {...draft,failed};
 }
+function websiteSettings(){
+ const state=$('website-state').value;if(!['auction','in_transit','on_site'].includes(state))throw Error('Выберите состояние автомобиля.');
+ const changes={state,availability:$('website-availability').value};
+ const files=Array.from($('website-photos').files||[]);
+ if(state!=='auction'){
+  changes.currency=$('website-currency').value;
+  for(const[field,id]of[['price_net','website-net'],['price_gross','website-gross']]){const value=$(id).value.trim();if(value){if(!/^\d{1,8}(?:[.,]\d{1,2})?$/.test(value))throw Error('Проверьте цену автомобиля: число, не более двух знаков после запятой.');changes[field]=value;}}
+ }
+ if(state==='on_site'){
+  if(!changes.price_net&&!changes.price_gross)throw Error('Для машины на площадке укажите цену нетто или брутто.');
+  if(!files.length)throw Error('Для машины на площадке выберите реальные фотографии.');
+  if(files.length>30||files.some(f=>!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size<=0||f.size>20*1024*1024))throw Error('Выберите до 30 фотографий JPEG, PNG или WebP, до 20 МБ каждая.');
+  changes.location_pl='Na placu w Warszawie';
+ }else if(state==='in_transit')changes.location_pl='W drodze do Warszawy';
+ else changes.location_pl='Samochód na aukcji europejskiej';
+ return {changes,files:state==='on_site'?files:[]};
+}
+function showWebsiteFields(){$('website-ready-fields').hidden=$('website-state').value==='auction';$('website-yard-fields').hidden=$('website-state').value!=='on_site';}
+$('website-state').addEventListener('change',showWebsiteFields);showWebsiteFields();
 $('website-create').addEventListener('click',async()=>{
   const result=$('website-result');const locked=['website-create','server-save','post','retry','send-draft','import-partslink'].map(id=>[$(id),$(id).disabled]);
   try{
-    ensurePartslinkRead();ensureDeliveryValid();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
+    ensurePartslinkRead();ensureDeliveryValid();const settings=websiteSettings();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
     if(!await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
     for(const [button]of locked)button.disabled=true;$('progress').hidden=false;
     const saved=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
     if(saved.failed)throw Error('Не все фото сохранены. Повторите загрузку перед подготовкой карточки.');
     for(const{file,kind}of pendingPdfs())await storeFile(key,saved.id,file,{name:file.name,kind});
-    await storeRequest(key,{action:'product_create',body:{id:saved.id}});
+    const sitePhotos=[];
+    for(const [i,file]of settings.files.entries()){
+      result.textContent=`Сохраняю фото с площадки ${i+1} из ${settings.files.length}…`;
+      const uploaded=await storeFile(key,saved.id,file,{name:file.name,kind:'on_site'});sitePhotos.push(uploaded.asset_id);
+    }
+    const created=await storeRequest(key,{action:'product_create',body:{id:saved.id}});
+    if(sitePhotos.length)settings.changes.photo_ids=sitePhotos;
+    await storeRequest(key,{action:'product_save',body:{id:saved.id,revision:created.product.revision,changes:settings.changes}});
     $('website-link').href=`https://serwer2454127.home.pl/drafts/?id=${saved.id}#product-editor`;$('website-link').hidden=false;
-    result.textContent='Карточка автомобиля на польском создана на сервере. Откройте её, проверьте состояние, цену и материалы. На сайте она появится после отдельной публикации владельцем.';
+    result.textContent='Карточка автомобиля на польском создана или обновлена на сервере. Откройте её, проверьте состояние, цену и материалы. На сайте она появится после отдельной публикации владельцем.';
   }catch(error){result.textContent=error.message;}finally{for(const[button,disabled]of locked)button.disabled=disabled;countCaption();}
 });
 $('server-save').addEventListener('click',async()=>{

@@ -1,13 +1,22 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Atlant Auto · Импорт Arval</title><link rel="stylesheet" href="style.css"></head>
 <body><main>
-<header><b>ATLANT AUTO</b><span>ARVAL CAPTURE · 0.5.0</span></header>
+<header><b>ATLANT AUTO</b><span>ARVAL CAPTURE · 0.6.0</span></header>
 <h1>Сохранить автомобиль</h1><p class="intro">Открытый лот → проверка данных → черновик на сервере или пост для Telegram.</p><p class="note">Сбор без автоматических кликов на аукционе. Для инспекции заранее откройте Links and documents. В partslink24 вручную раскройте разделы комплектации.</p>
 <p id="status" role="status" aria-live="polite">Читаю открытую карточку…</p>
 <section id="preview" hidden><h2 id="title"></h2><p id="identity"></p><dl id="facts"></dl><div id="warnings"></div>
 <label>Название для объявления <input id="publication-title" maxlength="160" type="text"></label><p id="title-note" class="note"></p><details><summary>Исходное название аукциона</summary><p id="source-title"></p></details>
 <section id="delivery-quote" aria-labelledby="delivery-heading"><h3 id="delivery-heading">Доставка до Варшавы</h3>
 <label>Стоимость доставки, EUR <input id="delivery-cost" type="text" inputmode="decimal" maxlength="15" placeholder="Например, 850" autocomplete="off"></label><p id="delivery-status" class="note" role="status">Сумму из региона автомобиля вписывает сотрудник. Она появится в посте отдельно от ставки. Если поле пустое, доставка не указывается.</p></section>
+<section id="website-settings"><h3>Карточка сайта · состояние автомобиля</h3>
+<label>Состояние <select id="website-state"><option value="in_transit">В пути в Варшаву</option><option value="on_site">На площадке в Польше</option><option value="auction" selected>На аукционе</option></select></label>
+<label>Доступность <select id="website-availability"><option value="free">Свободен</option><option value="reserved">Зарезервирован под клиента</option></select></label>
+<div id="website-ready-fields" hidden><p class="note">Готовая цена автомобиля в Варшаве с доставкой, без регистрации и дополнительных документов. Ставка аукциона сюда не переносится.</p>
+<label>Цена нетто <input id="website-net" inputmode="decimal" placeholder="Например, 15000"></label>
+<label>Цена брутто <input id="website-gross" inputmode="decimal" placeholder="Например, 18450"></label>
+<label>Валюта <select id="website-currency"><option>EUR</option><option>PLN</option></select></label></div>
+<div id="website-yard-fields" hidden><h3>Реальные фотографии с площадки</h3><label>Выбрать фотографии <input id="website-photos" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple></label><p class="note">До 30 фото JPEG, PNG или WebP, до 20 МБ каждое. Они сохраняются отдельно от аукционных в галерее «Фото с площадки» этой машины. Первая фотография станет обложкой. Для состояния «На площадке» укажите хотя бы одну цену и загрузите реальные фото.</p></div>
+<p class="note">Эти настройки применяются кнопкой «Подготовить карточку сайта». Повторная подготовка обновляет состояние той же машины; заполненные цены и выбранные фото заменят соответствующие поля черновика. Сайт обновляется только после публикации владельцем.</p></section>
 <h3>PDF PartsLink · загрузить и прочитать</h3><p class="note">Из открытой страницы: нажмите расширение в PartsLink, затем вернитесь сюда и нажмите «Перечитать лот». Или импортируйте PDF ниже. Если дата производства в PartsLink отсутствует, в посте показываем первую регистрацию из Arval с соответствующей подписью.</p>
 <label>PDF PartsLink <input id="partslink-pdf" type="file" accept="application/pdf,.pdf"></label><button id="import-partslink" class="secondary">Прочитать PDF PartsLink</button><p id="partslink-import-status" role="status">Один файл: после успешного чтения его данные используются в объявлении, а сам PDF прикладывается при сохранении на сервере. Повторная загрузка не нужна. До 20 МБ, не больше 30 страниц; VIN должен совпадать с лотом. Скан без текста пока не поддерживается.</p>
 <section id="inspection-upload" aria-labelledby="inspection-heading"><h3 id="inspection-heading">PDF инспекции с аукциона</h3>
