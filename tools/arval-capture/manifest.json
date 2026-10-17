@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Atlant Auto · Arval Capture",
+  "version": "0.5.0",
+  "description": "Сохранение лота Arval на сервере и подготовка поста для Telegram.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "optional_host_permissions": [
+    "https://serwer2454127.home.pl/*"
+  ],
+  "action": {
+    "default_title": "Сохранить лот в Atlant Auto"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryEAJAI4dnWZkvHL97RzqZRRx46fnNklKSQt/i6lZKfkOXGvvSoGgGJbRucHgu5YTFJstJxUTMCCx0SB+BtxN5tnqvnbhhI+fa+b5DHfmRtM2mt9noDO8uZ811KpCwpV66CuqppaBapEhgpvZgh//BB7N9IF3Ubi2kDZCFnTZMQRGKoJqoBNwCHdly73uTlmGCyQKcGV0ytE6yfFgciXE6tdgtDokjdHPz+NkmWLYxSazSw/gdAYavT7ctwQK69Mb1OWyo8FqfdJWc5SEtVpspJ0psp/wxBSz0keRDry1i4PPwnBLMiqxDaJ/kaYCLAvgb+UulBcwS5u4COB2K4SswIDAQAB"
+}

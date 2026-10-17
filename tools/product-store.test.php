@@ -1,0 +1,26 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli')exit(1);
+$root=sys_get_temp_dir().'/atlant-products-'.bin2hex(random_bytes(8));putenv('ATLANT_DRAFT_ROOT='.$root);define('ATLANT_DRAFT_STORE',true);require $argv[1]??dirname(__DIR__).'/api/product-store.php';
+function expect(bool $ok,string $message):void{if(!$ok)throw new RuntimeException($message);}
+function rejected(callable $fn):bool{try{$fn();return false;}catch(InvalidArgumentException|DomainException $e){return true;}}
+try{
+ $packet=['vehicle'=>['vin'=>'WBA00000000000001','display_title'=>'BMW X2','make'=>'BMW','title'=>'Private source','mileage_km'=>12345,'fuel'=>'Petrol','transmission'=>'Automatic','publication_facts'=>['display_date'=>['kind'=>'production','value'=>'2022-05-10'],'first_registration'=>['value'=>'2022-06'],'engine'=>['label'=>'бензин']]],'source'=>['url'=>'https://remktg.arval.com/private','lot_id'=>'secret-lot','captured_at'=>'2026-10-17T10:00:00Z'],'auction'=>['price'=>['kind'=>'highest_bid','amount'=>9000,'currency'=>'EUR']],'website_seed'=>['equipment_ids'=>['cameraRear','heatedSeats']],'private'=>['client'=>'private-person@example.com']];
+ $id=draftCapture($packet,'employee-2')['id'];$db=productDb();$photo=bin2hex(random_bytes(16));$damage=bin2hex(random_bytes(16));$private=bin2hex(random_bytes(16));$inspection=bin2hex(random_bytes(16));
+ mkdir($root.'/objects/'.$id,0700,true);
+ foreach([$photo=>['vehicle','image/jpeg'],$damage=>['damage','image/jpeg'],$private=>['document','application/pdf'],$inspection=>['inspection','application/pdf']]as$aid=>$attrs){file_put_contents($root.'/objects/'.$id.'/'.$aid,'fixture');$db->prepare('INSERT INTO assets VALUES (?,?,?,?,?,?,?,?,?)')->execute([$aid,$id,hash('sha256',$aid),'private-name',$attrs[1],7,$attrs[0],'https://private.example/token',gmdate('c')]);}
+ $row=productCreate($id,'employee-2');expect($row['record']['state']==='auction'&&$row['record']['price_net']===null,'Auction source is not sale price');expect(productCreate($id,'employee-2')['public_id']===$row['public_id'],'One product per VIN');
+ expect($row['record']['equipment_pl']===['Kamera cofania','Podgrzewane fotele'],'Polish equipment');expect($row['record']['photo_ids']===[$photo]&&$row['record']['document_ids']===[],'No damage/private documents auto-shared');expect(productPublicList()===[],'Private by default');
+ expect(rejected(fn()=>productPublish($id,1,'employee-2')),'Only owner publishes');
+ $row=productSave($id,1,['state'=>'in_transit','availability'=>'reserved','price_net'=>'12500,50','description_pl'=>'Samochód w drodze do Warszawy.'],'employee-2');expect($row['record']['price_net']===12500.5,'Explicit ready price');expect(rejected(fn()=>productSave($id,1,[],'owner')),'Stale revision rejected');
+ $changed=$packet;$changed['vehicle']['display_title']='New auction title';draftCapture($changed,'employee-2');expect(productGet($id)['record']['state']==='in_transit'&&productGet($id)['record']['title']==='BMW X2','Reimport preserves product edits');
+ expect(rejected(fn()=>productSave($id,2,['photo_ids'=>[$damage]],'owner')),'Damage excluded from product photos');expect(rejected(fn()=>productSave($id,2,['document_ids'=>[$private]],'owner')),'Internal PDF cannot be shared');expect(rejected(fn()=>productSave($id,2,['state'=>'fake-state'],'owner')),'State allowlist');
+ $row=productPublish($id,2,'owner');$public=productPublicList()[0];$json=json_encode($public);foreach(['WBA00000000000001','private-person','secret-lot','remktg','private.example','source_url','draft_id']as$secret)expect(!str_contains($json,$secret),'No private source leak: '.$secret);
+ expect(!isset($public['auction_bid'])&&$public['price_net']===12500.5,'Purchased card uses ready price only');
+ $row=productSave($id,2,['state'=>'on_site','availability'=>'free','document_ids'=>[$inspection]],'employee-2');expect(productPublicList()[0]['state']==='in_transit','Unpublished changes not public');
+ productPublish($id,3,'owner');expect(productPublicList()[0]['state']==='on_site'&&productPublicList()[0]['document_ids']===[$inspection],'Explicit update publishes selected document');
+ productUnpublish($id,'owner');expect(productPublicList()===[],'Unpublish removes public data');expect(productGet($id)['record']['state']==='on_site','Unpublish retains entity');
+ expect(count(productVersions($id))===3,'Full revision history');$restored=productRestore($id,3,1,'employee-2');expect($restored['revision']===4&&$restored['record']['state']==='auction','Restore creates new revision');expect(productPublicList()===[],'Restore never publishes');expect(count(productVersions($id))===4,'Original versions retained');
+ expect($db->query('PRAGMA integrity_check')->fetchColumn()==='ok','Database integrity');
+ echo "PASS products: VIN identity, Polish seed, price separation, workflow/availability, source reimport isolation, owner publication, frozen public version, revision conflict, private document and VIN boundaries, unpublish. No real vehicles published.\n";
+}finally{if(is_dir($root)){foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f){if($f->isDir())rmdir($f->getPathname());else unlink($f->getPathname());}rmdir($root);}}
