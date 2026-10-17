@@ -108,21 +108,53 @@ export function parseHyundaiKiaRows(rows){
 function enrichHyundaiKia(fields,equipment){
   if(equipment.some(o=>/^ENVIRONMENT PACKAGE\s*-\s*MILD HEV$/i.test(clean(o.label))))fields['Тип двигателя']=[fields['Двигатель'],'MHEV'].filter(Boolean).join(' · ');
 }
+// Recognise the common identification/equipment table by its columns, not its brand.
+// A graphical PartsLink logo is often absent from the PDF text layer.
+export function parseIdentificationRows(rows){
+  const fields={},equipment=[];let section=null,valueX=null,current=null;
+  for(const row of rows){
+    if(/^(?:Характеристика\s+Данные автомобиля|Characteristic\s+Vehicle data)$/i.test(row.text)){
+      section='basic';valueX=row.cells.find(c=>/^(?:Данные|Vehicle)(?:\s|$)/i.test(clean(c.str)))?.x??null;current=null;continue;
+    }
+    if(/^(?:Оснащение\s+Наименование|Equipment\s+Description)$/i.test(row.text)){
+      section='equipment';valueX=row.cells.find(c=>/^(?:Наименование|Description)$/i.test(clean(c.str)))?.x??null;current=null;continue;
+    }
+    if(valueX===null||/^\d+\s*\/\s*\d+$/.test(row.text)||/^https?:\/\//i.test(row.text))continue;
+    if(/^(?:Оснащение|Данные автомобиля|Идентификация автомобиля|Equipment|Vehicle data|Vehicle identification)$/i.test(row.text)){section=null;current=null;continue;}
+    const left=clean(row.cells.filter(c=>c.x<valueX-3).map(c=>c.str).join(' '));
+    const right=clean(row.cells.filter(c=>c.x>=valueX-3).map(c=>c.str).join(' '));
+    if(section==='basic'){
+      if(left&&right){
+        if(fields[left]&&fields[left]!==right)throw Error(`В PDF разные значения поля «${left}». Требуется ручная проверка.`);
+        fields[left]=right;current=left;
+      }else if(!left&&right&&current)fields[current]=clean(fields[current]+' '+right);
+    }else if(section==='equipment'){
+      const match=left.match(/^([A-Z0-9][A-Z0-9_]{0,15})\s*[-–—]\s*(.*)$/);
+      if(match){current={code:match[1],category:match[2],label:right,kind:'equipment',page:row.page};equipment.push(current);}
+      else if(current){current.category=clean(current.category+' '+left);current.label=clean(current.label+' '+right);}
+    }
+  }
+  const identified=/^[A-HJ-NPR-Z0-9]{17}$/i.test(fields['Номер шасси']||fields['VIN']||'')
+    &&Boolean(fields['Модель']||fields['Model'])
+    &&Object.keys(fields).length>=3&&equipment.length>0;
+  return {fields,equipment,identified};
+}
 export function parsePartslinkText(text,vin,rows=[]) {
   const hyundaiKia=/Идентификация автомобиля/i.test(text)&&/Номер шасси/i.test(text)&&/partslink24/i.test(text)&&/(?:hyundai-kia-automotive-group|\b(?:kia|hyundai)_parts\b)/i.test(text);
   const vag=/Идентификация автомобиля/i.test(text)&&/Номер PR/i.test(text)&&/Номер шасси/i.test(text)&&/Дата производства/i.test(text);
   const stellantis=/Идентификация автомобиля/i.test(text)&&/Номер шасси/i.test(text)&&/Оснащение/i.test(text)&&/Заводской код/i.test(text)&&/КОРОБКА ПЕРЕДАЧ/i.test(text);
   const mercedes=/Идентификация автомобиля/i.test(text)&&/Номер шасси\s+(?:WDB|WDC|WDD|WDF|W1K|W1N|W1V)[A-HJ-NPR-Z0-9]{14}\b/i.test(text)&&/Торговое наименование/i.test(text)&&/Агрегаты/i.test(text)&&/Оснащение\s+Наименование\s+Код типа/i.test(text);
-  if(!/partslink\s*24/i.test(text)&&!vag&&!stellantis&&!mercedes&&!hyundaiKia)throw Error('Не распознан шаблон PDF PartsLink. Файл можно сохранить как документ, но автоматический импорт отклонён.');
+  const generic=(!hyundaiKia&&!mercedes&&!stellantis&&!vag)?parseIdentificationRows(rows):null;
+  if(!/partslink\s*24/i.test(text)&&!vag&&!stellantis&&!mercedes&&!hyundaiKia&&!generic?.identified)throw Error('Не удалось уверенно определить таблицы данных автомобиля в PDF PartsLink. Файл можно сохранить как документ; автоматический импорт требует проверки.');
   const vins=[...new Set((text.toUpperCase().match(/\b[A-HJ-NPR-Z0-9]{17}\b/g)||[]).filter(x=>/\d/.test(x)))];
   if(vins.length!==1||vins[0]!==vin)throw Error('В PDF должен быть один полный VIN, совпадающий с VIN лота. Импорт не выполнен.');
-  const columnData=hyundaiKia?parseHyundaiKiaRows(rows):mercedes?parseMercedesRows(rows):stellantis?parseStellantisRows(rows):{fields:{},equipment:[]};
+  const columnData=hyundaiKia?parseHyundaiKiaRows(rows):mercedes?parseMercedesRows(rows):stellantis?parseStellantisRows(rows):generic?.identified?generic:{fields:{},equipment:[]};
   const fields={...columnData.fields};const lines=text.split(/\r?\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
   const labels='Дата (?:выпуска|производства|изготовления)|Год (?:выпуска|производства)|Production date|Date of (?:production|manufacture)|Build date|Manufactur(?:e|ing) date|Produktionsdatum|Baudatum|Топливо|Тип (?:двигателя|топлива)|Fuel(?: type)?|Engine(?: type)?|Powertrain|Kraftstoff|Motor|Модельный год|Модель|Код двигателя|Код коробки передач';
   const pattern=new RegExp(`^(${labels})\\s*(?::|\\t|\\s)\\s*(.*)$`,'i');
   const labelOnly=new RegExp(`^(${labels})\\s*:?$`,'i');
   for(let i=0;i<lines.length;i++){
-    if(hyundaiKia)continue;
+    if(hyundaiKia||generic?.identified)continue;
     let match=lines[i].match(pattern);let value=match?.[2];
     if(!match||!value){
       match=lines[i].match(labelOnly);
@@ -133,7 +165,7 @@ export function parsePartslinkText(text,vin,rows=[]) {
     if(fields[key]&&fields[key]!==value)throw Error(`В PDF разные значения поля «${key}». Требуется ручная проверка.`);
     fields[key]=value;
   }
-  const equipment=hyundaiKia||mercedes||stellantis?columnData.equipment:vag?parseVagEquipment(rows):[];let kind=null;
+  const equipment=hyundaiKia||mercedes||stellantis||generic?.identified?columnData.equipment:vag?parseVagEquipment(rows):[];let kind=null;
   for(let i=0;i<lines.length;i++){
     const line=lines[i];
     if(/^(?:standard equipment|серийная комплектация|серийное оснащение|serienausstattung)\s*:?$/i.test(line)){kind='standard';continue;}
@@ -148,7 +180,7 @@ export function parsePartslinkText(text,vin,rows=[]) {
   const baseEngine=equipment.find(x=>/^Базовый двигатель$/i.test(x.category));
   if(baseEngine)fields['Двигатель']=baseEngine.label;
   if(hyundaiKia)enrichHyundaiKia(fields,equipment);
-  return {source:'partslink24_pdf',template:hyundaiKia?'hyundai-kia-columns-ru':mercedes?'mercedes-columns-ru':stellantis?'stellantis-columns-ru':vag?'vag-pr-table-ru':'partslink-labelled-text',vin,captured_at:new Date().toISOString(),fields,text_source:text,equipment};
+  return {source:'partslink24_pdf',template:hyundaiKia?'hyundai-kia-columns-ru':mercedes?'mercedes-columns-ru':stellantis?'stellantis-columns-ru':vag?'vag-pr-table-ru':generic?.identified?'partslink-identification-columns':'partslink-labelled-text',vin,captured_at:new Date().toISOString(),fields,text_source:text,equipment};
 }
 
 export async function readPartslinkPdf(file,vin) {
