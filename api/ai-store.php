@@ -38,10 +38,10 @@ function aiEnqueue(string $id,array $pdfIds,string $actor,bool $consent):string{
  if(!aiConfigured())throw new InvalidArgumentException('Генератор пока не подключён: нужен API-ключ на сервере.');
  $input=aiInput($id,$pdfIds);$c=aiConfig();$model=(string)($c['model']??'gpt-4.1-mini');$json=json_encode($input,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE);$hash=hash('sha256',AI_PROMPT_VERSION.$model.$json);$db=aiDb();$db->exec('BEGIN IMMEDIATE');
  try{
- $q=$db->prepare("SELECT id FROM generation_jobs WHERE draft_id=? AND fingerprint=? AND state IN ('queued','running','ready','needs_review') ORDER BY created_at DESC LIMIT 1");$q->execute([$id,$hash]);if($old=$q->fetchColumn()){$db->commit();return $old;}
+ $q=$db->prepare("SELECT id FROM generation_jobs WHERE draft_id=? AND fingerprint=? AND state IN ('queued','running','ready','needs_review') ORDER BY created_at DESC LIMIT 1");$q->execute([$id,$hash]);if($old=$q->fetchColumn()){$db->exec('COMMIT');return $old;}
  $day=(new DateTimeImmutable('today',new DateTimeZone('Europe/Warsaw')))->setTimezone(new DateTimeZone('UTC'))->format('c');$q=$db->prepare('SELECT COUNT(*) FROM generation_jobs WHERE created_at>=?');$q->execute([$day]);if($q->fetchColumn()>=max(1,min(100,(int)($c['daily_job_limit']??20))))throw new InvalidArgumentException('Дневной лимит генераций достигнут.');
- $job=bin2hex(random_bytes(16));$db->prepare('INSERT INTO generation_jobs(id,draft_id,fingerprint,state,actor,created_at,input_json,model,prompt_version) VALUES(?,?,?,?,?,?,?,?,?)')->execute([$job,$id,$hash,'queued',$actor,gmdate('c'),$json,$model,AI_PROMPT_VERSION]);draftEvent($db,$id,'generation_queued',$actor,['job_id'=>$job]);$db->commit();return $job;
- }catch(Throwable $e){if($db->inTransaction())$db->rollBack();throw $e;}
+ $job=bin2hex(random_bytes(16));$db->prepare('INSERT INTO generation_jobs(id,draft_id,fingerprint,state,actor,created_at,input_json,model,prompt_version) VALUES(?,?,?,?,?,?,?,?,?)')->execute([$job,$id,$hash,'queued',$actor,gmdate('c'),$json,$model,AI_PROMPT_VERSION]);draftEvent($db,$id,'generation_queued',$actor,['job_id'=>$job]);$db->exec('COMMIT');return $job;
+ }catch(Throwable $e){try{$db->exec('ROLLBACK');}catch(Throwable $ignored){}throw $e;}
 }
 function aiJobs(string $id):array{$q=aiDb()->prepare('SELECT id,state,created_at,finished_at,result_json,error_code,model,input_json FROM generation_jobs WHERE draft_id=? ORDER BY created_at DESC,rowid DESC LIMIT 10');$q->execute([draftId($id)]);return $q->fetchAll();}
 function aiResult(string $id,string $job):?array{$q=aiDb()->prepare("SELECT result_json,input_json FROM generation_jobs WHERE draft_id=? AND id=? AND state IN ('ready','needs_review')");$q->execute([draftId($id),draftId($job)]);$r=$q->fetch();if(!$r)return null;$input=json_decode($r['input_json'],true);if(aiInput($id,array_column($input['files'],'id'))!==$input)throw new InvalidArgumentException('Материалы машины изменились. Запустите новую генерацию.');return json_decode($r['result_json'],true);}
@@ -72,8 +72,8 @@ PROMPT;
 function aiRunOne(?callable $transport=null):string{
  $db=aiDb();$db->prepare("UPDATE generation_jobs SET state='uncertain',error_code='worker_interrupted',finished_at=? WHERE state='running' AND started_at<?")->execute([gmdate('c'),gmdate('c',time()-600)]);
  if(!aiConfigured())return 'disabled';
- $db->exec('BEGIN IMMEDIATE');$job=$db->query("SELECT * FROM generation_jobs WHERE state='queued' ORDER BY created_at,rowid LIMIT 1")->fetch();if(!$job){$db->commit();return 'idle';}
- $db->prepare("UPDATE generation_jobs SET state='running',started_at=? WHERE id=? AND state='queued'")->execute([gmdate('c'),$job['id']]);$db->commit();$state='error';$error=null;$result=null;$usage=null;
+ $db->exec('BEGIN IMMEDIATE');$job=$db->query("SELECT * FROM generation_jobs WHERE state='queued' ORDER BY created_at,rowid LIMIT 1")->fetch();if(!$job){$db->exec('COMMIT');return 'idle';}
+ $db->prepare("UPDATE generation_jobs SET state='running',started_at=? WHERE id=? AND state='queued'")->execute([gmdate('c'),$job['id']]);$db->exec('COMMIT');$state='error';$error=null;$result=null;$usage=null;
  try{
  $input=json_decode($job['input_json'],true);if(aiInput($job['draft_id'],array_column($input['files'],'id'))!==$input)throw new RuntimeException('source_changed');$request=aiRequest($job);
  if($transport)$response=$transport($request);else{
