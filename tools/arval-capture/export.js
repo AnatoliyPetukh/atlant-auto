@@ -1,3 +1,4 @@
+import {createWebsiteEditor} from './website-editor.js';
 import {parseDeliveryAmount,deliveryLabel} from './delivery.js';
 import {collectArvalLot} from './collector.js';
 import {collectPartslink,attachPartslink} from './partslink.js';
@@ -13,6 +14,12 @@ const $ = id => document.getElementById(id);
 const tabId = Number(new URLSearchParams(location.search).get('tab'));
 let packet;
 let partslinkFile=null;
+let inspectionFiles=[];
+let sourceLocks=[];
+const websiteEditor=createWebsiteEditor({key:()=>$('employee-key').value.trim(),onBusy:busy=>{
+ if(busy){sourceLocks=['server-save','retry','post','import-partslink','send-draft'].map(id=>[$(id),$(id).disabled]);for(const[control]of sourceLocks)control.disabled=true;}
+ else{for(const[control,disabled]of sourceLocks)control.disabled=disabled;sourceLocks=[];}
+}});
 function ensurePartslinkRead(){
   if($('partslink-pdf').files[0]&&$('partslink-pdf').files[0]!==partslinkFile)throw Error('Выбранный PDF PartsLink ещё не прочитан. Нажмите «Прочитать PDF PartsLink» и дождитесь подтверждения. При ошибке данные этого файла не используются.');
 }
@@ -39,8 +46,17 @@ const addLog = (message, failed = false) => {
   const li = document.createElement('li'); li.textContent = message; li.className = failed ? 'failed' : 'ok'; $('log').append(li);
 };
 
+function renderSourceDetails(){
+ const root=$('source-extra');root.replaceChildren();
+ const section=(title,value)=>{const d=document.createElement('details'),h=document.createElement('summary'),p=document.createElement('p');h.textContent=title;p.className='source-detail';p.textContent=value||'Данные не найдены на открытой странице.';d.append(h,p);root.append(d);return d;};
+ section('Повреждения · комментарии Arval',packet.condition.damages.map((d,i)=>`${i+1}. ${[d.part,d.nature,d.repair].filter(Boolean).join(' · ')}`).join('\n'));
+ section('Сервисная история · исходные записи',packet.condition.maintenance_entries.map(e=>`${e.date_source} · ${e.mileage_km} км · ${e.description_source}`).join('\n'));
+ section('Состояние шин · исходные данные',packet.condition.tyres_source);
+ const docs=section('Links and documents · найденные отчёты','Ссылки сохраняются как исходные материалы. Скачанные PDF прикрепите ниже; можно несколько.');docs.classList.add('source-documents');
+ for(const report of packet.documents){const a=document.createElement('a');a.textContent=report.label;a.href=report.url;a.target='_blank';a.rel='noopener noreferrer';docs.append(a,document.createElement('br'));}
+}
 async function readLot() {
-  for(const id of ['retry','post','server-save','website-create'])$(id).disabled=true;
+  for(const id of ['retry','post','server-save'])$(id).disabled=true;
   let ready=false;
   try {
     if (!Number.isSafeInteger(tabId) || tabId <= 0) throw new Error('Запустите расширение кнопкой на открытой карточке Arval.');
@@ -57,6 +73,7 @@ async function readLot() {
     // The operator opens documents and equipment panels before invoking capture.
     const [response] = await chrome.scripting.executeScript({target:{tabId}, func: collectArvalLot});
     const previous=packet;packet = response.result;
+    if(previous?.vehicle?.vin&&previous.vehicle.vin!==packet?.vehicle?.vin){inspectionFiles=[];renderInspectionFiles();websiteEditor.reset();$('server-pdfs').value='';$('website-link').hidden=true;$('server-link').hidden=true;}
     if (!packet?.vehicle?.vin) throw new Error('Arval не вернул данные автомобиля.');
     if(chrome.storage?.local){const key='parts:'+packet.vehicle.vin;const stored=await chrome.storage.local.get(key);attachPartslink(packet,stored[key]);}
     if(previous?.vehicle?.vin===packet.vehicle.vin&&previous.enrichment?.partslink24_pdf)packet.enrichment={...(packet.enrichment||{}),partslink24_pdf:previous.enrichment.partslink24_pdf};
@@ -85,8 +102,14 @@ async function readLot() {
       ['Дата в объявлении', `${vehicleDateLabel(packet.vehicle.publication_facts)}${packet.vehicle.publication_facts.display_date?` · источник: ${packet.vehicle.publication_facts.display_date.source}`:''}`],
       ['Тип двигателя', packet.vehicle.publication_facts.engine.label],
       ['Пробег', packet.vehicle.mileage_km === null ? 'Не распознан' : `${packet.vehicle.mileage_km.toLocaleString('ru')} км`],
+      ['Количество ключей', packet.vehicle.keys==null?'Не указано':String(packet.vehicle.keys)],
+      ['Мощность', [packet.vehicle.power_kw?packet.vehicle.power_kw+' кВт':'',packet.vehicle.power_hp?packet.vehicle.power_hp+' л. с.':''].filter(Boolean).join(' / ')||packet.vehicle.power_source||'Не указана'],
+      ['Цвет (источник)', packet.vehicle.color||'Не указан'],
+      ['Страна регистрационных документов', packet.vehicle.registration_country_source||'Не указана'],
+      ['Полный привод', packet.vehicle.awd===true?'Да':packet.vehicle.awd===false?'Нет':packet.vehicle.drive_source||'Не указан'],
+      ['НДС к вычету (Arval)', packet.vehicle.vat_deductible===true?'Да':packet.vehicle.vat_deductible===false?'Нет':packet.vehicle.vat_deductible_source||'Не указан'],
       ['Первая регистрация (Arval)', packet.vehicle.first_registration_source || 'Не распознана'],
-      ['Текущая максимальная ставка', packet.auction.price.amount === null ? 'Не распознана' : `${packet.auction.price.amount.toLocaleString('ru')} ${packet.auction.price.currency} · НДС не определён`],
+      ['Текущая максимальная ставка', packet.auction.price.amount === null ? 'Не распознана' : `${packet.auction.price.amount.toLocaleString('ru')} ${packet.auction.price.currency} · нетто по правилу публикации`],
       ['До окончания торгов (на момент сбора)', packet.auction.countdown_source_original||packet.auction.countdown_source||'Таймер не распознан'],
       ['Основные / повреждения', `${packet.photos.filter(p=>p.kind==='vehicle').length} / ${packet.photos.filter(p=>p.kind==='damage').length} фото`],
       ['Комплектация / замечания', `${packet.equipment.length} опций / ${packet.condition.damages.length} замечаний`],
@@ -97,6 +120,7 @@ async function readLot() {
       const dt = document.createElement('dt');dt.textContent = label;
       const dd = document.createElement('dd');dd.textContent = value;if(label==='Дата производства')dd.id='production-fact';if(label==='Дата в объявлении')dd.id='publication-date-fact';if(label==='Тип двигателя')dd.id='engine-fact';if(label==='Главное в комплектации')dd.id='equipment-fact';$('facts').append(dt, dd);
     }
+    renderSourceDetails();
     $('warnings').replaceChildren();
     for (const warning of packet.warnings) {const p = document.createElement('p');p.className='warning';p.textContent=warning;$('warnings').append(p);}
     setStatus('Лот прочитан. Проверьте данные, сохраните на сервере или подготовьте пост для Telegram.');
@@ -107,7 +131,7 @@ async function readLot() {
       else $('connection-panel').open=true;
     }
   } catch(error) { setStatus(error.message); }
-  finally{$('retry').disabled=false;$('post').disabled=!ready;$('server-save').disabled=!ready;$('website-create').disabled=!ready;}
+  finally{$('retry').disabled=false;$('post').disabled=!ready;$('server-save').disabled=!ready;}
 }
 
 $('retry').addEventListener('click',readLot);
@@ -133,63 +157,26 @@ async function saveServerPhotos(key,photos,progress){
   }
   return {...draft,failed};
 }
-function websiteSettings(){
- const state=$('website-state').value;if(!['auction','in_transit','on_site'].includes(state))throw Error('Выберите состояние автомобиля.');
- const changes={state,availability:$('website-availability').value};
- const files=Array.from($('website-photos').files||[]);
- if(state!=='auction'){
-  changes.currency=$('website-currency').value;
-  for(const[field,id]of[['price_net','website-net'],['price_gross','website-gross']]){const value=$(id).value.trim();if(value){if(!/^\d{1,8}(?:[.,]\d{1,2})?$/.test(value))throw Error('Проверьте цену автомобиля: число, не более двух знаков после запятой.');changes[field]=value;}}
- }
- if(state==='on_site'){
-  if(!changes.price_net&&!changes.price_gross)throw Error('Для машины на площадке укажите цену нетто или брутто.');
-  if(!files.length)throw Error('Для машины на площадке выберите реальные фотографии.');
-  if(files.length>30||files.some(f=>!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size<=0||f.size>20*1024*1024))throw Error('Выберите до 30 фотографий JPEG, PNG или WebP, до 20 МБ каждая.');
-  changes.location_pl='Na placu w Warszawie';
- }else if(state==='in_transit')changes.location_pl='W drodze do Warszawy';
- else changes.location_pl='Samochód na aukcji europejskiej';
- return {changes,files:state==='on_site'?files:[]};
+async function saveSourceAndPreview(){
+ const result=$('server-result');const locked=['server-save','post','retry','send-draft','import-partslink'].map(id=>[$(id),$(id).disabled]);
+ try{
+  ensurePartslinkRead();ensureDeliveryValid();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
+  for(const{file}of pendingPdfs())if(file.size<=0||file.size>20*1024*1024||(!/\.pdf$/i.test(file.name)&&file.type!=='application/pdf'))throw Error('Проверьте документы: нужны PDF до 20 МБ каждый.');
+  if(!await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
+  for(const[button]of locked)button.disabled=true;$('progress').hidden=false;
+  const saved=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
+  if(saved.failed)throw Error('Черновик сохранён частично: не все фотографии загрузились. Повторите сохранение перед подготовкой превью.');
+  for(const{file,kind}of pendingPdfs()){result.textContent=`Сохраняю ${file.name}…`;await storeFile(key,saved.id,file,{name:file.name,kind});}
+  const created=await storeRequest(key,{action:'product_create',body:{id:saved.id}});
+  $('server-link').href=`https://serwer2454127.home.pl/drafts/?id=${saved.id}`;$('server-link').hidden=false;
+  $('website-link').href=`https://serwer2454127.home.pl/drafts/?id=${saved.id}#product-editor`;$('website-link').hidden=false;
+  result.textContent='Данные, все найденные фотографии и документы сохранены. Открываю превью…';
+  await websiteEditor.open(created.product);
+  $('website-editor').scrollIntoView({behavior:'smooth',block:'start'});
+  result.textContent='Данные и все найденные фотографии сохранены на сервере. Превью открыто ниже: внесите правки и выберите состояние. На сайте пока ничего не изменилось.';
+ }catch(error){result.textContent=error.message;}finally{for(const[button,disabled]of locked)button.disabled=disabled;countCaption();}
 }
-function showWebsiteFields(){$('website-ready-fields').hidden=$('website-state').value==='auction';$('website-yard-fields').hidden=$('website-state').value!=='on_site';}
-$('website-state').addEventListener('change',showWebsiteFields);showWebsiteFields();
-$('website-create').addEventListener('click',async()=>{
-  const result=$('website-result');const locked=['website-create','server-save','post','retry','send-draft','import-partslink'].map(id=>[$(id),$(id).disabled]);
-  try{
-    ensurePartslinkRead();ensureDeliveryValid();const settings=websiteSettings();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
-    if(!await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
-    for(const [button]of locked)button.disabled=true;$('progress').hidden=false;
-    const saved=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
-    if(saved.failed)throw Error('Не все фото сохранены. Повторите загрузку перед подготовкой карточки.');
-    for(const{file,kind}of pendingPdfs())await storeFile(key,saved.id,file,{name:file.name,kind});
-    const sitePhotos=[];
-    for(const [i,file]of settings.files.entries()){
-      result.textContent=`Сохраняю фото с площадки ${i+1} из ${settings.files.length}…`;
-      const uploaded=await storeFile(key,saved.id,file,{name:file.name,kind:'on_site'});sitePhotos.push(uploaded.asset_id);
-    }
-    const created=await storeRequest(key,{action:'product_create',body:{id:saved.id}});
-    if(sitePhotos.length)settings.changes.photo_ids=sitePhotos;
-    await storeRequest(key,{action:'product_save',body:{id:saved.id,revision:created.product.revision,changes:settings.changes}});
-    $('website-link').href=`https://serwer2454127.home.pl/drafts/?id=${saved.id}#product-editor`;$('website-link').hidden=false;
-    result.textContent='Карточка автомобиля на польском создана или обновлена на сервере. Откройте её, проверьте состояние, цену и материалы. На сайте она появится после отдельной публикации владельцем.';
-  }catch(error){result.textContent=error.message;}finally{for(const[button,disabled]of locked)button.disabled=disabled;countCaption();}
-});
-$('server-save').addEventListener('click',async()=>{
-  const result=$('server-result');
-  try{
-    ensurePartslinkRead();ensureDeliveryValid();
-    const key=$('employee-key').value.trim();if(!key)throw Error('Введите ключ сотрудника ниже.');
-    if(!await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу Atlant Auto.');
-    $('server-save').disabled=true;$('retry').disabled=true;$('post').disabled=true;$('send-draft').disabled=true;$('import-partslink').disabled=true;$('progress').hidden=false;
-    const draft=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
-    let pdfFailed=0;
-    for(const {file,kind} of pendingPdfs()){
-      result.textContent=`Сохраняю ${file.name}…`;
-      try{await storeFile(key,draft.id,file,{name:file.name,kind});}catch(error){pdfFailed++;addLog(`${file.name}: ${error.message}`,true);}
-    }
-    result.textContent=draft.failed||pdfFailed?`Черновик сохранён частично: не загружено фото ${draft.failed}, документов ${pdfFailed}. Можно повторить — одинаковые файлы не дублируются.`:'Черновик и все найденные фотографии сохранены на сервере. Прикреплённые PDF также сохранены. Ссылки на отчёты сохранены; сами отчёты нужно приложить PDF.';
-    $('server-link').href=`https://serwer2454127.home.pl/drafts/?id=${draft.id}`;$('server-link').hidden=false;
-  }catch(error){result.textContent=error.message;}finally{$('server-save').disabled=false;$('retry').disabled=false;$('post').disabled=false;$('import-partslink').disabled=false;countCaption();}
-});
+$('server-save').addEventListener('click',saveSourceAndPreview);
 const countCaption=()=>{
   const facts=packet?vehicleFacts(packet):null;const policy=facts?.publication||{ready:false,reasons:[]};
   const privateLink=hasPrivateAuctionLink($('caption').value);
@@ -206,7 +193,7 @@ $('partslink-pdf').addEventListener('change',()=>{
   const status=$('partslink-import-status');status.className='warning';status.textContent=$('partslink-pdf').files[0]?'Файл выбран. Теперь нажмите «Прочитать PDF PartsLink». До успешного чтения его данные не добавлены к лоту.':'Файл не выбран.';
   if(!$('telegram').hidden)countCaption();
 });
-const pendingPdfs=()=>[...Array.from($('server-pdfs').files,file=>({file,kind:'document'})),...Array.from($('inspection-pdfs').files,file=>({file,kind:'inspection'})),...(partslinkFile?[{file:partslinkFile,kind:'partslink'}]:[])];
+const pendingPdfs=()=>[...Array.from($('server-pdfs').files,file=>({file,kind:'document'})),...inspectionFiles.map(file=>({file,kind:'inspection'})),...(partslinkFile?[{file:partslinkFile,kind:'partslink'}]:[])];
 function renderEquipmentPicker(){
   const candidates=equipmentHighlights(packet,15);const selected=new Set(selectedEquipmentHighlights(packet).items.map(x=>x.id));
   const root=$('equipment-picker');root.replaceChildren();
@@ -222,9 +209,14 @@ function renderEquipmentPicker(){
   }
   $('equipment-selection-count').textContent=candidates.items.length?`Выбрано: ${selected.size} из ${candidates.items.length} · источник: ${candidates.source}`:'Подтверждённые значимые опции не распознаны. Подключите PartsLink; список не дополняется предположениями.';
 }
+function renderInspectionFiles(){
+ const list=$('inspection-file-list');list.replaceChildren();
+ inspectionFiles.forEach((file,index)=>{const li=document.createElement('li');li.append(document.createTextNode(file.name+' '));const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='Убрать';remove.addEventListener('click',()=>{inspectionFiles.splice(index,1);renderInspectionFiles();});li.append(remove);list.append(li);});
+ $('inspection-upload-status').textContent=inspectionFiles.length?`Выбрано отчётов: ${inspectionFiles.length}. Можно добавить ещё. Все будут сохранены на сервере вместе с автомобилем.`:'Отчёты не выбраны. Можно прикрепить несколько PDF сразу или по очереди.';
+}
 $('inspection-pdfs').addEventListener('change',()=>{
-  const files=[...$('inspection-pdfs').files];
-  $('inspection-upload-status').textContent=files.length?`Выбрано отчётов: ${files.length}. Следующий шаг — «Сохранить на сервере». Для выдачи в боте оставьте включённым «Разрешить выдачу инспекции через кнопку» при подготовке поста.`:'Файл не выбран. Прикрепите PDF инспекции и нажмите «Сохранить на сервере».';
+ for(const file of $('inspection-pdfs').files)if(!inspectionFiles.some(f=>f.name===file.name&&f.size===file.size&&f.lastModified===file.lastModified))inspectionFiles.push(file);
+ $('inspection-pdfs').value='';renderInspectionFiles();
 });
 function partsStatus(){
   const page=packet.enrichment?.partslink24;const pdf=packet.enrichment?.partslink24_pdf;

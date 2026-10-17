@@ -14,3 +14,9 @@ export async function storeFile(key,id,blob,{name='file',kind='document',sourceU
   const form=new FormData();form.append('id',id);form.append('kind',kind);form.append('source_url',sourceUrl);form.append('file',blob,name);
   return storeRequest(key,{action:'asset',body:form});
 }
+
+export async function storePhotoBlob(key,assetId){
+  if(!/^[a-f0-9]{32}$/.test(assetId))throw Error('Некорректный идентификатор фото.');
+  const response=await fetch(STORE_ENDPOINT+'?asset='+assetId,{headers:{Authorization:'Bearer '+key},credentials:'omit',redirect:'error',signal:AbortSignal.timeout(30000)});
+  if(!response.ok||!/^image\/(jpeg|png|webp)(?:;|$)/.test(response.headers.get('Content-Type')||''))throw Error('Не удалось открыть сохранённое фото.');return response.blob();
+}

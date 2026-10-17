@@ -1,10 +1,11 @@
 # Security
 
-This is a private project owned by Atlant Auto.
+This project is owned by Atlant Auto. The repository is currently public. On 2026-10-17 the owner explicitly authorized publishing the reviewed version 0.7.0 source code; credentials and vehicle/customer records remain excluded.
 
 ## Access
 
-- Keep the GitHub repository private.
+- Treat all committed source as publicly readable while the repository is public.
+- Prefer a private repository for internal code after verifying GitHub Pages plan compatibility or moving website hosting.
 - Do not add collaborators unless they are required for a specific task.
 - Remove collaborator access immediately after the task is finished.
 - Use personal GitHub accounts only; do not share one account between people.
@@ -27,7 +28,10 @@ The publishing script reads FTP credentials from environment variables or asks f
 - Two-factor authentication enabled on the owner account.
 - Branch protection on `main`.
 - Require pull request before merge if outside collaborators are ever invited.
-- Disable GitHub Actions unless automation is intentionally added.
+- Keep the intentional GitHub Pages build/test/deployment workflow; review any additional workflow before enabling it.
+- Keep home.pl SSH credentials out of GitHub while server deployment is performed from the authorized local workstation.
+- Enable secret scanning and push protection where available.
+- Back up the production database and immutable assets independently of Git; periodically test restore.
 
 ## If access must be revoked
 

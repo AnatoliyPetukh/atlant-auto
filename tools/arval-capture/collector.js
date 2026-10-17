@@ -10,7 +10,19 @@ export function collectArvalLot() {
     .map(el => [...el.children].map(text));
   const fields = Object.fromEntries(pairs(document.querySelector('main') || document));
   const get = key => fields[key] && fields[key] !== '-' ? fields[key] : null;
-  const number = value => value ? Number(value.replace(/[^\d]/g, '')) : null;
+  const number = value => value && /\d/.test(value) ? Number(value.replace(/[^\d]/g, '')) : null;
+  const normalized = label => label.toLowerCase().replace(/[^a-z0-9]/g,'');
+  const getAny = (...labels) => {for(const label of labels){const key=Object.keys(fields).find(k=>normalized(k)===normalized(label));if(key&&get(key)!==null)return get(key);}return null;};
+  const yesNo = value => /^(yes|true|oui)$/i.test(value||'')?true:/^(no|false|non)$/i.test(value||'')?false:null;
+  const powerSource=getAny('Power','Engine Power','Power (kW)');
+  const unitNumber = (value,unit) => {const match=(value||'').match(new RegExp('(\\d+(?:[.,]\\d+)?)\\s*(?:'+unit+')\\b','i'));return match?Number(match[1].replace(',','.')):null;};
+  const powerKw=unitNumber(powerSource,'kW')??(getAny('Power (kW)')&&/^\d+(?:[.,]\d+)?$/.test(getAny('Power (kW)'))?Number(getAny('Power (kW)').replace(',','.')):null);
+  const powerHp=unitNumber(powerSource,'hp|bhp|PS|CV')??number(getAny('Horsepower','Power (HP)'));
+  const keysSource=getAny('Number of Keys','Number of available keys','Keys');
+  const keys=keysSource&&/^\d+\s*(?:keys?)?$/i.test(keysSource)?number(keysSource):null;
+  const driveSource=getAny('4 wheel drive','4-wheel drive','Four wheel drive');
+  const vatSource=getAny('VAT Deductible');
+  const countrySource=getAny('Country of registration documents','Country of registration papers','Registration documents country','Country of registration','Registration Country');
   const titleEl = document.querySelector('#submenu-main-characteristics');
   const title = text(titleEl);
   const vin = get('Vehicle Identification Number');
@@ -73,6 +85,18 @@ export function collectArvalLot() {
     else if (damages.length && label === damageLabels[1]) damages.at(-1).nature = value;
     else if (damages.length && label === damageLabels[2]) damages.at(-1).repair = value;
   }
+  // Attach damage comments only when the visible image container identifies one damage.
+  for(const photo of photoMap.values())if(photo.kind==='damage'){
+    const img=[...document.querySelectorAll('#submenu-damages img[src]')].find(el=>{try{const u=new URL(el.getAttribute('src'),document.baseURI);return u.origin+u.pathname===new URL(photo.url).origin+new URL(photo.url).pathname;}catch{return false;}});
+    for(let node=img?.parentElement;node;node=node.parentElement){
+      const entries=pairs(node);const parts=entries.filter(([key])=>key==='Damaged Part(s)');
+      if(parts.length===1){const values=Object.fromEntries(entries);photo.damage={part:parts[0][1],nature:values['Nature of damage']||null,repair:values['Damage Repair']||null};break;}
+      if(node.id==='submenu-damages')break;
+    }
+  }
+  const tyresEl=document.querySelector('#submenu-tyres');
+  const tyresRoot=tyresEl?.matches('h1,h2,h3,h4')?tyresEl.nextElementSibling:tyresEl;
+  const tyresPairs=pairs(tyresRoot);
   const maintenanceEl = document.querySelector('#submenu-maintenance-history');
   const maintenanceRoot = maintenanceEl?.matches('h1,h2,h3,h4') ? maintenanceEl.nextElementSibling : maintenanceEl;
   const maintenanceHeading = text(maintenanceEl?.querySelector('h2,h3')) || text(maintenanceEl);
@@ -120,12 +144,12 @@ export function collectArvalLot() {
   if (year && modelYear && year !== modelYear) warnings.push('Год производства и модельный год в источнике различаются; сохранены отдельно.');
   return {
     schema_version: 'atlant.vehicle.capture/1',
-    source: {auction: 'arval', lot_id: location.hash.match(/item-details\/([^?]+)/)?.[1] || null, sales_event_id: hashQuery.get('salesEventId'), url: sourceUrl.href, captured_at: capturedAt, interface_language: document.documentElement.lang || 'unknown', extractor_version: '0.4.1'},
+    source: {auction: 'arval', lot_id: location.hash.match(/item-details\/([^?]+)/)?.[1] || null, sales_event_id: hashQuery.get('salesEventId'), url: sourceUrl.href, captured_at: capturedAt, interface_language: document.documentElement.lang || 'unknown', extractor_version: '0.7.0'},
     workflow: {state: 'auction', publication: 'draft', availability: 'unknown'},
-    vehicle: {vin, make: get('Brand'), title, model_generation: get('Model generation'), production_year: year, model_year: modelYear, first_registration_source: registration, mileage_km: mileageMatch ? number(mileageMatch[1]) : null, fuel: summary.match(/\b(Petrol|Diesel|Electric|Hybrid)\b/i)?.[0] || null, transmission: summary.match(/\b(Manual|Automatic)\b/i)?.[0] || null, engine_cm3: number(get('Engine Size')), power_kw: number(get('Power')), color: get('Paint Color/Carmaker Color'), keys: number(get('Number of Keys')), storage_location: get('Storage location name'), vat_deductible_source: get('VAT Deductible')},
+    vehicle: {vin, make: get('Brand'), title, model_generation: get('Model generation'), production_year: year, model_year: modelYear, first_registration_source: registration, mileage_km: mileageMatch ? number(mileageMatch[1]) : null, fuel: summary.match(/\b(Petrol|Diesel|Electric|Hybrid)\b/i)?.[0] || null, transmission: summary.match(/\b(Manual|Automatic)\b/i)?.[0] || null, engine_cm3: number(get('Engine Size')), power_kw: powerKw, power_hp: powerHp, power_source: powerSource, color: getAny('Paint Color/Carmaker Color','Paint Color','Colour','Color'), keys, keys_source: keysSource, awd: yesNo(driveSource), drive_source: driveSource, registration_country_source: countrySource, vat_deductible: yesNo(vatSource), storage_location: get('Storage location name'), vat_deductible_source: vatSource},
     auction: {price: {kind: priceMatch ? 'highest_bid' : 'unknown', amount, currency: priceMatch?.[2] || null, tax_basis: 'unknown', observed_at: capturedAt, source_text: priceText || null}, countdown_source: countdown, countdown_source_original: countdown===null?null:completeCountdowns[0].raw, ends_at: null},
     equipment: equipment.map(([type, specification]) => ({type, specification})),
-    condition: {damages, tyres_source: text(document.querySelector('#submenu-tyres')), maintenance_count: maintenanceCount === undefined ? null : Number(maintenanceCount), maintenance_entries: maintenanceEntries, maintenance_source: [maintenanceHeading,text(maintenanceRoot)].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join('\n')},
+    condition: {damages, tyres_source: [text(tyresEl),text(tyresRoot)].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join('\n'), tyres: tyresPairs.map(([label,value])=>({label,value})), maintenance_count: maintenanceCount === undefined ? null : Number(maintenanceCount), maintenance_entries: maintenanceEntries, maintenance_source: [maintenanceHeading,text(maintenanceRoot)].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join('\n')},
     photos: [...photoMap.values()], documents,
     evidence: {fields, summary_source: summary, sections: [...document.querySelectorAll('main [id^="submenu-"]')].filter(x => ['submenu-details', 'submenu-damages', 'submenu-maintenance-history', 'submenu-tyres'].includes(x.id)).map(x => ({section: x.id, text: text(x)}))},
     warnings
