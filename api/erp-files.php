@@ -1,5 +1,5 @@
 <?php if(!defined('ATLANT_DRAFT_STORE'))exit; $mediaSection=$section==='media';$kinds=erpFileKinds();$visibleKinds=$mediaSection?['vehicle','on_site','damage','inspection_video','review']:['invoice','transport','registration','inspection','partslink','specification','document']; ?>
-<section class="panel"><h2><?=$mediaSection?'Медиафайлы':'Документы автомобиля'?></h2><p class="muted">Файлы хранятся внутри этой машины. Загрузка не отправляет их в Telegram и не публикует на сайте.</p>
+<section class="panel"><h2><?=$mediaSection?'Медиафайлы':'Документы автомобиля'?></h2><p class="muted">Файлы хранятся внутри этой машины. Загрузка не отправляет их в Telegram и не публикует на сайте. PDF PartsLink здесь прикладывается как документ; дату выпуска и комплектацию импортируйте через расширение.</p>
 <form method="post" enctype="multipart/form-data" action="?id=<?=e($detail['id'])?>&amp;section=<?=e($section)?>">
 <input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="upload">
 <label>Раздел <select name="file_kind"><?php foreach($visibleKinds as $kind):?><option value="<?=e($kind)?>"><?=e($kinds[$kind])?></option><?php endforeach;?></select></label>
