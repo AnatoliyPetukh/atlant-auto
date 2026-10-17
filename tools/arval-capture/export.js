@@ -6,23 +6,24 @@ import {telegramCaption,readArvalPhoto,hasPrivateAuctionLink} from './telegram.j
 import {storeRequest,storeFile} from './server-store.js';
 import {applyVehicleTitle,publicVehicleTitle} from './vehicle-title.js';
 import {applyVehicleFacts,vehicleFacts,productionLabel,vehicleDateLabel} from './vehicle-facts.js';
-import {readPartslinkPdf} from './partslink-pdf.js';
+import {readPartslinkPdfs} from './partslink-pdf.js';
 import {applyVehicleLocation} from './location.js';
 import {applyEquipmentHighlights,equipmentHighlights,selectedEquipmentHighlights} from './equipment-highlights.js';
 
 const $ = id => document.getElementById(id);
 const tabId = Number(new URLSearchParams(location.search).get('tab'));
 let packet;
-let partslinkFile=null;
+let partslinkFiles=[];
+let importedPartslinkFiles=[];
+let partslinkSelectionVersion=0;
 let inspectionFiles=[];
 let sourceLocks=[];
 const websiteEditor=createWebsiteEditor({key:()=>$('employee-key').value.trim(),onBusy:busy=>{
  if(busy){sourceLocks=['server-save','retry','post','import-partslink','send-draft'].map(id=>[$(id),$(id).disabled]);for(const[control]of sourceLocks)control.disabled=true;}
  else{for(const[control,disabled]of sourceLocks)control.disabled=disabled;sourceLocks=[];}
 }});
-function ensurePartslinkRead(){
-  if($('partslink-pdf').files[0]&&$('partslink-pdf').files[0]!==partslinkFile)throw Error('Выбранный PDF PartsLink ещё не прочитан. Нажмите «Прочитать PDF PartsLink» и дождитесь подтверждения. При ошибке данные этого файла не используются.');
-}
+function partslinkUnread(){return partslinkFiles.length!==importedPartslinkFiles.length||partslinkFiles.some((f,i)=>f!==importedPartslinkFiles[i]);}
+function ensurePartslinkRead(){if(partslinkUnread())throw Error('Выбранный комплект PDF PartsLink ещё не прочитан. Нажмите «Прочитать PDF PartsLink» и дождитесь подтверждения. При ошибке новые данные не используются.');}
 function ensureDeliveryValid(){parseDeliveryAmount($('delivery-cost').value);}
 function syncDeliveryInput(){
   if(!packet)return;
@@ -77,7 +78,7 @@ async function readLot() {
     if (!packet?.vehicle?.vin) throw new Error('Arval не вернул данные автомобиля.');
     if(chrome.storage?.local){const key='parts:'+packet.vehicle.vin;const stored=await chrome.storage.local.get(key);attachPartslink(packet,stored[key]);}
     if(previous?.vehicle?.vin===packet.vehicle.vin&&previous.enrichment?.partslink24_pdf)packet.enrichment={...(packet.enrichment||{}),partslink24_pdf:previous.enrichment.partslink24_pdf};
-    else{partslinkFile=null;$('partslink-pdf').value='';}
+    else{partslinkFiles=[];importedPartslinkFiles=[];partslinkSelectionVersion++;$('partslink-pdf').value='';renderPartslinkFiles();}
     if(previous?.vehicle?.vin===packet.vehicle.vin && previous.vehicle.title_override)packet.vehicle.title_override=previous.vehicle.title_override;
     if(previous?.vehicle?.vin===packet.vehicle.vin && Array.isArray(previous.vehicle.equipment_selection))packet.vehicle.equipment_selection=[...previous.vehicle.equipment_selection];
     if(previous?.vehicle?.vin===packet.vehicle.vin&&previous.vehicle.storage_location===packet.vehicle.storage_location&&previous.logistics?.delivery_to_warsaw)packet.logistics={...(packet.logistics||{}),delivery_to_warsaw:{...previous.logistics.delivery_to_warsaw}};
@@ -185,15 +186,33 @@ const countCaption=()=>{
   $('publication-status').className=policy.ready?'note':'warning';
   if(privateLink){$('publication-status').textContent+=' Удалите закрытую ссылку Arval из текста поста.';$('publication-status').className='warning';}
   let deliveryInvalid=false;try{ensureDeliveryValid();}catch{deliveryInvalid=true;}
-  const unread=$('partslink-pdf').files[0]&&$('partslink-pdf').files[0]!==partslinkFile;
+  const unread=partslinkUnread();
   if(unread){$('publication-status').textContent+=' Выбран новый PDF PartsLink: сначала прочитайте его.';$('publication-status').className='warning';}
   $('send-draft').disabled=$('caption').value.length>1024||!policy.ready||privateLink||Boolean(unread)||deliveryInvalid;
 };
+function refreshPartslinkFacts(){
+ if(!packet)return;applyVehicleFacts(packet);applyEquipmentHighlights(packet);const facts=packet.vehicle.publication_facts;
+ $('production-fact').textContent=`${productionLabel(facts.production)}${facts.production?` · источник: ${facts.production.source}`:''}`;
+ $('publication-date-fact').textContent=`${vehicleDateLabel(facts)}${facts.display_date?` · источник: ${facts.display_date.source}`:''}`;
+ $('engine-fact').textContent=facts.engine.label;
+ const equipment=packet.vehicle.equipment_highlights;$('equipment-fact').textContent=`${equipment.items.map(x=>x.label).join(', ')||'Нет распознанных значимых опций'} · источник: ${equipment.source}`;
+ if(!$('telegram').hidden){renderEquipmentPicker();$('parts-status').textContent=partsStatus();$('caption').value=telegramCaption(packet,{includeReport:$('include-report').checked,buttons:true,includeMaintenance:$('include-service').checked});countCaption();}
+}
+function renderPartslinkFiles(){
+ const list=$('partslink-file-list');list.replaceChildren();
+ partslinkFiles.forEach((file,index)=>{
+  const li=document.createElement('li');li.append(document.createTextNode(file.name+(importedPartslinkFiles.includes(file)?' · прочитан ':' · не прочитан ')));
+  const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='Убрать';remove.addEventListener('click',()=>{partslinkFiles.splice(index,1);partslinkSelectionVersion++;if(!partslinkFiles.length)clearPartslink();else{renderPartslinkFiles();$('partslink-import-status').textContent='Комплект изменён. Прочитайте оставшиеся файлы заново.';if(!$('telegram').hidden)countCaption();}});li.append(remove);list.append(li);
+ });
+}
+function clearPartslink(){partslinkFiles=[];importedPartslinkFiles=[];partslinkSelectionVersion++;$('partslink-pdf').value='';if(packet?.enrichment)delete packet.enrichment.partslink24_pdf;renderPartslinkFiles();refreshPartslinkFacts();$('partslink-import-status').className='note';$('partslink-import-status').textContent='Комплект PDF очищен. Выберите один или несколько файлов PartsLink.';}
+$('clear-partslink').addEventListener('click',clearPartslink);
 $('partslink-pdf').addEventListener('change',()=>{
-  const status=$('partslink-import-status');status.className='warning';status.textContent=$('partslink-pdf').files[0]?'Файл выбран. Теперь нажмите «Прочитать PDF PartsLink». До успешного чтения его данные не добавлены к лоту.':'Файл не выбран.';
-  if(!$('telegram').hidden)countCaption();
+ for(const file of $('partslink-pdf').files)if(!partslinkFiles.some(f=>f.name===file.name&&f.size===file.size&&f.lastModified===file.lastModified))partslinkFiles.push(file);
+ partslinkSelectionVersion++;$('partslink-pdf').value='';renderPartslinkFiles();const status=$('partslink-import-status');status.className='warning';status.textContent=`Выбрано файлов: ${partslinkFiles.length}. Нажмите «Прочитать PDF PartsLink»: все файлы будут проверены по VIN и объединены.`;
+ if(!$('telegram').hidden)countCaption();
 });
-const pendingPdfs=()=>[...Array.from($('server-pdfs').files,file=>({file,kind:'document'})),...inspectionFiles.map(file=>({file,kind:'inspection'})),...(partslinkFile?[{file:partslinkFile,kind:'partslink'}]:[])];
+const pendingPdfs=()=>[...Array.from($('server-pdfs').files,file=>({file,kind:'document'})),...inspectionFiles.map(file=>({file,kind:'inspection'})),...importedPartslinkFiles.map(file=>({file,kind:'partslink'}))];
 function renderEquipmentPicker(){
   const candidates=equipmentHighlights(packet,15);const selected=new Set(selectedEquipmentHighlights(packet).items.map(x=>x.id));
   const root=$('equipment-picker');root.replaceChildren();
@@ -228,18 +247,12 @@ $('import-partslink').addEventListener('click',async()=>{
   const locked=['server-save','retry','post'].map(id=>[$(id),$(id).disabled]);
   try{
     if(!packet)throw Error('Сначала прочитайте лот Arval.');
-    button.disabled=true;for(const [control]of locked)control.disabled=true;$('send-draft').disabled=true;const original=packet;const file=$('partslink-pdf').files[0];status.className='';status.textContent='Читаю PDF на этом компьютере…';
-    const parts=await readPartslinkPdf(file,packet.vehicle.vin);
-    if(packet!==original)throw Error('Лот был перечитан во время разбора PDF. Повторите импорт для текущего лота.');
-    packet.enrichment={...(packet.enrichment||{}),partslink24_pdf:parts};partslinkFile=file;applyVehicleFacts(packet);applyEquipmentHighlights(packet);
-    const facts=packet.vehicle.publication_facts;
-    $('production-fact').textContent=`${productionLabel(facts.production)}${facts.production?` · источник: ${facts.production.source}`:''}`;
-    $('publication-date-fact').textContent=`${vehicleDateLabel(facts)}${facts.display_date?` · источник: ${facts.display_date.source}`:''}`;
-    $('engine-fact').textContent=facts.engine.label;
-    const equipment=packet.vehicle.equipment_highlights;$('equipment-fact').textContent=`${equipment.items.map(x=>x.label).join(', ')||'Нет распознанных значимых опций'} · источник: ${equipment.source}`;
-    status.className='ok';status.textContent=`PDF прочитан, VIN совпадает. ${vehicleDateLabel(facts)}. ${facts.date_notice} Распознано позиций комплектации: ${parts.equipment.length}. Данные уже добавлены к лоту и будут использованы в посте. Следующий шаг — «Сохранить на сервере».`;
-    if(!$('telegram').hidden){renderEquipmentPicker();$('parts-status').textContent=partsStatus();$('caption').value=telegramCaption(packet,{includeReport:$('include-report').checked,buttons:true,includeMaintenance:$('include-service').checked});countCaption();}
-  }catch(error){status.className='failed';status.textContent=error.message+(partslinkFile?' Ранее успешно импортированный PDF остаётся в черновике.':'');}
+    button.disabled=true;for(const [control]of locked)control.disabled=true;$('send-draft').disabled=true;const original=packet,version=partslinkSelectionVersion,files=[...partslinkFiles];status.className='';status.textContent='Читаю PDF на этом компьютере…';
+    const parts=await readPartslinkPdfs(files,packet.vehicle.vin,p=>{status.textContent=`Читаю файл ${p.index} из ${p.total}: ${p.file_name}…`;});
+    if(packet!==original||version!==partslinkSelectionVersion)throw Error('Лот или комплект файлов изменился во время разбора. Повторите импорт текущего комплекта.');
+    packet.enrichment={...(packet.enrichment||{}),partslink24_pdf:parts};importedPartslinkFiles=files;refreshPartslinkFacts();renderPartslinkFiles();const facts=packet.vehicle.publication_facts;
+    status.className='ok';status.textContent=`PDF прочитан: файлов ${files.length}, VIN каждого совпадает. ${vehicleDateLabel(facts)}. ${facts.date_notice} Распознано позиций комплектации: ${parts.equipment.length}. Данные объединены; все PDF будут приложены при сохранении на сервере.`;
+  }catch(error){status.className='failed';status.textContent=error.message+(importedPartslinkFiles.length?' Ранее успешно импортированный комплект остаётся в черновике; сохранение с изменённым комплектом заблокировано до успешного чтения.':'');}
   finally{button.disabled=false;for(const [control,disabled]of locked)control.disabled=disabled;if(!$('telegram').hidden)countCaption();}
 });
 $('publication-title').addEventListener('input',()=>{

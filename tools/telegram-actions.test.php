@@ -115,6 +115,9 @@ try {
     $big=$damageIds[0];$db->prepare('UPDATE assets SET bytes=? WHERE id=?')->execute([11*1024*1024,$big]);
     $large=$shared;$large['damage_files']=[$big];$n=count($calls);
     verify(actionDeliverDamage($offer,$large,0,'902',$config,$call) && $calls[$n][0]==='sendDocument','Oversized photo delivered as original file');
+    $multiPacket=$packet;$multiPacket['enrichment']['partslink24_pdf']=['equipment'=>[['code'=>'OPTION1','label'=>'Merged PDF equipment']]];draftCapture($multiPacket,'test');
+    $partsIds=[];for($i=0;$i<4;$i++){$aid=bin2hex(random_bytes(16));$partsIds[]=$aid;$raw='%PDF-1.4 parts fixture '.$i;file_put_contents($root.'/objects/'.$car['id'].'/'.$aid,$raw);$db->prepare('INSERT INTO assets VALUES (?,?,?,?,?,?,?,?,?)')->execute([$aid,$car['id'],hash('sha256',$raw),'part-'.$i.'.pdf','application/pdf',strlen($raw),'partslink','',gmdate('c')]);}
+    $multiOffer=actionOffer($packet['vehicle']['vin'],str_repeat('8',64),['parts'=>true]);$multiResources=json_decode($multiOffer['resources_json'],true);verify($multiResources['parts_files']===$partsIds,'All four PartsLink PDFs available, not only first three');verify($multiResources['equipment'][0]['label']==='Merged PDF equipment','Merged PDF equipment used in bot');
     verify(draftDb()->query('PRAGMA integrity_check')->fetchColumn()==='ok','Integrity');
     echo "PASS actions: four deep links, service history/legacy privacy, immutable share snapshot, private PDFs excluded, queued leads, update/request idempotency, manager routing, inspection PDF, PartsLink TXT, chat isolation and rate limit. No real Telegram calls.\n";
 }finally{if(is_dir($root)){foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST) as $f){if($f->isDir())rmdir($f->getPathname());else unlink($f->getPathname());}rmdir($root);}}

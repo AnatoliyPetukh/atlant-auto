@@ -198,6 +198,22 @@ const http = require('node:http');
     assert.equal(mercedesCheck.other.production,null);assert.equal(mercedesCheck.other.display_date.kind,'first_registration');
     assert(!mercedesCheck.highlights.items.some(x=>x.id==='navigation'));assert(mercedesCheck.mismatch);
     console.log('PASS Mercedes PDF: numeric/letter codes, wrapped options, VPD excluded, exact VIN, owner delivery-date rule scoped to Mercedes, preparation not advertised as installed.');
+    const kiaMerge=await page.evaluate(async()=>{
+      const {parsePartslinkText,mergePartslinkDocuments}=await import('./partslink-pdf.js');const {vehicleFacts}=await import('./vehicle-facts.js');
+      const vin='U5Y00000000000001';const row=(y,cells)=>({page:1,y,cells:cells.map(([x,str])=>({x,str})),text:cells.map(c=>c[1]).join(' ')});
+      const prefix='Идентификация автомобиля\nНомер шасси '+vin+'\nhttps://www.partslink24.com/hyundai-kia-automotive-group/kia_parts/vin-group.action';
+      const basics=[row(750,[[40,'Данные автомобиля']]),row(720,[[40,'Номер шасси'],[240,vin]]),row(690,[[40,'Дата производства'],[240,'29.02.2020']]),row(660,[[40,'Топливо'],[240,'DIESEL - DIESEL']]),row(630,[[40,'Двигатель'],[240,'ENGINE TYPE (DOHC) - TCI']])];
+      const options=[row(750,[[40,'Оснащение']]),row(720,[[40,'Характеристика'],[240,'Наименование']]),row(690,[[40,'0093E6'],[240,'VEHICLE PACKAGE - GT LINE']]),row(660,[[40,'956MB1'],[240,'SURROUND VIEW CAMERA']]),row(640,[[240,'SYSTEM']])];
+      const extra=[row(750,[[40,'Доп.оборудование']]),row(720,[[40,'Характеристика'],[240,'Наименование']]),row(690,[[40,'009EA1'],[240,'ENVIRONMENT PACKAGE - MILD HEV']]),row(660,[[40,'963VA9'],[240,'SPEAKER BRAND - HARMAN/KARDON']])];
+      const docs=[basics,options,extra].map((rows,i)=>({...parsePartslinkText(prefix+'\n'+rows.map(r=>r.text).join('\n'),vin,rows),file_name:'part-'+i+'.pdf',page_count:1}));
+      const merged=mergePartslinkDocuments(docs,vin),reverse=mergePartslinkDocuments([...docs].reverse(),vin);
+      const packet={vehicle:{vin,make:'Kia',title:'Sportage',fuel:'Diesel'},enrichment:{partslink24_pdf:merged}};
+      let wrong=false,conflict=false;try{mergePartslinkDocuments([...docs,{...docs[0],vin:'U5Y00000000000002'}],vin);}catch{wrong=true;}
+      try{mergePartslinkDocuments([...docs,{...docs[0],fields:{'Дата производства':'01.01.2021'}}],vin);}catch{conflict=true;}
+      return {merged,reverse,facts:vehicleFacts(packet),wrong,conflict};
+    });
+    assert.equal(kiaMerge.merged.source_files.length,3);assert.equal(kiaMerge.merged.equipment.length,4);assert.equal(kiaMerge.merged.equipment[0].code,'0093E6');assert(kiaMerge.merged.equipment.some(o=>o.label==='SURROUND VIEW CAMERA SYSTEM'));assert.equal(kiaMerge.facts.production.value,'2020-02-29');assert.equal(kiaMerge.facts.engine.label,'мягкий гибрид (дизель)');assert.equal(kiaMerge.reverse.fields['Дата производства'],'29.02.2020');assert(kiaMerge.wrong&&kiaMerge.conflict);
+    console.log('PASS Hyundai/Kia multi-PDF: split identification/equipment/options, leading-zero codes, wrapped labels, date and MHEV diesel, order independence, VIN/date conflict rejection.');
     const {PDFDocument,StandardFonts}=require('pdf-lib');
     const testPdf=await PDFDocument.create();const font=await testPdf.embedFont(StandardFonts.Helvetica);const pdfPage=testPdf.addPage();
     [`partslink24`,`VIN: ${vin}`,'Production date: 21.11.2022','Fuel type: Petrol','Engine type: MHEV'].forEach((line,i)=>pdfPage.drawText(line,{x:40,y:750-i*25,size:12,font}));
@@ -367,25 +383,32 @@ const http = require('node:http');
     assert(storageCalls[telegramIndex].body.includes('BMW X2 · исправленный заголовок'));
     assert(!storageCalls[telegramIndex].body.includes('source_url'));assert(!storageCalls[telegramIndex].body.includes('Лот:'));
     assert.equal(await storageUi.locator('.post-buttons-preview span').count(),4);
-    await storageUi.locator('#partslink-pdf').setInputFiles({name:'partslink.pdf',mimeType:'application/pdf',buffer:Buffer.from(pdfBytes)});
+    const splitPdfs=[];
+    for(const [name,line]of[['equipment.pdf','S3AGA Rear view camera'],['options.pdf','S248A Steering wheel heating']]){
+      const doc=await PDFDocument.create();const font=await doc.embedFont(StandardFonts.Helvetica);const page=doc.addPage();['partslink24',`VIN: ${vin}`,'Optional equipment',line].forEach((text,i)=>page.drawText(text,{x:40,y:750-i*25,size:12,font}));splitPdfs.push({name,mimeType:'application/pdf',buffer:Buffer.from(await doc.save())});
+    }
+    await storageUi.locator('#partslink-pdf').setInputFiles([{name:'partslink.pdf',mimeType:'application/pdf',buffer:Buffer.from(pdfBytes)},...splitPdfs]);
+    assert.equal(await storageUi.locator('#partslink-file-list li').count(),3);
     const callsBeforeUnread=storageCalls.length;
     await storageUi.locator('#server-save').click();await storageUi.locator('#server-result').filter({hasText:'ещё не прочитан'}).waitFor();
     assert.equal(storageCalls.length,callsBeforeUnread);
     await storageUi.locator('#post').click();assert((await storageUi.locator('#partslink-import-status').textContent()).includes('ещё не прочитан'));assert(await storageUi.locator('#send-draft').isDisabled());
     await storageUi.locator('#import-partslink').click();await storageUi.locator('#partslink-import-status').filter({hasText:'PDF прочитан'}).waitFor();
-    assert((await storageUi.locator('#partslink-import-status').textContent()).includes('Данные уже добавлены к лоту'));
+    assert((await storageUi.locator('#partslink-import-status').textContent()).includes('Данные объединены'));
     assert((await storageUi.locator('#production-fact').textContent()).includes('21.11.2022'));
     assert((await storageUi.locator('#engine-fact').textContent()).includes('мягкий гибрид (бензин)'));
     await storageUi.locator('#server-save').click();await storageUi.locator('#server-save:enabled').waitFor();await storageUi.locator('#server-result').filter({hasText:'все найденные фотографии сохранены'}).waitFor();
-    assert(storageCalls.some(x=>x.url.includes('action=asset')&&x.body.includes('partslink.pdf')&&x.body.includes('partslink')));
+    for(const name of ['partslink.pdf','equipment.pdf','options.pdf'])assert(storageCalls.some(x=>x.url.includes('action=asset')&&x.body.includes(name)&&x.body.includes('partslink')),'All PartsLink PDFs uploaded: '+name);
     const fullPdf=await PDFDocument.create();const fullPage=fullPdf.addPage();const fullFont=await fullPdf.embedFont(StandardFonts.Helvetica);
     [`partslink24`,`VIN: ${vin}`,'Production date: 21.11.2022','Fuel type: Petrol','Engine type: HEV'].forEach((line,i)=>fullPage.drawText(line,{x:40,y:750-i*25,size:12,font:fullFont}));
+    await storageUi.locator('#clear-partslink').click();
     await storageUi.locator('#partslink-pdf').setInputFiles({name:'full-hybrid.pdf',mimeType:'application/pdf',buffer:Buffer.from(await fullPdf.save())});
     await storageUi.locator('#import-partslink').click();await storageUi.locator('#partslink-import-status').filter({hasText:'PDF прочитан'}).waitFor();
     assert(await storageUi.locator('#send-draft').isDisabled());assert((await storageUi.locator('#publication-status').textContent()).includes('не готовится для публикации'));
     assert(await storageUi.locator('#server-save').isEnabled());
     const noDatePdf=await PDFDocument.create();const noDatePage=noDatePdf.addPage();const noDateFont=await noDatePdf.embedFont(StandardFonts.Helvetica);
     ['partslink24',`VIN: ${vin}`,'Fuel type: Petrol'].forEach((line,i)=>noDatePage.drawText(line,{x:40,y:750-i*25,size:12,font:noDateFont}));
+    await storageUi.locator('#clear-partslink').click();
     await storageUi.locator('#partslink-pdf').setInputFiles({name:'partslink-without-date.pdf',mimeType:'application/pdf',buffer:Buffer.from(await noDatePdf.save())});
     await storageUi.locator('#import-partslink').click();await storageUi.locator('#partslink-import-status').filter({hasText:'PDF прочитан'}).waitFor();
     assert((await storageUi.locator('#caption').inputValue()).includes('Первая регистрация: 04.2023'));

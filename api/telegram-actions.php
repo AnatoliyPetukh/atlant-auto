@@ -24,12 +24,12 @@ function actionOffer(string $vin,string $requestId,array $options): array {
     foreach ($draft['assets'] as $asset) {
         if ($asset['mime']!=='application/pdf')continue;
         if (!empty($options['inspection']) && $asset['kind']==='inspection' && count($resources['inspection_files'])<3)$resources['inspection_files'][]=$asset['id'];
-        if (!empty($options['parts']) && $asset['kind']==='partslink' && count($resources['parts_files'])<3)$resources['parts_files'][]=$asset['id'];
+        if (!empty($options['parts']) && $asset['kind']==='partslink' && count($resources['parts_files'])<10)$resources['parts_files'][]=$asset['id'];
     }
     if (!empty($options['inspection'])) foreach (($p['documents']??[]) as $doc) {
         if (($doc['kind']??'')==='macadam_report' && ($url=actionInspectionUrl((string)($doc['url']??'')))) {$resources['inspection_url']=$url;break;}
     }
-    if (!empty($options['parts'])) foreach (array_slice($p['enrichment']['partslink24']['equipment']??[],0,300) as $option) {
+    if (!empty($options['parts'])) foreach (array_slice($p['enrichment']['partslink24_pdf']['equipment']??$p['enrichment']['partslink24']['equipment']??[],0,300) as $option) {
         if (!is_array($option))continue;
         $resources['equipment'][]=['code'=>mbSafeCut((string)($option['code']??''),50),'label'=>mbSafeCut((string)($option['label']??''),300)];
     }
