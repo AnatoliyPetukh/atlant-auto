@@ -25,6 +25,23 @@ try{
  $facts=productSave($id,4,['keys'=>'0','power_kw'=>'100,5','power_hp'=>'136','color_pl'=>'Biały','registration_country_pl'=>'Francja','awd'=>false,'vat_deductible'=>true,'tyres_pl'=>'Opony letnie, bieżnik 5 mm.'],'employee-2');
  expect($facts['record']['keys']===0&&$facts['record']['power_kw']===100.5&&$facts['record']['awd']===false,'Reviewed facts typed without losing zero/false');
  productPublish($id,5,'owner');$visible=productPublicList()[0];expect($visible['keys']===0&&$visible['vat_deductible']===true&&$visible['tyres_pl']!==''&&$visible['registration_country_pl']==='Francja','Reviewed facts reach public projection');productUnpublish($id,'owner');
+ // ERP is the authority. Explicit ERP saves atomically refresh an existing public card.
+ productPublish($id,5,'owner');
+ expect(rejected(fn()=>productSave($id,5,['state'=>'sold'],'employee-2',true)),'Staff cannot change an already-public vehicle');
+ expect(productGet($id)['revision']===5&&productPublicList()[0]['state']==='auction','Rejected ERP change is atomic');
+ expect(rejected(fn()=>productSave($id,5,['state'=>'on_site','photo_ids'=>[$photo],'price_net'=>'12000'],'owner',true)),'Cannot advertise auction photos as yard arrival');
+ expect(productGet($id)['revision']===5,'Failed publication validation rolls back ERP revision');
+ $erp=productSave($id,5,['state'=>'in_transit','price_net'=>'12000'],'owner',true);
+ expect($erp['published_revision']===6&&productPublicList()[0]['state']==='in_transit','ERP state reaches website in same transaction');
+ $again=$packet;$again['vehicle']['display_title']='Recaptured source';draftCapture($again,'employee-2');
+ expect(productGet($id)['record']['state']==='in_transit'&&productPublicList()[0]['state']==='in_transit','Recapture cannot reset ERP or website state');
+ expect(count(productRegistryList('WBA00000000000001','in_transit'))===1&&productRegistryList('WBA00000000000001','on_site')===[],'VIN registry state filters');
+ expect(rejected(fn()=>productSave($id,5,['state'=>'sold'],'owner',true)),'Stale ERP revision cannot overwrite newer state');
+ $erp=productSave($id,6,['state'=>'on_site','photo_ids'=>[$yard]],'owner',true);expect(productPublicList()[0]['state']==='on_site','Yard arrival sync with real photos');
+ $erp=productSave($id,7,['state'=>'sold'],'owner',true);expect(productPublicList()[0]['state']==='sold','Sold state sync');
+ productUnpublish($id,'owner');productSave($id,8,['state'=>'auction'],'employee-2',true);expect(productPublicList()===[],'Hidden vehicle never auto-publishes');
+ $newPacket=$packet;$newPacket['vehicle']['vin']='WBA00000000000002';$new=draftCapture($newPacket,'employee-2');
+ expect(count(productRegistryList('WBA00000000000002','incoming'))===1&&productGet($new['id'])===null,'Extension upload appears in ERP without creating a public product');
  expect($db->query('PRAGMA integrity_check')->fetchColumn()==='ok','Database integrity');
  echo "PASS products: VIN identity, Polish seed, price separation, workflow/availability, source reimport isolation, owner publication, frozen public version, revision conflict, private document and VIN boundaries, unpublish. No real vehicles published.\n";
 }finally{if(is_dir($root)){foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f){if($f->isDir())rmdir($f->getPathname());else unlink($f->getPathname());}rmdir($root);}}

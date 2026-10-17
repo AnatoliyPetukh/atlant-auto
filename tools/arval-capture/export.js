@@ -1,4 +1,3 @@
-import {createWebsiteEditor} from './website-editor.js';
 import {parseDeliveryAmount,deliveryLabel} from './delivery.js';
 import {collectArvalLot} from './collector.js';
 import {collectPartslink,attachPartslink} from './partslink.js';
@@ -17,11 +16,6 @@ let partslinkFiles=[];
 let importedPartslinkFiles=[];
 let partslinkSelectionVersion=0;
 let inspectionFiles=[];
-let sourceLocks=[];
-const websiteEditor=createWebsiteEditor({key:()=>$('employee-key').value.trim(),onBusy:busy=>{
- if(busy){sourceLocks=['server-save','retry','post','import-partslink','send-draft'].map(id=>[$(id),$(id).disabled]);for(const[control]of sourceLocks)control.disabled=true;}
- else{for(const[control,disabled]of sourceLocks)control.disabled=disabled;sourceLocks=[];}
-}});
 function partslinkUnread(){return partslinkFiles.length!==importedPartslinkFiles.length||partslinkFiles.some((f,i)=>f!==importedPartslinkFiles[i]);}
 function ensurePartslinkRead(){if(partslinkUnread())throw Error('Выбранный комплект PDF PartsLink ещё не прочитан. Нажмите «Прочитать PDF PartsLink» и дождитесь подтверждения. При ошибке новые данные не используются.');}
 function ensureDeliveryValid(){parseDeliveryAmount($('delivery-cost').value);}
@@ -74,7 +68,7 @@ async function readLot() {
     // The operator opens documents and equipment panels before invoking capture.
     const [response] = await chrome.scripting.executeScript({target:{tabId}, func: collectArvalLot});
     const previous=packet;packet = response.result;
-    if(previous?.vehicle?.vin&&previous.vehicle.vin!==packet?.vehicle?.vin){inspectionFiles=[];renderInspectionFiles();websiteEditor.reset();$('server-pdfs').value='';$('website-link').hidden=true;$('server-link').hidden=true;}
+    if(previous?.vehicle?.vin&&previous.vehicle.vin!==packet?.vehicle?.vin){inspectionFiles=[];renderInspectionFiles();$('server-pdfs').value='';$('server-link').hidden=true;}
     if (!packet?.vehicle?.vin) throw new Error('Arval не вернул данные автомобиля.');
     if(chrome.storage?.local){const key='parts:'+packet.vehicle.vin;const stored=await chrome.storage.local.get(key);attachPartslink(packet,stored[key]);}
     if(previous?.vehicle?.vin===packet.vehicle.vin&&previous.enrichment?.partslink24_pdf)packet.enrichment={...(packet.enrichment||{}),partslink24_pdf:previous.enrichment.partslink24_pdf};
@@ -158,7 +152,7 @@ async function saveServerPhotos(key,photos,progress){
   }
   return {...draft,failed};
 }
-async function saveSourceAndPreview(){
+async function saveSourceForErp(){
  const result=$('server-result');const locked=['server-save','post','retry','send-draft','import-partslink'].map(id=>[$(id),$(id).disabled]);
  try{
   ensurePartslinkRead();ensureDeliveryValid();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
@@ -166,18 +160,13 @@ async function saveSourceAndPreview(){
   if(!await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
   for(const[button]of locked)button.disabled=true;$('progress').hidden=false;
   const saved=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
-  if(saved.failed)throw Error('Черновик сохранён частично: не все фотографии загрузились. Повторите сохранение перед подготовкой превью.');
+  if(saved.failed)throw Error('Черновик сохранён частично: не все фотографии загрузились. Повторите сохранение перед работой в ERP.');
   for(const{file,kind}of pendingPdfs()){result.textContent=`Сохраняю ${file.name}…`;await storeFile(key,saved.id,file,{name:file.name,kind});}
-  const created=await storeRequest(key,{action:'product_create',body:{id:saved.id}});
-  $('server-link').href=`https://serwer2454127.home.pl/drafts/?id=${saved.id}`;$('server-link').hidden=false;
-  $('website-link').href=`https://serwer2454127.home.pl/drafts/?id=${saved.id}#product-editor`;$('website-link').hidden=false;
-  result.textContent='Данные, все найденные фотографии и документы сохранены. Открываю превью…';
-  await websiteEditor.open(created.product);
-  $('website-editor').scrollIntoView({behavior:'smooth',block:'start'});
-  result.textContent='Данные и все найденные фотографии сохранены на сервере. Превью открыто ниже: внесите правки и выберите состояние. На сайте пока ничего не изменилось.';
+  $('server-link').href=`https://serwer2454127.home.pl/erp/?id=${saved.id}`;$('server-link').hidden=false;
+  result.textContent='Автомобиль сохранён в реестре ERP по VIN. Все найденные фотографии и приложенные документы загружены. Откройте ERP по ссылке ниже: состояние, цены и публикация меняются там. На сайте ничего не изменилось.';
  }catch(error){result.textContent=error.message;}finally{for(const[button,disabled]of locked)button.disabled=disabled;countCaption();}
 }
-$('server-save').addEventListener('click',saveSourceAndPreview);
+$('server-save').addEventListener('click',saveSourceForErp);
 const countCaption=()=>{
   const facts=packet?vehicleFacts(packet):null;const policy=facts?.publication||{ready:false,reasons:[]};
   const privateLink=hasPrivateAuctionLink($('caption').value);
