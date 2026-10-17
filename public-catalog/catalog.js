@@ -5,6 +5,10 @@ const validId=id=>typeof id==='string'&&/^[a-f0-9]{32}$/.test(id);
 const asset=(car,id)=>API+'?id='+encodeURIComponent(car.id)+'&asset='+encodeURIComponent(id);
 const money=(n,c)=>Number.isFinite(n)?new Intl.NumberFormat('pl-PL',{maximumFractionDigits:2}).format(n)+' '+c:'Cena na zapytanie';
 let cars=[],state='all',tax='net';
+// Catalogue-only framing. Original photos remain unchanged in the vehicle gallery.
+const coverFraming={'b52f6ef89d984b4f8c070c79a90461f0':{scale:1.38,origin:'52% 65%'}};
+function compactSpecs(car){const node=el('p',null,'spec');const year=String(car.production_date||car.first_registration||'').slice(0,4);const mileage=Number.isFinite(car.mileage_km)?new Intl.NumberFormat('pl-PL').format(car.mileage_km)+' km':null;node.append(el('span',[year?(year+(car.production_date?' · prod.':' · rej.')):null,mileage].filter(Boolean).join(' · ')),el('span',[car.fuel_pl,car.transmission_pl].filter(Boolean).join(' · ')));node.title=specification(car);return node;}
+
 function date(value){if(!value)return null;const parts=String(value).split('-');return parts.reverse().join('.');}
 function price(car,mode=tax){
  if(car.state==='auction')return {value:money(car.auction_bid,car.auction_currency||'EUR'),label:'Najwyższa oferta na aukcji · netto'};
@@ -25,16 +29,16 @@ setInterval(updateClocks,30000);
 function cards(){
  $('catalog').replaceChildren();const list=cars.filter(c=>state==='all'||(state==='in_transit'?['in_transit','purchased'].includes(c.state):c.state===state));
  const order={in_transit:0,purchased:0,on_site:1,auction:2,sold:3};list.sort((a,b)=>(order[a.state]??9)-(order[b.state]??9)||(a.availability==='reserved')-(b.availability==='reserved'));
- $('status').textContent=list.length?list.length+' ofert':'Brak opublikowanych ofert w tej kategorii. Skontaktuj się z nami — pomożemy znaleźć samochód.';
+ $('status').textContent=list.length?list.length+' '+(list.length===1?'oferta':list.length%100<12||list.length%100>14?[2,3,4].includes(list.length%10)?'oferty':'ofert':'ofert'):'Brak opublikowanych ofert w tej kategorii. Skontaktuj się z nami — pomożemy znaleźć samochód.';
  for(const car of list){
   const card=el('article',null,'card');const link=el('a',null,'view');link.href='?id='+car.id;
-  if(car.photo_ids?.length){const img=el('img');img.className='cover';img.src=asset(car,car.photo_ids[0]);img.alt=car.title;img.loading='lazy';link.append(img);}
-  const body=el('div',null,'card-body');const heading=el('h2');const name=el('a',car.title,'view');name.href=link.href;heading.append(name);body.append(badge(car),heading,el('p',specification(car),'spec'));
+  if(car.photo_ids?.length){const img=el('img');img.className='cover';img.src=asset(car,car.photo_ids[0]);img.alt=car.title;img.loading='lazy';const framing=coverFraming[car.id];if(framing){img.style.setProperty('--cover-scale',framing.scale);img.style.setProperty('--cover-origin',framing.origin);}link.append(img);}
+  const body=el('div',null,'card-body');const heading=el('h2');const name=el('a',car.title,'view');name.href=link.href;heading.append(name);body.append(badge(car),heading,compactSpecs(car));
   if(car.eta)body.append(el('p','Planowane przybycie: '+date(car.eta),'muted'));
   const value=el('p',price(car).value,'price'),label=el('p',price(car).label,'price-label');body.append(value,label);card.append(link,body);
   if(car.state!=='auction')toggle(car,body,mode=>{value.textContent=price(car,mode).value;label.textContent=price(car,mode).label;});
-  if(car.state==='auction')body.append(el('p','Oferta z ostatniego odczytu. Nie jest to końcowa cena samochodu.','muted'));
-  const timer=clock(car);if(timer)body.append(timer);body.append(inquiry(car));$('catalog').append(card);
+  if(car.state==='auction')body.append(el('p','Odczyt aukcji · cena zakupu do ustalenia.','card-note'));
+  const timer=clock(car);if(timer)body.append(timer);body.append(el('div',null,'card-spacer'),inquiry(car));$('catalog').append(card);
  }
  updateClocks();
 }
