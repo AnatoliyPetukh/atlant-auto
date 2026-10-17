@@ -32,10 +32,10 @@ function viewerNext(string $value): string {
 function viewerCsrf(): bool {
     return is_string($_POST['csrf']??null) && hash_equals((string)$_SESSION['csrf'],$_POST['csrf']);
 }
-function viewerRate(bool $failed=false,bool $clear=false): bool {
+function viewerRate(bool $failed=false,bool $clear=false,string $scope='login'): bool {
     global $viewerPrivate;
     $dir=$viewerPrivate.'/draft-auth-rates';if(!is_dir($dir) && !mkdir($dir,0700,true))throw new RuntimeException('Rate storage unavailable');
-    $path=$dir.'/'.hash('sha256',(string)($_SERVER['REMOTE_ADDR']??'unknown')).'.json';
+    $path=$dir.'/'.hash('sha256',($scope==='employee'?'employee:':'').(string)($_SERVER['REMOTE_ADDR']??'unknown')).'.json';
     $file=fopen($path,'c+');if(!$file || !flock($file,LOCK_EX))throw new RuntimeException('Rate lock unavailable');
     try {
         $state=json_decode(stream_get_contents($file),true)?:['start'=>time(),'failures'=>0];
@@ -43,4 +43,32 @@ function viewerRate(bool $failed=false,bool $clear=false): bool {
         $allowed=(int)$state['failures']<8;if($failed)$state['failures']++;
         rewind($file);ftruncate($file,0);fwrite($file,json_encode($state));fflush($file);return $allowed;
     }finally{flock($file,LOCK_UN);fclose($file);}
+}
+
+require_once __DIR__.'/employee-session.php';
+$viewerEmployeeHashes=[];
+if($viewerSignedIn){
+ $employeeConfigPath=getenv('ATLANT_TELEGRAM_CONFIG')?:$viewerPrivate.'/telegram-draft-config.php';
+ if(is_file($employeeConfigPath)){
+  if(!defined('ATLANT_TELEGRAM_SERVER'))define('ATLANT_TELEGRAM_SERVER',true);
+  $employeeConfig=require $employeeConfigPath;$viewerEmployeeHashes=$employeeConfig['employee_key_hashes']??[];unset($employeeConfig);
+ }
+}
+$viewerEmployee=employeeResolve($_SESSION,$viewerEmployeeHashes,$viewerSignedIn,time());
+function viewerConfirmEmployee(string $key):string{
+ global $viewerSignedIn,$viewerEmployeeHashes,$viewerEmployee;
+ if(!$viewerSignedIn||!viewerCsrf())throw new InvalidArgumentException('Сессия или форма устарела. Войдите заново.');
+ if($key===''){
+  $actor=employeeResolve($_SESSION,$viewerEmployeeHashes,$viewerSignedIn,time());
+  if($actor===null)throw new InvalidArgumentException('Подтвердите ключ сотрудника для этой сессии.');
+  return $actor;
+ }
+ if(!viewerRate(false,false,'employee'))throw new InvalidArgumentException('Слишком много неверных ключей. Повторите через 15 минут.');
+ $verified=employeeVerify($key,$viewerEmployeeHashes);unset($key);
+ if($verified===null){viewerRate(true,false,'employee');throw new InvalidArgumentException('Ключ сотрудника не принят.');}
+ viewerRate(false,true,'employee');session_regenerate_id(true);employeeBind($_SESSION,$verified,time());$viewerEmployee=$verified['actor'];return $viewerEmployee;
+}
+function viewerEmployeeField():void{
+ global $viewerEmployee;
+ if($viewerEmployee===null)echo '<label>Ключ сотрудника · подтвердится на время сессии<input type="password" name="employee_key" autocomplete="off" required></label>';
 }
