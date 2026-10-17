@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {erpCaption} from '../erp-assets/erp-telegram.js';
+const packet={vehicle:{vin:'WBA00000000000011',make:'BMW',title:'BMW X2',display_title:'BMW X2',fuel:'Petrol',transmission:'Automatic',mileage_km:20000,first_registration_source:'May-23',storage_location:'FR-91-FLEURY-TEA'},source:{captured_at:'2026-10-17T10:00:00Z'},auction:{price:{amount:9000,currency:'EUR',kind:'highest_bid',tax_basis:'net'}},condition:{damages:[],maintenance_entries:[]},equipment:[],documents:[]};
+test('auction caption preserves existing source format',()=>{const text=erpCaption(packet,{state:'auction'});assert.match(text,/На аукционе Arval/);assert.match(text,/9\s000 EUR/);assert.doesNotMatch(text,/WBA00000000000011/);});
+test('ERP arrival replaces auction amount and location without mutating source',()=>{const text=erpCaption(packet,{state:'on_site',availability:'free',price_net:15000,currency:'EUR'});assert.match(text,/На площадке в Варшаве/);assert.match(text,/15\s000 EUR · нетто/);assert.doesNotMatch(text,/9\s000 EUR|максимальная ставка|Франция/);assert.equal(packet.auction.price.amount,9000);});
+test('reserved and sold are distinct; sold does not retain an auction bid',()=>{assert.match(erpCaption(packet,{state:'in_transit',availability:'reserved',price_gross:18450,currency:'PLN'}),/Зарезервирован под клиента/);const sold=erpCaption(packet,{state:'sold',price_net:15000,currency:'EUR'});assert.match(sold,/Продано/);assert.doesNotMatch(sold,/9\s000|15\s000|Зарезервирован/);});

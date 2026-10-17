@@ -88,12 +88,20 @@ function draftDetail(string $id): array {
     }
     return $row;
 }
+function draftUploadMimeAllowed(string $kind,string $mime):bool {
+ $images=['image/jpeg','image/png','image/webp'];$video=['video/mp4','video/quicktime','video/webm'];
+ if(in_array($kind,['vehicle','on_site','damage'],true))return in_array($mime,$images,true);
+ if(in_array($kind,['invoice','transport','registration','inspection','partslink','specification'],true))return $mime==='application/pdf';
+ if($kind==='inspection_video')return in_array($mime,$video,true);
+ if($kind==='review')return $mime==='application/pdf'||in_array($mime,$video,true);
+ return $kind==='document'&&($mime==='application/pdf'||in_array($mime,$images,true));
+}
 function draftUpload(string $id,array $file,string $kind,string $source,string $actor): array {
     draftFind($id);
-    if (!in_array($kind,['vehicle','on_site','damage','inspection','partslink','document'],true)) throw new InvalidArgumentException('Некорректный тип файла.');
+    if (!in_array($kind,['vehicle','on_site','damage','inspection','partslink','document','invoice','transport','registration','specification','inspection_video','review'],true)) throw new InvalidArgumentException('Некорректный тип файла.');
     if (strlen($source)>2048 || is_array($file['error']??null) || ($file['error']??-1)!==UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name']??'') || ($file['size']??0)<=0 || $file['size']>20*1024*1024) throw new InvalidArgumentException('Файл не загружен или больше 20 МБ.');
     $mime=(new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
-    if (!in_array($mime,['image/jpeg','image/png','image/webp','application/pdf'],true)) throw new InvalidArgumentException('Разрешены JPEG, PNG, WebP и PDF.');
+    if (!draftUploadMimeAllowed($kind,$mime)) throw new InvalidArgumentException('Формат файла не подходит для выбранного раздела.');
     if ($kind==='on_site'&&!in_array($mime,['image/jpeg','image/png','image/webp'],true))throw new InvalidArgumentException('Для площадки нужны фотографии.');
     if (str_starts_with($mime,'image/')) {
         $size=@getimagesize($file['tmp_name']);if (!$size || $size[0]*$size[1]>50000000) throw new InvalidArgumentException('Некорректные размеры изображения.');
@@ -102,7 +110,7 @@ function draftUpload(string $id,array $file,string $kind,string $source,string $
     try {
         $q=$db->prepare('SELECT id,kind,mime FROM assets WHERE draft_id=? AND digest=?');$q->execute([$id,$digest]);$existing=$q->fetch();
         if ($existing) {
-            if ($existing['mime']==='application/pdf' && in_array($kind,['inspection','partslink','document'],true) && $existing['kind']!==$kind) {
+            if ($existing['mime']==='application/pdf' && in_array($existing['kind'],['inspection','partslink','document'],true) && in_array($kind,['inspection','partslink','document'],true) && $existing['kind']!==$kind) {
                 $db->prepare('UPDATE assets SET kind=? WHERE id=?')->execute([$kind,$existing['id']]);draftEvent($db,$id,'file_reclassified',$actor,['asset_id'=>$existing['id'],'from'=>$existing['kind'],'to'=>$kind]);
             }
             $db->exec('COMMIT');return ['asset_id'=>$existing['id'],'duplicate'=>true];
@@ -127,7 +135,7 @@ function draftServeAsset(string $asset): never {
     if (!is_file($path)) {http_response_code(404);exit;}
     header('Content-Type: '.$row['mime']);header('Content-Length: '.filesize($path));header('X-Content-Type-Options: nosniff');header('Cache-Control: no-store');
     header('Content-Security-Policy: sandbox; default-src \'none\'');
-    header('Content-Disposition: '.(str_starts_with($row['mime'],'image/')?'inline':'attachment').'; filename="file.'.(['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp','application/pdf'=>'pdf'][$row['mime']]).'"');
+    header('Content-Disposition: '.(str_starts_with($row['mime'],'image/')?'inline':'attachment').'; filename="file.'.(['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp','application/pdf'=>'pdf','video/mp4'=>'mp4','video/quicktime'=>'mov','video/webm'=>'webm'][$row['mime']]).'"');
     readfile($path);exit;
 }
 function draftTelegramReceipt(string $vin,string $requestId,string $status,string $caption,array $ids,string $actor): bool {

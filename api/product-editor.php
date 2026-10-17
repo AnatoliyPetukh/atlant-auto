@@ -6,7 +6,7 @@ $product=productGet($detail['id']);
 <p>Это та же машина по VIN. Исходные данные и документы хранятся отдельно от редактируемой карточки. Повторный сбор лота не сбрасывает состояние, цены и текст.</p>
 <?php if(!empty($productNotice)):?><p class="tag"><?=e($productNotice)?></p><?php endif;?>
 <?php if(!empty($productError)):?><p style="color:#a52b2b" role="alert"><?=e($productError)?></p><?php endif;?>
-<form method="post" action="?id=<?=e($detail['id'])?>#product-editor">
+<form method="post" action="?id=<?=e($detail['id'])?>&amp;section=website#product-editor">
 <input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="revision" value="<?=e($product['revision']??0)?>">
 <?php if(!$product):?><p>Материалы этого VIN уже находятся в реестре. Нажмите «Принять в ERP», чтобы подготовить редактируемую карточку. Начальное состояние — «На аукционе»; на сайте она пока не появится.</p>
 <?php else:$r=$product['record'];?><p><span class="tag"><?=e(productStates()[$r['state']])?></span> · <?=empty($product['published_json'])?'Не опубликован':($product['published_revision']===$product['revision']?'Опубликован':'Есть неопубликованные изменения')?></p>

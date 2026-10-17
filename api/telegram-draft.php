@@ -8,6 +8,12 @@ function reply(int $code, array $body): never {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
     header('X-Content-Type-Options: nosniff');
+    if(defined('ATLANT_ERP_TELEGRAM')){
+        header('Content-Type: text/html; charset=utf-8');header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'");
+        $id=(string)($_POST['draft_id']??'');$back='/drafts/'.(preg_match('/^[a-f0-9]{32}$/D',$id)?'?id='.$id.'&section=telegram':'');
+        $message=!empty($body['ok'])?(!empty($body['duplicate'])?'Этот черновик уже был отправлен. Повторное сообщение не создавалось.':'Черновик отправлен в закрытый Telegram-чат. Ссылки на материалы находятся в подписи альбома.'):(string)($body['error']??'Отправка не подтверждена. Проверьте чат перед повтором.');
+        echo '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Telegram · ATLANT AUTO</title><body style="font:18px/1.6 system-ui;max-width:760px;margin:70px auto;padding:24px"><h1>Telegram</h1><p>'.htmlspecialchars($message,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8').'</p><p><a href="'.htmlspecialchars($back,ENT_QUOTES,'UTF-8').'">Вернуться к автомобилю в ERP</a></p></body></html>';exit;
+    }
     echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
@@ -16,9 +22,15 @@ $configPath = getenv('ATLANT_TELEGRAM_CONFIG') ?: dirname(__DIR__) . '/.atlant-i
 if (!is_file($configPath)) reply(503, ['ok'=>false,'error'=>'Telegram ещё не подключён.']);
 define('ATLANT_TELEGRAM_SERVER', true);
 $config = require $configPath;
+$erpMode=defined('ATLANT_ERP_TELEGRAM');
+if($erpMode){
+    define('ATLANT_DRAFT_VIEWER',true);require __DIR__.'/draft-viewer-auth.php';
+    if(!$viewerSignedIn||!viewerCsrf())reply(403,['ok'=>false,'error'=>'Сессия или форма устарела. Откройте ERP и повторите после проверки чата.']);
+    session_write_close();
+}
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if ($origin !== '') {
-    if (!in_array($origin, $config['allowed_origins'] ?? [], true)) reply(403, ['ok'=>false,'error'=>'Extension origin denied']);
+    if (!in_array($origin, $config['allowed_origins'] ?? [], true) && !($erpMode&&$origin==='https://serwer2454127.home.pl')) reply(403, ['ok'=>false,'error'=>'Extension origin denied']);
     header('Access-Control-Allow-Origin: ' . $origin);
     header('Vary: Origin');
     header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -26,7 +38,7 @@ if ($origin !== '') {
 }
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') reply(405, ['ok'=>false,'error'=>'POST required']);
-$auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+$auth = $erpMode?'Bearer '.(string)($_POST['employee_key']??''):($_SERVER['HTTP_AUTHORIZATION'] ?? '');
 if (!preg_match('/^Bearer ([A-Za-z0-9_-]{32,128})$/D', $auth, $m)) reply(401, ['ok'=>false,'error'=>'Нужен ключ сотрудника.']);
 $employee = null;
 foreach (($config['employee_key_hashes'] ?? []) as $name=>$hash) {
@@ -37,7 +49,19 @@ $token = $config['bot_token'] ?? '';
 $chat = (string)($config['chat_id'] ?? '');
 if (!preg_match('/^[0-9]+:[A-Za-z0-9_-]+$/D', $token) || !preg_match('/^-[0-9]+$/D', $chat)) reply(503, ['ok'=>false,'error'=>'Закрытый чат бота не настроен.']);
 if (!function_exists('curl_init')) reply(503, ['ok'=>false,'error'=>'На сервере нужен PHP cURL.']);
-$payload = json_decode($_POST['payload'] ?? '', true);
+$storedPhotoFiles=[];$erpRecord=null;
+if($erpMode){
+    try{
+        define('ATLANT_DRAFT_STORE',true);require_once __DIR__.'/erp-store.php';require_once __DIR__.'/product-store.php';
+        $erpDraft=draftDetail(draftId((string)($_POST['draft_id']??'')));$erpRecord=productGet($erpDraft['id'])['record']??null;
+        if(($erpDraft['packet']['vehicle']['publication_facts']['publication']['ready']??false)!==true)throw new InvalidArgumentException('Проверьте дату и тип двигателя через расширение: исходные данные ещё не готовы для Telegram.');
+        if(($erpRecord['state']??'')==='closed')throw new InvalidArgumentException('Лот в архиве без покупки не отправляется как предложение.');
+        $photoIds=$_POST['photo_ids']??[];if(!is_array($photoIds))throw new InvalidArgumentException('Проверьте фотографии.');
+        $storedPhotoFiles=erpTelegramPhotoFiles($erpDraft['id'],$photoIds);
+        $payload=['vin'=>$erpDraft['vin'],'caption'=>(string)($_POST['caption']??''),'photos'=>$photoIds,'buttons_version'=>1,'share_inspection'=>isset($_POST['share_inspection']),'share_partslink'=>isset($_POST['share_partslink']),'share_maintenance'=>isset($_POST['share_maintenance'])];
+        $day=(new DateTimeImmutable('now',new DateTimeZone('Europe/Warsaw')))->format('Y-m-d');$payload['request_id']=hash('sha256',json_encode([$payload,$employee,$day],JSON_THROW_ON_ERROR));
+    }catch(Throwable $e){reply(400,['ok'=>false,'error'=>$e instanceof InvalidArgumentException?$e->getMessage():'Не удалось прочитать автомобиль и фотографии. Отправка не выполнялась.']);}
+}else $payload = json_decode($_POST['payload'] ?? '', true);
 if (!is_array($payload)) reply(400, ['ok'=>false,'error'=>'Некорректные данные.']);
 $caption = trim((string)($payload['caption'] ?? ''));
 $vin = (string)($payload['vin'] ?? '');
@@ -49,19 +73,19 @@ if ($caption === '' || $charCount === false || $charCount > 1024) reply(400, ['o
 if (preg_match('/remktg\.arval\.com/i', $caption)) reply(400, ['ok'=>false,'error'=>'Закрытая ссылка Arval не должна попадать в пост. Удалите её из текста.']);
 if (!is_array($payload['photos'] ?? null)) reply(400, ['ok'=>false,'error'=>'Некорректный список фотографий.']);
 $count = count($payload['photos']);
-if ($count < 2 || $count > 10 || count($_FILES) !== $count) reply(400, ['ok'=>false,'error'=>'Нужно от 2 до 10 фотографий.']);
+if ($count < 2 || $count > 10 || (!$erpMode&&count($_FILES) !== $count)) reply(400, ['ok'=>false,'error'=>'Нужно от 2 до 10 фотографий.']);
 if(!defined('ATLANT_DRAFT_STORE'))define('ATLANT_DRAFT_STORE',true);
 require_once __DIR__.'/telegram-actions.php';
 try {
     $q=draftDb()->prepare('SELECT packet_json FROM drafts WHERE vin=?');$q->execute([$vin]);$saved=$q->fetchColumn();
-    $presentation=actionPostPresentation($caption,$saved?json_decode($saved,true,512,JSON_THROW_ON_ERROR):[]);
+    $presentation=actionPostPresentation($caption,$saved?json_decode($saved,true,512,JSON_THROW_ON_ERROR):[],!$erpMode||($erpRecord['state']??'auction')==='auction');
 }catch(Throwable $e){reply(503,['ok'=>false,'error'=>'Не удалось подготовить оформление поста. Альбом не отправлен.']);}
 if(preg_match_all('/./us',$presentation['caption'])>1024)reply(400,['ok'=>false,'error'=>'После оформления подпись длиннее 1024 знаков. Сократите описание.']);
 $post = ['chat_id'=>$chat, 'disable_notification'=>'true'];
 $media = []; $hashes = [];
 for ($i=0; $i<$count; $i++) {
-    $file = $_FILES['photo_'.$i] ?? null;
-    if (!$file || is_array($file['error']) || $file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name']) || $file['size'] <= 0 || $file['size'] > 8*1024*1024) reply(400, ['ok'=>false,'error'=>'Фотография не загружена или больше 8 МБ.']);
+    $file = $erpMode?($storedPhotoFiles[$i]??null):($_FILES['photo_'.$i] ?? null);
+    if (!$file || is_array($file['error']) || $file['error'] !== UPLOAD_ERR_OK || (!$erpMode&&!is_uploaded_file($file['tmp_name'])) || $file['size'] <= 0 || $file['size'] > 8*1024*1024) reply(400, ['ok'=>false,'error'=>'Фотография не загружена или больше 8 МБ.']);
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
     $size = @getimagesize($file['tmp_name']);
     if (!in_array($mime, ['image/jpeg','image/png'], true) || !$size || $size[0]+$size[1] > 10000 || max($size[0],$size[1])/max(1,min($size[0],$size[1])) > 20) reply(400, ['ok'=>false,'error'=>'Неподдерживаемый формат или размеры фото.']);

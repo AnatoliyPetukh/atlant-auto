@@ -142,7 +142,7 @@ function actionDeliverDamage(array $offer,array $resources,int $offset,string $u
     return true;
 }
 // Plain text stays editable; Telegram entities supply emphasis without parsing HTML.
-function actionPostPresentation(string $caption,array $packet): array {
+function actionPostPresentation(string $caption,array $packet,bool $includeAuction=true): array {
     $lines=[];$ordinal=0;$titleText=null;
     foreach(explode("\n",str_replace(["\r\n","\r"],"\n",$caption)) as $line) {
         $line=trim(preg_replace('/[\p{Zs}\t]+/u',' ',$line));if($line==='')continue;
@@ -180,6 +180,7 @@ function actionPostPresentation(string $caption,array $packet): array {
             $entities[]=['type'=>'bold','offset'=>$offset,'length'=>$utf16($line)];
         $offset+=$utf16($line)+1;
     }
+    if(!$includeAuction)return ['caption'=>$text,'caption_entities'=>$entities];
     $auction=$packet['auction']??[];$timestamp=null;$estimated=false;
     // Only accept an absolute instant with timezone, never infer a timezone from display text.
     $end=$auction['ends_at']??null;
