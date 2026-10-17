@@ -21,6 +21,7 @@ Thumbs.db
 Desktop.ini
 
 # Local secrets and credentials
+/.server-access/
 .env
 .env.*
 *.pem
@@ -49,3 +50,14 @@ autogood-calc-tax.js
 .DS_Store
 .idea/
 .vscode/
+
+# Local hosting credential supplied by owner
+/FTP.rtf
+
+/.presentation-access.json
+/.telegram-bot-setup.json
+/.telegram-employee-access.json
+/api/telegram-draft.config.php
+
+# Private VIN title correction examples
+/_private/
