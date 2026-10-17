@@ -29,7 +29,7 @@ function actionOffer(string $vin,string $requestId,array $options): array {
     if (!empty($options['inspection'])) foreach (($p['documents']??[]) as $doc) {
         if (($doc['kind']??'')==='macadam_report' && ($url=actionInspectionUrl((string)($doc['url']??'')))) {$resources['inspection_url']=$url;break;}
     }
-    if (!empty($options['parts'])) foreach (array_slice($p['enrichment']['partslink24_pdf']['equipment']??$p['enrichment']['partslink24']['equipment']??[],0,300) as $option) {
+    if (!empty($options['parts'])) foreach (array_slice($p['enrichment']['partslink24_pdf']['equipment']??$p['enrichment']['partslink24']['equipment']??[],0,1000) as $option) {
         if (!is_array($option))continue;
         $resources['equipment'][]=['code'=>mbSafeCut((string)($option['code']??''),50),'label'=>mbSafeCut((string)($option['label']??''),300)];
     }
