@@ -31,13 +31,7 @@ try {
         if (count($_FILES)!==1) throw new InvalidArgumentException('Нужен один файл.');
         $result=draftUpload((string)($_POST['id']??''),$_FILES['file']??[],(string)($_POST['kind']??'document'),(string)($_POST['source_url']??''),$actor);
     } elseif (in_array($action,['product_create','product_save','product_publish','product_unpublish'],true)) {
-        $body=json_decode(file_get_contents('php://input',false,null,0,2*1024*1024+1),true,512,JSON_THROW_ON_ERROR);
-        if(!is_array($body))throw new InvalidArgumentException('Нужны данные карточки.');$id=draftId((string)($body['id']??''));
-        if($action==='product_create')$product=productCreate($id,$actor);
-        elseif($action==='product_save')$product=productSave($id,(int)($body['revision']??0),$body['changes']??[],$actor);
-        elseif($action==='product_publish')$product=productPublish($id,(int)($body['revision']??0),$actor);
-        else{productUnpublish($id,$actor);$product=productGet($id);}
-        $result=['id'=>$id,'product'=>$product];
+        storeReply(403,['ok'=>false,'error'=>'Управление состоянием и публикацией перенесено в ERP. Откройте https://serwer2454127.home.pl/erp/']);
     } elseif ($action==='capture') {
         if ((int)($_SERVER['CONTENT_LENGTH']??0)>2*1024*1024) storeReply(413,['ok'=>false,'error'=>'Данные больше 2 МБ.']);
         $packet=json_decode(file_get_contents('php://input',false,null,0,2*1024*1024+1),true,512,JSON_THROW_ON_ERROR);

@@ -1,3 +1,17 @@
+# Current workflow: Chrome → server → VIN ERP → website (0.9.0)
+
+The extension only captures Arval, reads multiple PartsLink PDFs, attaches multiple inspection PDFs, and uploads the source packet plus all discovered ordinary/damage photos. After success it offers the stable ERP entry `https://serwer2454127.home.pl/erp/?id=...`. This routes to the existing session-protected VIN registry under `/drafts/`; session cookies stay narrowly scoped. Telegram remains a separate explicit action. Extension product create/save/publish endpoints now return 403; older extension copies can still upload source data but must be updated to use the new flow.
+
+The existing unique VIN record is the entity; no duplicate ERP or website vehicle is created. New uploads appear under “Новые загрузки”. In ERP, “Принять в ERP” idempotently prepares reviewed fields with initial auction state, without publishing. Main operator states: auction, in_transit, on_site, sold. Legacy purchased/closed records remain accessible. Free/reserved is independent.
+
+ERP owns lifecycle, price, reviewed Polish content and public selections. First website publication still requires owner authorization. Saving an already-published vehicle from ERP atomically updates its public projection and revision; only owner can do that. An unreviewed or hidden record never auto-publishes. Restoring an old revision remains a private draft until explicitly reviewed/published. Source recapture preserves both ERP lifecycle and reviewed/public fields.
+
+Ready vehicles require at least one explicit Warsaw price for publication. On-site publication additionally requires at least one selected yard photo. An invalid ERP save rolls back both internal/public changes. Auction bids remain separate from ready prices. PDF upload stores originals; inspection assessment is not automatically inferred. No actual vehicle is published during tests.
+
+ERP v1 is a VIN register and lifecycle editor, not accounting, warehouse accounting, customer CRM, invoicing or payments. Existing material history and product revisions are retained. Private VINs, source URLs, customer data and non-selected documents stay outside the public projection.
+
+## Prior iterations (superseded where conflicting)
+
 # Vehicle → Polish website (0.5.0)
 
 The existing read-only Arval extension saves a vehicle by VIN, source snapshots, normal and damage images, PartsLink data and inspection attachments to the private home.pl store. “Подготовить карточку сайта” saves the packet and creates an idempotent Polish product draft. It does not publish or send Telegram messages.

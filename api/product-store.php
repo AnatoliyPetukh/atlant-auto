@@ -17,6 +17,22 @@ function productRestore(string $id,int $current,int $target,string $actor):array
  return productSave($id,$current,json_decode($json,true,512,JSON_THROW_ON_ERROR),$actor);
 }
 function productStates():array{return ['auction'=>'Na aukcji','purchased'=>'Zakupiony','in_transit'=>'W drodze do Warszawy','on_site'=>'Na placu w Warszawie','sold'=>'Sprzedany','closed'=>'Aukcja zakończona — nie kupiony'];}
+function productErpStates():array{return ['auction'=>'На аукционе','in_transit'=>'В пути в Варшаву','on_site'=>'На площадке в Варшаве','sold'=>'Продано'];}
+function productRegistryList(string $search='',string $state='',int $offset=0):array {
+ $db=productDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.created_at,d.updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id WHERE (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
+ $term='%'.mbSafeCut($search,150).'%';$args=[$term,$term,$term];
+ if($state==='incoming')$sql.=' AND p.draft_id IS NULL';elseif(isset(productStates()[$state])){$sql.=" AND json_extract(p.record_json,'$.state')=?";$args[]=$state;}
+ $sql.=' ORDER BY d.updated_at DESC,d.id LIMIT 50 OFFSET ?';$args[]=max(0,$offset);$q=$db->prepare($sql);$q->execute($args);return $q->fetchAll();
+}
+function productAssertPublishable(array $record,array $draft):void {
+ if(!$record['photo_ids']||$record['description_pl']==='')throw new InvalidArgumentException('Для публикации нужны описание и хотя бы одно фото.');
+ if($record['state']==='closed')throw new InvalidArgumentException('Завершённый без покупки лот оставьте в архиве.');
+ if(in_array($record['state'],['purchased','in_transit','on_site'],true)&&$record['price_net']===null&&$record['price_gross']===null)throw new InvalidArgumentException('Для сайта укажите готовую цену автомобиля в Варшаве.');
+ if($record['state']==='on_site'){
+  $yard=array_column(array_filter($draft['assets'],fn($a)=>$a['kind']==='on_site'),'id');
+  if(!array_intersect($record['photo_ids'],$yard))throw new InvalidArgumentException('Для состояния «На площадке» выберите реальные фотографии с площадки.');
+ }
+}
 function productEquipmentLabels():array{return ['areaView'=>'Kamery Area View','camera360'=>'Kamery 360°','adaptiveCruise'=>'Adaptacyjny tempomat','panorama'=>'Dach panoramiczny','awd'=>'Napęd na cztery koła','matrix'=>'Reflektory matrycowe','adaptiveLed'=>'Adaptacyjne reflektory LED','hud'=>'Wyświetlacz Head-Up','ventilation'=>'Wentylacja foteli','memory'=>'Elektryczny fotel z pamięcią','cameraRear'=>'Kamera cofania','heatedSeats'=>'Podgrzewane fotele','heatedWheel'=>'Podgrzewana kierownica','blindSpot'=>'Monitorowanie martwego pola','tailgate'=>'Elektryczna klapa bagażnika','led'=>'Reflektory LED','parking'=>'Czujniki parkowania z przodu i z tyłu','navigation'=>'Nawigacja','climate'=>'Klimatyzacja automatyczna','cruise'=>'Tempomat','aeb'=>'Automatyczne hamowanie awaryjne','laneAssist'=>'Asystent pasa ruchu','keyless'=>'Dostęp bezkluczykowy','carplay'=>'Apple CarPlay','androidAuto'=>'Android Auto','activeParking'=>'Aktywny asystent parkowania','parkingAssist'=>'Asystent parkowania','powerSeat'=>'Elektryczna regulacja fotela','sunroof'=>'Szyberdach','leather'=>'Skórzana tapicerka','foldingMirrors'=>'Elektrycznie składane lusterka','heatedWindscreen'=>'Podgrzewana przednia szyba','premiumAudio'=>'System audio premium','rainSensor'=>'Czujnik deszczu','autoLights'=>'Automatyczne włączanie świateł'];}
 function productGet(string $id):?array {$q=productDb()->prepare('SELECT * FROM vehicle_products WHERE draft_id=?');$q->execute([draftId($id)]);$row=$q->fetch();if(!$row)return null;$row['record']=json_decode($row['record_json'],true,512,JSON_THROW_ON_ERROR);unset($row['record_json']);return $row;}
 function productText(mixed $value,int $max):string{if(!is_string($value))throw new InvalidArgumentException('Нужен текст.');$value=trim($value);if(preg_match_all('/./us',$value)>$max||preg_match('/https?:\/\/|remktg\.arval|partslink24\.com|[\x00-\x08\x0b\x0c\x0e-\x1f]/iu',$value))throw new InvalidArgumentException('Текст слишком длинный или содержит ссылку/служебные символы.');return $value;}
@@ -79,13 +95,20 @@ function productValidated(array $record,array $draft):array {
  }
  return $record;
 }
-function productSave(string $id,int $revision,array $changes,string $actor):array {
+function productSave(string $id,int $revision,array $changes,string $actor,bool $syncPublished=false):array {
  $db=productDb();$db->exec('BEGIN IMMEDIATE');try{
   $row=productGet($id);if(!$row)throw new OutOfBoundsException('Сначала создайте карточку.');if($row['revision']!==$revision)throw new DomainException('Карточка изменилась. Обновите страницу.');
+  $sync=$syncPublished&&!empty($row['published_json']);
+  if($sync&&$actor!=='owner')throw new InvalidArgumentException('Изменять опубликованный автомобиль в ERP может владелец.');
   $allowed=['title','description_pl','state','availability','price_net','price_gross','currency','eta','location_pl','delivery_eur','equipment_pl','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'];$r=$row['record'];foreach($allowed as $key)if(array_key_exists($key,$changes))$r[$key]=$changes[$key];
   productRemember($db,$id,$revision,$row['record'],'existing',$row['updated_at']);
   $r=productValidated($r,draftDetail($id));$q=$db->prepare('UPDATE vehicle_products SET revision=revision+1,record_json=?,updated_at=? WHERE draft_id=?');$q->execute([json_encode($r,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),gmdate('c'),$id]);
   productRemember($db,$id,$revision+1,$r,$actor,gmdate('c'));
+  if($sync){
+   if($r['state']==='closed'){$db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([$id]);}
+   else{productAssertPublishable($r,draftDetail($id));$public=productPublicSnapshot(['record'=>$r,'public_id'=>$row['public_id']]);$db->prepare('UPDATE vehicle_products SET published_json=?,published_revision=?,published_at=? WHERE draft_id=?')->execute([json_encode($public,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),$revision+1,gmdate('c'),$id]);}
+   draftEvent($db,$id,'erp_site_synced',$actor,['revision'=>$revision+1,'state'=>$r['state']]);
+  }
   draftEvent($db,$id,'product_saved',$actor,['state'=>$r['state'],'previous_state'=>$row['record']['state'],'revision'=>$revision+1]);$db->exec('COMMIT');return productGet($id);
  }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}
 }
@@ -98,8 +121,7 @@ function productPublicSnapshot(array $row):array {
 function productPublish(string $id,int $revision,string $actor):array {
  if($actor!=='owner')throw new InvalidArgumentException('Публикация доступна владельцу.');$db=productDb();$db->exec('BEGIN IMMEDIATE');try{
   $row=productGet($id);if(!$row)throw new OutOfBoundsException();if($row['revision']!==$revision)throw new DomainException('Сначала сохраните изменения и обновите страницу.');
-  $r=productValidated($row['record'],draftDetail($id));if(!$r['photo_ids']||$r['description_pl']==='')throw new InvalidArgumentException('Для публикации нужны описание и хотя бы одно фото.');
-  if($r['state']==='closed')throw new InvalidArgumentException('Завершённый без покупки лот оставьте в архиве.');
+  $r=productValidated($row['record'],draftDetail($id));productAssertPublishable($r,draftDetail($id));
   $public=productPublicSnapshot($row);$at=gmdate('c');$db->prepare('UPDATE vehicle_products SET published_json=?,published_revision=?,published_at=? WHERE draft_id=?')->execute([json_encode($public,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),$revision,$at,$id]);
   draftEvent($db,$id,'product_published',$actor,['revision'=>$revision]);$db->exec('COMMIT');return productGet($id);
  }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}

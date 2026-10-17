@@ -2,18 +2,18 @@
 if(!defined('ATLANT_DRAFT_STORE')){http_response_code(404);exit;}
 $product=productGet($detail['id']);
 ?>
-<section class="panel" id="product-editor"><h2>Карточка автомобиля для польского сайта</h2>
+<section class="panel" id="product-editor"><h2>Автомобиль в ERP · состояние и карточка сайта</h2>
 <p>Это та же машина по VIN. Исходные данные и документы хранятся отдельно от редактируемой карточки. Повторный сбор лота не сбрасывает состояние, цены и текст.</p>
 <?php if(!empty($productNotice)):?><p class="tag"><?=e($productNotice)?></p><?php endif;?>
 <?php if(!empty($productError)):?><p style="color:#a52b2b" role="alert"><?=e($productError)?></p><?php endif;?>
 <form method="post" action="?id=<?=e($detail['id'])?>#product-editor">
 <input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="revision" value="<?=e($product['revision']??0)?>">
-<?php if(!$product):?><p>Для этого VIN товар ещё не создан. Будет подготовлена карточка на польском со статусом «На аукционе».</p>
+<?php if(!$product):?><p>Материалы этого VIN уже находятся в реестре. Нажмите «Принять в ERP», чтобы подготовить редактируемую карточку. Начальное состояние — «На аукционе»; на сайте она пока не появится.</p>
 <?php else:$r=$product['record'];?><p><span class="tag"><?=e(productStates()[$r['state']])?></span> · <?=empty($product['published_json'])?'Не опубликован':($product['published_revision']===$product['revision']?'Опубликован':'Есть неопубликованные изменения')?></p>
 <label>Название<input name="title" value="<?=e($r['title'])?>" maxlength="250" required style="display:block;width:100%"></label>
 <label>Описание на польском<textarea name="description_pl" rows="4" maxlength="3000" style="display:block;width:100%;font:inherit;padding:12px"><?=e($r['description_pl'])?></textarea></label>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:18px 0">
-<label>Состояние<select name="state" style="display:block;width:100%;font:inherit;padding:10px"><?php foreach(productStates() as $key=>$label):?><option value="<?=e($key)?>" <?=$r['state']===$key?'selected':''?>><?=e($label)?></option><?php endforeach;?></select></label>
+<label>Состояние<select name="state" style="display:block;width:100%;font:inherit;padding:10px"><?php foreach((productErpStates()+productStates()) as $key=>$label):?><option value="<?=e($key)?>" <?=$r['state']===$key?'selected':''?>><?=e($label)?></option><?php endforeach;?></select></label>
 <label>Доступность<select name="availability" style="display:block;width:100%;font:inherit;padding:10px"><option value="free" <?=$r['availability']==='free'?'selected':''?>>Свободен</option><option value="reserved" <?=$r['availability']==='reserved'?'selected':''?>>Зарезервирован под клиента</option></select></label>
 <label>Цена готового автомобиля в Варшаве · нетто<input name="price_net" inputmode="decimal" value="<?=e($r['price_net']??'')?>" style="display:block;width:100%"></label>
 <label>Цена готового автомобиля в Варшаве · брутто<input name="price_gross" inputmode="decimal" value="<?=e($r['price_gross']??'')?>" style="display:block;width:100%"></label>
@@ -33,10 +33,10 @@ $product=productGet($detail['id']);
 <?php endif;?>
 <label style="display:block;margin:24px 0">Ваш ключ сотрудника<input type="password" name="employee_key" autocomplete="off" required style="display:block;width:100%;max-width:520px"></label>
 <p class="muted">Сотрудник может создать и сохранить карточку. Публикация и снятие с сайта доступны с ключом владельца owner. Ключ не выводится в карточку и не публикуется.</p>
-<?php if(!$product):?><button name="product_action" value="create">Создать карточку сайта</button><?php else:?><button name="product_action" value="save">Сохранить карточку</button> <button name="product_action" value="publish">Сохранить и опубликовать</button><?php if($product['published_json']):?> <button name="product_action" value="unpublish" style="background:#6b7378">Снять с публикации</button><?php endif;?><?php endif;?>
+<?php if(!$product):?><button name="product_action" value="create">Принять в ERP</button><?php else:?><button name="product_action" value="save">Сохранить в ERP<?=$product['published_json']?' и обновить сайт':''?></button> <button name="product_action" value="publish">Сохранить и опубликовать на сайте</button><?php if($product['published_json']):?> <button name="product_action" value="unpublish" style="background:#6b7378">Снять с публикации</button><?php endif;?><?php endif;?>
 </form>
 <?php if($product):?><h3>Podgląd zapisanej wersji · предпросмотр</h3><div style="border-left:4px solid #087987;padding:12px 20px;background:#f2f8f7"><span class="tag"><?=e(productStates()[$r['state']])?></span><h2><?=e($r['title'])?></h2><p><?=nl2br(e($r['description_pl']))?></p><p><?=e($r['mileage_km']===null?'':number_format($r['mileage_km'],0,',',' ').' km')?> · <?=e($r['fuel_pl']??'')?> · <?=e($r['transmission_pl']??'')?></p><p><?=e($r['location_pl'])?></p><ul><?php foreach($r['equipment_pl'] as $option):?><li><?=e($option)?></li><?php endforeach;?></ul></div>
 <?php if($product['published_json']):?><p><a target="_blank" rel="noopener" href="https://atlantauto.pl/pl/oferty/?id=<?=e($product['public_id'])?>">Открыть опубликованную карточку на сайте →</a></p><?php endif;?>
 <details><summary>История версий карточки и восстановление</summary><p>Восстановление создаёт новую редакцию черновика. Публичная карточка меняется только после отдельной публикации.</p>
 <form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="revision" value="<?=e($product['revision'])?>"><label>Версия <select name="target_revision"><?php foreach(productVersions($detail['id']) as $version):?><option value="<?=e($version['revision'])?>">№ <?=e($version['revision'])?> · <?=e($version['created_at'])?> · <?=e($version['actor'])?></option><?php endforeach;?></select></label><label> Ключ сотрудника <input type="password" name="employee_key" autocomplete="off" required></label><button name="product_action" value="restore">Восстановить в черновик</button></form></details>
-<p class="muted">Ревизия <?=e($product['revision'])?>. Новая загрузка источника доступна выше в истории снимков; она не меняет опубликованную карточку автоматически.</p><?php endif;?></section>
+<p class="muted">Ревизия <?=e($product['revision'])?>. Повторная загрузка из расширения сохраняет материалы и историю, но не меняет состояние ERP. Сохранение опубликованного автомобиля владельцем обновляет сайт. Скрытая карточка остаётся скрытой до явной публикации.</p><?php endif;?></section>

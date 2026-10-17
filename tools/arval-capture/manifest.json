@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Atlant Auto · Arval Capture",
-  "version": "0.8.0",
-  "description": "Сохранение лота Arval на сервере и подготовка поста для Telegram.",
+  "version": "0.9.0",
+  "description": "Загрузка автомобиля по VIN в ERP Atlant Auto и подготовка поста для Telegram.",
   "permissions": [
     "activeTab",
     "scripting",
