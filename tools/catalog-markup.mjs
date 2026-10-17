@@ -29,7 +29,8 @@ function sourceBadge(car, locale) {
 
 export function catalogueCards(locale) {
   const order = { "on-site": 0, "in-transit": 1, sold: 2 };
-  return [...cars].sort((a, b) => (order[a.availability] ?? 99) - (order[b.availability] ?? 99)).map((car) => {
+  const liveLink=locale==='pl'?'<p style="grid-column:1/-1;margin:0 0 12px"><a href="/pl/oferty/">Aktualne oferty: aukcje, samochody w drodze i w Warszawie →</a></p>':'';
+  return liveLink+[...cars].sort((a, b) => (order[a.availability] ?? 99) - (order[b.availability] ?? 99)).map((car) => {
     const name = `${car.brand} ${car.model} ${car.version}`.trim();
     const sold = car.status === "sold";
     const state = sold ? "sold" : car.availability === "in-transit" ? "in-transit" : "on-site";
