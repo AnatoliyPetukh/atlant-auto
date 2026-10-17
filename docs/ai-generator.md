@@ -15,3 +15,7 @@ The result includes Polish/Russian description, condition, maintenance, equipmen
 Verification: `php tools/ai-generator.test.php "$PWD/api/ai-store.php"` uses an isolated temporary SQLite database and mock transport, no live API or vehicle publication. Covers consent, document isolation, minimal input, idempotency, source changes, evidence and uncertain requests. Real API and native scheduler must be independently checked after configuration.
 
 References: [home.pl cron](https://pomoc.home.pl/baza-wiedzy/cykliczne-uruchamianie-cron), [Responses structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [PDF file inputs](https://developers.openai.com/api/docs/guides/file-inputs), [data controls](https://developers.openai.com/api/docs/guides/your-data).
+
+## Deployment verification, 2026-10-17
+
+Installed on home.pl; API key supplied through an ignored owner file and transferred by SFTP, mode 0600. Native scheduler invocation observed at 21:50 UTC independently of the manual run. Real API smoke checks passed on fictional text and a generated fictional one-page inspection PDF; no real vehicle documents were transmitted and the production vehicle database was not used for these smoke checks. Polish/Russian descriptions returned and strict evidence validation passed. Uncited sections are removed and flagged for review rather than triggering an automatic paid retry. Initial API smoke tests exposed one missing-evidence response before this handling was improved. Actual vehicle generation remains opt-in through the ERP form.
