@@ -58,9 +58,9 @@ test("public pages have reciprocal Polish and English hreflang sets", () => {
     const route = routeFor(file);
     const links = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)];
     const map = Object.fromEntries(links.map(([, lang, href]) => [lang, href]));
-    for (const lang of ["pl", "en", "x-default"]) assert.ok(map[lang], `${route}: missing ${lang}`);
-    assert.equal(map.ru, undefined, `${route}: Russian hreflang must not be published`);
-    for (const lang of ["pl", "en"]) {
+    for (const lang of ["pl", "en", "ru", "x-default"]) assert.ok(map[lang], `${route}: missing ${lang}`);
+
+    for (const lang of ["pl", "en", "ru"]) {
       const targetRoute = new URL(map[lang]).pathname;
       const targetFile = targetRoute === "/" ? path.join(root, "index.html")
         : targetRoute.endsWith("/") ? path.join(root, targetRoute.slice(1), "index.html")

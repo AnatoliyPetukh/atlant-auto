@@ -5,9 +5,10 @@ import { t } from "./i18n-catalog.mjs";
 import { site } from "./seo-config.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atlant-auto-draft");
-const homes = { pl: "/pl/", en: "/en/" };
-const catalogues = { pl: "/pl/samochody/", en: "/en/cars/" };
+const homes = { ru: "/ru/", pl: "/pl/", en: "/en/" };
+const catalogues = { ru: "/ru/avtomobili/", pl: "/pl/samochody/", en: "/en/cars/" };
 const routes = {
+  ru: { 404: "/ru/404/", 500: "/ru/500/" },
   pl: { 404: "/404.html", 500: "/500.html" },
   en: { 404: "/en/404/", 500: "/en/500/" }
 };

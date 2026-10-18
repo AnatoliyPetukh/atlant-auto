@@ -109,9 +109,9 @@ function nav(locale) {
   return items.map(([key, route]) => `<a href="${route}">${t(locale.lang, key)}</a>`).join("");
 }
 
-function languageNav(current) {
+function languageNav(current, key) {
   return Object.entries(locales).map(([code, locale]) =>
-    `<a href="${locale.home}" lang="${code}"${code === current ? ' aria-current="page"' : ""}>${code.toUpperCase()}</a>`
+    `<a href="${equivalents[key][code]}" lang="${code}"${code === current ? ' aria-current="page"' : ""}>${code.toUpperCase()}</a>`
   ).join("");
 }
 
@@ -141,7 +141,7 @@ function pageHtml(page, localeCode) {
   const isHome = key === "home";
   const contactAction = locale.routes[4];
   const catalogue = locale.routes[0];
-  const vehiclePrefix = localeCode === "pl" ? "/pl/samochody/" : "/en/cars/";
+  const vehiclePrefix = locales[localeCode].routes[0];
   const vehicleSuffix = "/";
   const linkedVehicleSlugs = key === "cars"
       ? [
@@ -183,7 +183,7 @@ function pageHtml(page, localeCode) {
         </dl>
         <a class="text-link" href="${site.krsSearch}" target="_blank" rel="noopener noreferrer">${t(localeCode, "company.official.registryLink")}</a>
       </div>
-      <div class="locations-heading"><p class="eyebrow">Atlant Auto · Warszawa</p><h2>${t(localeCode, "company.locations.heading")}</h2><p>${t(localeCode, "company.locations.intro")}</p></div>
+      <div class="locations-heading"><p class="eyebrow">Atlant Auto · ${t(localeCode, "brand.location")}</p><h2>${t(localeCode, "company.locations.heading")}</h2><p>${t(localeCode, "company.locations.intro")}</p></div>
       <div class="location-grid">
         <article class="location-card"><span class="location-label">01</span><h3>${t(localeCode, "company.location.office")}</h3><address>${site.registeredAddress}</address><p>${t(localeCode, "company.location.officeNote")}</p><a class="button ghost dark" href="${site.officeMap}" target="_blank" rel="noopener noreferrer">${t(localeCode, "company.location.openMap")}</a></article>
         <article class="location-card"><span class="location-label">02</span><h3>${t(localeCode, "company.location.lot")}</h3><address>${site.vehicleLotAddress}</address><p>${t(localeCode, "company.location.lotNote")}</p><a class="button ghost dark" href="${site.vehicleLotMap}" target="_blank" rel="noopener noreferrer">${t(localeCode, "company.location.openMap")}</a></article>
@@ -216,9 +216,9 @@ function pageHtml(page, localeCode) {
 <body class="content-page page-${key}">
   <header class="topbar">
     <a class="brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a>
-    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">Menu</span></button>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">${localeCode === "ru" ? "Меню" : "Menu"}</span></button>
     <nav class="nav" id="primary-navigation" aria-label="${t(localeCode, "navigation.primary.label")}">${nav(locale)}</nav>
-    <div class="language-nav" aria-label="${t(localeCode, "language.selector.label")}">${languageNav(localeCode)}</div>
+    <div class="language-nav" aria-label="${t(localeCode, "language.selector.label")}">${languageNav(localeCode, key)}</div>
   </header>
   <main>
     <nav class="breadcrumbs" aria-label="${t(localeCode, "navigation.breadcrumb.label")}"><a href="${locale.home}">${t(localeCode, "navigation.home")}</a><span aria-hidden="true">/</span><span>${esc(h1)}</span></nav>
@@ -243,7 +243,7 @@ ${lowerCta}
   </main>
   <footer class="footer">
     <div><a class="brand footer-brand" href="${locale.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a><p>${t(localeCode, "footer.tagline")}</p><p>NIP ${site.nip}</p></div>
-    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.vehicleLotAddress}</span><a href="${locale.routes[3]}">${t(localeCode, "footer.companyInfo")}</a><a href="${localeCode === "pl" ? "/pl/polityka-prywatnosci/" : "/en/privacy/"}">${t(localeCode, "footer.privacy")}</a></address>
+    <address><a href="tel:+48515392420">${site.phone}</a><a href="mailto:${site.email}">${site.email}</a><span>${site.vehicleLotAddress}</span><a href="${locale.routes[3]}">${t(localeCode, "footer.companyInfo")}</a><a href="${equivalents.privacy[localeCode]}">${t(localeCode, "footer.privacy")}</a></address>
   </footer>
   <aside class="cookie-banner" data-cookie-banner hidden>
     <div><strong>${t(localeCode, "cookie.banner.title")}</strong><p>${t(localeCode, "cookie.banner.description")}</p></div>
@@ -271,6 +271,7 @@ const vehicleRoutes = fs.existsSync(vehicleRoutesFile) ? JSON.parse(fs.readFileS
 const sitemapRoutes = [
   "/pl/",
   "/en/",
+  "/ru/",
   ...generated,
   ...vehicleRoutes
 ];

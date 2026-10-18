@@ -17,14 +17,14 @@ function walk(directory) {
 
 walk(root);
 
-test("public site exposes only Polish and English pages", () => {
+test("public site exposes Polish, English and Russian pages", () => {
   const rootHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
   assert.match(rootHtml, /url=\/pl\//);
   assert.doesNotMatch(rootHtml, /lang="ru"|hreflang="ru"|>RU</i);
 
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
-    assert.doesNotMatch(html, /lang="ru"|hreflang="ru"|>RU</i, path.relative(root, file));
+    assert.match(html, /<html lang="(?:pl|en|ru)"/, path.relative(root, file));
   }
 });
 
