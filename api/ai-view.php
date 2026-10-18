@@ -2,7 +2,16 @@
 if(!defined('ATLANT_DRAFT_VIEWER')||!$viewerSignedIn){http_response_code(404);exit;}
 $jobs=aiJobs($detail['id']);$aiLabels=['queued'=>'В очереди','running'=>'Обрабатывается','needs_review'=>'Готово · проверьте результат','ready'=>'Готово','error'=>'Ошибка · можно повторить вручную','uncertain'=>'Результат запроса неизвестен · проверьте перед повтором'];
 ?>
-<section class="panel"><h2>Описание и переводы</h2><p>Сервер подготовит польское и русское описание, перевод сервисной истории и замечаний. Задача продолжит выполняться после закрытия браузера. Обработчик проверяет очередь каждые 5 минут.</p>
+<section class="panel"><h2>Описание и переводы</h2>
+<?php $latestJob=$jobs[0]??null;$generationMessage=match($latestJob['state']??''){
+ 'queued'=>'✓ Задача принята и поставлена в очередь. Ожидайте: сервер проверяет очередь каждые 5 минут. Можно закрыть страницу — задача сохранена.',
+ 'running'=>'✓ Задача обрабатывается. Подождите, затем обновите страницу — результат появится ниже.',
+ 'needs_review','ready'=>'✓ Описание готово. Результат ниже — проверьте его перед сохранением в карточку.',
+ default=>null};if($generationMessage):?>
+<p role="status" style="padding:14px 16px;background:#e7f5eb;color:#216b3a;border:1px solid #b7dfc3;border-radius:8px;font-weight:600"><?=e($generationMessage)?></p>
+<?php elseif($latestJob&&in_array($latestJob['state'],['error','uncertain'],true)):?>
+<p role="alert" style="padding:14px 16px;background:#fff3de;color:#80540b;border:1px solid #e9ce98;border-radius:8px">Задача требует внимания. Проверьте сообщение ниже перед повторным запуском.</p>
+<?php endif;?><p>Сервер подготовит польское и русское описание, перевод сервисной истории и замечаний. Задача продолжит выполняться после закрытия браузера. Обработчик проверяет очередь каждые 5 минут.</p>
 <?php if(!aiConfigured()):?><p class="tag">Генератор пока не подключён: ожидается настройка API-ключа.</p><?php endif;?>
 <p>Выберите только документы этого автомобиля, которые можно передать в OpenAI. Инвойсы, транспортные документы, внутренние комментарии и фотографии в генератор не включаются. Ссылки на аукцион и учётные данные не передаются. Оригинальные PDF могут содержать персональные данные — проверьте их перед выбором.</p>
 <form method="post" action="?id=<?=e($detail['id'])?>&amp;section=generator"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="generate">
