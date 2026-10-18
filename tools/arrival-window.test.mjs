@@ -14,3 +14,13 @@ test('ERP Telegram includes the complete arrival window in transit',()=>{
  const packet={vehicle:{title:'Fixture',fuel:'Petrol'},condition:{},source:{},auction:{price:{amount:null}},documents:[]};
  const text=erpCaption(packet,{state:'in_transit',eta_from:'2026-10-07',eta_to:'2026-10-14'});assert.match(text,/Ожидаемое прибытие: 7–14 октября 2026/);
 });
+
+import {weekWindow,weekForDate} from '../erp-assets/product-arrival.js';
+test('calendar week selects Monday through Sunday, including ISO year boundaries',()=>{
+ assert.deepEqual(weekWindow('2026-W44'),{eta_from:'2026-10-26',eta_to:'2026-11-01'});
+ assert.deepEqual(weekWindow('2026-W01'),{eta_from:'2025-12-29',eta_to:'2026-01-04'});
+ assert.deepEqual(weekWindow('2020-W53'),{eta_from:'2020-12-28',eta_to:'2021-01-03'});
+ assert.equal(weekForDate('2021-01-01'),'2020-W53');assert.equal(weekForDate('2026-10-28'),'2026-W44');
+ for(const value of ['2021-W53','2026-W00','2026-W54','bad',''])assert.equal(weekWindow(value),null);
+ assert.equal(weekForDate('2026-02-30'),'');
+});
