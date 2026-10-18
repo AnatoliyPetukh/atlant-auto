@@ -5,7 +5,9 @@ const franceRegions={'01':'Гваделупа','02':'Мартиника','03':'�
 
 export function resolveLocation(value) {
   const source=String(value??'').normalize('NFKC').replace(/\s+/g,' ').trim();
-  const code=source.toUpperCase().match(/^([A-Z]{2})(?:-|$)/)?.[1];
+  const namedCountries={Germany:'DE',Deutschland:'DE',France:'FR',Poland:'PL',Polska:'PL',Netherlands:'NL',Belgium:'BE',Spain:'ES',Italy:'IT',Denmark:'DK',Norway:'NO',Sweden:'SE',Austria:'AT',Finland:'FI',Portugal:'PT',Switzerland:'CH'};
+  const named=Object.keys(namedCountries).find(name=>source.toLowerCase().endsWith(name.toLowerCase()));
+  const code=source.toUpperCase().match(/^([A-Z]{2})(?:-|$)/)?.[1]||namedCountries[named];
   const country=countries[code]||null;
   const result={source,country_code:country?code:null,country,region:null,department:null,method:country?'country_code':'unresolved',label:country||'Местоположение уточняется'};
   if(code==='FR') {

@@ -12,7 +12,7 @@ function compactSpecs(car){const node=el('p',null,'spec');const year=String(car.
 
 function date(value){if(!value)return null;const parts=String(value).split('-');return parts.reverse().join('.');}
 function price(car,mode=tax){
- if(car.state==='auction')return {value:money(car.auction_bid,car.auction_currency||'EUR'),label:'Najwyższa oferta na aukcji · netto'};
+ if(car.state==='auction')return {value:money(car.auction_bid,car.auction_currency||'EUR'),label:({starting_price:'Cena wywoławcza',buy_now:'Cena kup teraz',unknown:'Cena z aukcji'}[car.auction_price_kind]||'Najwyższa oferta na aukcji')+' · '+(car.auction_tax_basis==='gross'?'brutto':car.auction_tax_basis==='unknown'?'VAT do potwierdzenia':'netto')};
  return {value:money(mode==='net'?car.price_net:car.price_gross,car.currency),label:(mode==='net'?'Netto':'Brutto')+' · samochód w Warszawie'};
 }
 function inquiry(car){const sold=car.state==='sold'||car.availability==='reserved';const a=el('a',sold?'Znajdź podobny':car.state==='auction'?'Zapytaj o zakup':'Zapytaj o rezerwację','cta');a.href='mailto:biuro@atlantauto.pl?subject='+encodeURIComponent((sold?'Szukam podobnego: ':'Zapytanie: ')+car.title)+'&body='+encodeURIComponent('Oferta: '+location.origin+location.pathname+'?id='+car.id);return a;}

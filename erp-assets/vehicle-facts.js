@@ -39,11 +39,11 @@ export function vehicleFacts(packet) {
   const fallback=productionDate(v.production_year);
   // A checked catalog with no production date uses registration, clearly labelled.
   // Invalid/conflicting nonempty dates must never be hidden by this fallback.
-  const date=partsChecked?(partsDate?{...partsDate,kind:'production'}:null):(fallback?{...fallback,source:'Arval',kind:'production'}:null);
-  const registration=registrationDate(v.first_registration_source);
+  const date=partsChecked?(partsDate?{...partsDate,kind:'production'}:null):(fallback?{...fallback,source:packet.source?.auction==='bca'?'BCA':'Arval',kind:'production'}:null);
+  const registration=registrationDate(v.first_registration_source);if(registration)registration.source=packet.source?.auction==='bca'?'BCA':'Arval';
   const registrationFallback=partsChecked&&present.length===0;
   const displayDate=date||(registrationFallback?registration:null);
-  const dateNotice=registrationFallback?'В PartsLink дата производства не указана. Для объявления используется первая регистрация из Arval.':'';
+  const dateNotice=registrationFallback?'В PartsLink дата производства не указана. Для объявления используется первая регистрация с аукциона.':'';
   const evidence=[clean(v.title),clean(v.fuel),...engine].join(' | ');
   const mild=/\b(?:MHEV|mild[- ]?hybrid)\b|мягк\S* гибрид/i.test(evidence);
   const plug=/\b(?:PHEV|plug[- ]?in|hybride rechargeable)\b|подзаряжаем\S* гибрид/i.test(evidence);
@@ -56,7 +56,7 @@ export function vehicleFacts(packet) {
   const fuel=petrol===diesel?null:petrol?'бензин':'дизель';
   let engineLabel=hybrid?`${{mild:'мягкий гибрид',full:'полный гибрид',plug_in:'подзаряжаемый гибрид',unknown:'гибрид — тип уточняется',conflict:'гибрид — противоречивые данные'}[kind]}${fuel?` (${fuel})`:' — топливо уточняется'}`:fuel||(/\belectric\b|электр/i.test(evidence)?'электро':'тип двигателя уточняется');
   const reasons=[];
-  if(!displayDate)reasons.push(dateConflict?'Дата производства в PartsLink не распознана или противоречива. Требуется проверка.':registrationFallback?'В PartsLink нет даты производства, а первая регистрация Arval не распознана.':'Дата производства не подтверждена. Загрузите PartsLink для проверки даты и возможного использования первой регистрации Arval.');
+  if(!displayDate)reasons.push(dateConflict?'Дата производства в PartsLink не распознана или противоречива. Требуется проверка.':registrationFallback?'В PartsLink нет даты производства, а первая регистрация с аукциона не распознана.':'Дата производства не подтверждена. Загрузите PartsLink для проверки даты и возможного использования первой регистрации Arval.');
   if(kind==='full'||kind==='plug_in')reasons.push('По правилу компании полный и подзаряжаемый гибрид не готовится для публикации в канал.');
   else if(hybrid&&(kind!=='mild'||!fuel))reasons.push('Перед публикацией подтвердите тип гибрида и топливо по источнику.');
   return {production:date,production_candidates:production,first_registration:registration,display_date:displayDate,date_notice:dateNotice,partslink_date_checked:partsChecked,engine:{hybrid_type:kind,fuel,label:engineLabel,evidence},publication:{ready:reasons.length===0,reasons}};

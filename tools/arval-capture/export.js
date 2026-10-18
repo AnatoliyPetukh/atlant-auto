@@ -1,3 +1,4 @@
+import {collectBcaLot,validateBcaPhoto} from './bca-collector.js';
 import {parseDeliveryAmount,deliveryLabel} from './delivery.js';
 import {collectArvalLot} from './collector.js';
 import {collectPartslink,attachPartslink} from './partslink.js';
@@ -44,7 +45,8 @@ const addLog = (message, failed = false) => {
 function renderSourceDetails(){
  const root=$('source-extra');root.replaceChildren();
  const section=(title,value)=>{const d=document.createElement('details'),h=document.createElement('summary'),p=document.createElement('p');h.textContent=title;p.className='source-detail';p.textContent=value||'Данные не найдены на открытой странице.';d.append(h,p);root.append(d);return d;};
- section('Повреждения · комментарии Arval',packet.condition.damages.map((d,i)=>`${i+1}. ${[d.part,d.nature,d.repair].filter(Boolean).join(' · ')}`).join('\n'));
+ section('Повреждения · замечания аукциона',packet.condition.damages.map((d,i)=>`${i+1}. ${[d.part,d.nature,d.repair].filter(Boolean).join(' · ')}`).join('\n'));
+ if(packet.source.auction==='bca')section('BCA · комментарии и история повреждений',[packet.condition.auction_comments_source,packet.condition.previous_major_accident_damage===true?'Previous major accident damage: Yes':null,packet.condition.vendor_damage_description_source].filter(Boolean).join('\n'));
  section('Сервисная история · исходные записи',packet.condition.maintenance_entries.map(e=>`${e.date_source} · ${e.mileage_km} км · ${e.description_source}`).join('\n'));
  section('Состояние шин · исходные данные',packet.condition.tyres_source);
  const docs=section('Links and documents · найденные отчёты','Ссылки сохраняются как исходные материалы. Скачанные PDF прикрепите ниже; можно несколько.');docs.classList.add('source-documents');
@@ -54,9 +56,9 @@ async function readLot() {
   for(const id of ['retry','post','server-save'])$(id).disabled=true;
   let ready=false;
   try {
-    if (!Number.isSafeInteger(tabId) || tabId <= 0) throw new Error('Запустите расширение кнопкой на открытой карточке Arval.');
-    const [site]=await chrome.scripting.executeScript({target:{tabId},func:()=>location.hostname==='www.partslink24.com'});
-    if(site?.result===true) {
+    if (!Number.isSafeInteger(tabId) || tabId <= 0) throw new Error('Запустите расширение кнопкой на открытой карточке Arval или BCA.');
+    const [site]=await chrome.scripting.executeScript({target:{tabId},func:()=>({partslink:location.hostname==='www.partslink24.com',bca:['www.bca.com','bca.com'].includes(location.hostname)})});
+    if(site?.result?.partslink) {
       const [data]=await chrome.scripting.executeScript({target:{tabId},func:collectPartslink});
       await chrome.storage.local.set({['parts:'+data.result.vin]:data.result});
       $('progress').hidden=false;$('log').replaceChildren();
@@ -66,10 +68,10 @@ async function readLot() {
     }
     // No clicks, forms, or synthetic input on auction/catalog pages.
     // The operator opens documents and equipment panels before invoking capture.
-    const [response] = await chrome.scripting.executeScript({target:{tabId}, func: collectArvalLot});
+    const [response] = await chrome.scripting.executeScript({target:{tabId}, func: site?.result?.bca?collectBcaLot:collectArvalLot});
     const previous=packet;packet = response.result;
     if(previous?.vehicle?.vin&&previous.vehicle.vin!==packet?.vehicle?.vin){inspectionFiles=[];renderInspectionFiles();$('server-pdfs').value='';$('server-link').hidden=true;}
-    if (!packet?.vehicle?.vin) throw new Error('Arval не вернул данные автомобиля.');
+    if (!packet?.vehicle?.vin) throw new Error('Аукцион не вернул данные автомобиля.');
     if(chrome.storage?.local){const key='parts:'+packet.vehicle.vin;const stored=await chrome.storage.local.get(key);attachPartslink(packet,stored[key]);}
     if(previous?.vehicle?.vin===packet.vehicle.vin&&previous.enrichment?.partslink24_pdf)packet.enrichment={...(packet.enrichment||{}),partslink24_pdf:previous.enrichment.partslink24_pdf};
     else{partslinkFiles=[];importedPartslinkFiles=[];partslinkSelectionVersion++;$('partslink-pdf').value='';renderPartslinkFiles();}
@@ -102,9 +104,9 @@ async function readLot() {
       ['Цвет (источник)', packet.vehicle.color||'Не указан'],
       ['Страна регистрационных документов', packet.vehicle.registration_country_source||'Не указана'],
       ['Полный привод', packet.vehicle.awd===true?'Да':packet.vehicle.awd===false?'Нет':packet.vehicle.drive_source||'Не указан'],
-      ['НДС к вычету (Arval)', packet.vehicle.vat_deductible===true?'Да':packet.vehicle.vat_deductible===false?'Нет':packet.vehicle.vat_deductible_source||'Не указан'],
-      ['Первая регистрация (Arval)', packet.vehicle.first_registration_source || 'Не распознана'],
-      ['Текущая максимальная ставка', packet.auction.price.amount === null ? 'Не распознана' : `${packet.auction.price.amount.toLocaleString('ru')} ${packet.auction.price.currency} · нетто по правилу публикации`],
+      ['НДС · сведения аукциона', packet.vehicle.vat_deductible===true?'Да':packet.vehicle.vat_deductible===false?'Нет':packet.vehicle.vat_deductible_source||'Не указан'],
+      ['Первая регистрация (источник)', packet.vehicle.first_registration_source || 'Не распознана'],
+      [packet.auction.price.kind==='starting_price'?'Начальная цена':packet.auction.price.kind==='highest_bid'?'Текущая максимальная ставка':'Цена в источнике', packet.auction.price.amount === null ? 'Не распознана' : `${packet.auction.price.amount.toLocaleString('ru')} ${packet.auction.price.currency} · ${packet.auction.price.tax_basis==='gross'?'брутто':packet.auction.price.tax_basis==='net'||packet.source.auction==='arval'?'нетто':'нетто/брутто уточняется'}`],
       ['До окончания торгов (на момент сбора)', packet.auction.countdown_source_original||packet.auction.countdown_source||'Таймер не распознан'],
       ['Основные / повреждения', `${packet.photos.filter(p=>p.kind==='vehicle').length} / ${packet.photos.filter(p=>p.kind==='damage').length} фото`],
       ['Комплектация / замечания', `${packet.equipment.length} опций / ${packet.condition.damages.length} замечаний`],
@@ -138,8 +140,15 @@ const photoCache=new Map();
 async function photoBlob(photo){
   const cacheKey=packet.vehicle.vin+':'+photo.url;
   if(photoCache.has(cacheKey))return photoCache.get(cacheKey);
+  if(packet.source.auction==='bca'){
+    const [checked]=await chrome.scripting.executeScript({target:{tabId},func:validateBcaPhoto,args:[photo.url,packet.vehicle.vin]});
+    if(checked?.result!==photo.url)throw Error('BCA: фотография не подтверждена текущей карточкой.');
+    const response=await fetch(photo.url,{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('BCA не отдал фотографию.');
+    const blob=await response.blob();if(!['image/jpeg','image/png','image/webp'].includes(blob.type)||!blob.size||blob.size>8*1024*1024)throw Error('Неподдерживаемая фотография BCA или размер больше 8 МБ.');
+    photoCache.set(cacheKey,blob);return blob;
+  }
   const [read]=await chrome.scripting.executeScript({target:{tabId},func:readArvalPhoto,args:[photo.url,packet.vehicle.vin]});
-  if(typeof read.result!=='string'||!read.result.startsWith('data:image/'))throw Error('Не удалось получить фотографию из Arval.');
+  if(typeof read.result!=='string'||!read.result.startsWith('data:image/'))throw Error('Не удалось получить фотографию с аукциона.');
   const blob=await(await fetch(read.result)).blob();photoCache.set(cacheKey,blob);return blob;
 }
 async function saveServerPhotos(key,photos,progress){
@@ -147,7 +156,7 @@ async function saveServerPhotos(key,photos,progress){
   const draft=await storeRequest(key,{body:packet});let failed=0;
   for(const [i,photo]of photos.entries()){
     progress(`Сохраняю на сервер фото ${i+1} из ${photos.length}…`);
-    try{const blob=await photoBlob(photo);await storeFile(key,draft.id,blob,{name:`${String(i+1).padStart(3,'0')}.${blob.type==='image/png'?'png':'jpg'}`,kind:photo.kind==='damage'?'damage':'vehicle',sourceUrl:photo.url});}
+    try{const blob=await photoBlob(photo);await storeFile(key,draft.id,blob,{name:`${String(i+1).padStart(3,'0')}.${blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'}`,kind:photo.kind==='damage'?'damage':'vehicle',sourceUrl:photo.url});}
     catch(error){failed++;addLog(`Сервер: фото ${i+1}: ${error.message}`,true);}
   }
   return {...draft,failed};
@@ -157,7 +166,7 @@ async function saveSourceForErp(){
  try{
   ensurePartslinkRead();ensureDeliveryValid();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
   for(const{file}of pendingPdfs())if(file.size<=0||file.size>20*1024*1024||(!/\.pdf$/i.test(file.name)&&file.type!=='application/pdf'))throw Error('Проверьте документы: нужны PDF до 20 МБ каждый.');
-  if(!await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
+  if(!await chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*']:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
   for(const[button]of locked)button.disabled=true;$('progress').hidden=false;
   const saved=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
   if(saved.failed)throw Error('Черновик сохранён частично: не все фотографии загрузились. Повторите сохранение перед работой в ERP.');
@@ -229,7 +238,7 @@ $('inspection-pdfs').addEventListener('change',()=>{
 function partsStatus(){
   const page=packet.enrichment?.partslink24;const pdf=packet.enrichment?.partslink24_pdf;
   if(page||pdf)return `Данные PartsLink подключены по VIN. Распознано опций: ${[page?`страница — ${page.equipment?.length||0}`:'',pdf?`PDF — ${pdf.equipment?.length||0}`:''].filter(Boolean).join('; ')}. Для поста выбираются значимые опции.`;
-  return 'Данные PartsLink пока не сохранены. Прочитайте открытую страницу PartsLink и перечитайте лот Arval либо импортируйте PDF в блоке «Данные PartsLink».';
+  return 'Данные PartsLink пока не сохранены. Прочитайте открытую страницу PartsLink и перечитайте лот аукциона либо импортируйте PDF в блоке «Данные PartsLink».';
 }
 $('import-partslink').addEventListener('click',async()=>{
   const button=$('import-partslink');const status=$('partslink-import-status');
@@ -277,10 +286,10 @@ $('save-key').addEventListener('click',async()=>{
     button.disabled=true;$('employee-key').value=key;
     status.textContent='Сохраняю ключ на этом компьютере…';
     // Start the optional permission request inside the click gesture, before await.
-    const permission=chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']}).catch(()=>false);
+    const permission=chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*']:['https://serwer2454127.home.pl/*']}).catch(()=>false);
     await chrome.storage.local.set({telegram_employee_key:key});
     const check=await chrome.storage.local.get('telegram_employee_key');
-    if(check.telegram_employee_key!==key)throw Error('Chrome не подтвердил сохранение ключа. Закройте вкладку расширения и откройте его заново из Arval.');
+    if(check.telegram_employee_key!==key)throw Error('Chrome не подтвердил сохранение ключа. Закройте вкладку расширения и откройте его заново с аукциона.');
     saved=true;status.textContent='Ключ сохранён на этом компьютере. Проверяю доступ к серверу…';
     if(!await permission){status.className='warning';status.textContent='Ключ сохранён на этом компьютере, но проверка не выполнена: доступ к серверу не разрешён. Повторите проверку и разрешите доступ к serwer2454127.home.pl.';return;}
     const connected=await storeRequest(key,{action:'identity'});
@@ -302,7 +311,7 @@ $('send-draft').addEventListener('click',async()=>{
   try{
     ensurePartslinkRead();ensureDeliveryValid();
     const caption=$('caption').value.trim();
-    if(hasPrivateAuctionLink(caption))throw Error('Закрытая ссылка Arval не должна попадать в пост. Удалите её из текста.');
+    if(hasPrivateAuctionLink(caption))throw Error('Закрытая ссылка аукциона не должна попадать в пост. Удалите её из текста.');
     const policy=vehicleFacts(packet).publication;if(!policy.ready)throw Error(policy.reasons.join(' '));
     const key=$('employee-key').value.trim();
     const photos=packet.photos.filter(x=>x.kind==='vehicle');
@@ -310,7 +319,7 @@ $('send-draft').addEventListener('click',async()=>{
     if(!key)throw Error('Сначала создайте бота и подключите сервер. Здесь нужен отдельный ключ сотрудника, не токен бота.');
     if(caption.length>1024||!caption)throw Error('Подпись должна содержать от 1 до 1024 знаков.');
     if(selected.length<2||selected.length>10)throw Error('Выберите от 2 до 10 фотографий.');
-    const granted=await chrome.permissions.request({origins:['https://serwer2454127.home.pl/*']});
+    const granted=await chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*']:['https://serwer2454127.home.pl/*']});
     if(!granted)throw Error('Нет разрешения на отправку в сервер Atlant Auto.');
     $('send-draft').disabled=true;
     $('retry').disabled=true;$('server-save').disabled=true;$('import-partslink').disabled=true;
@@ -327,7 +336,7 @@ $('send-draft').addEventListener('click',async()=>{
     const form=new FormData();form.append('payload',JSON.stringify({...payload,request_id:requestId}));
     for(const [i,photo]of selected.entries()){
       result.textContent=`Читаю фото ${i+1} из ${selected.length}…`;
-      const blob=await photoBlob(photo);form.append('photo_'+i,blob,`${i+1}.${blob.type==='image/png'?'png':'jpg'}`);
+      const blob=await photoBlob(photo);form.append('photo_'+i,blob,`${i+1}.${blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'}`);
     }
     result.textContent='Отправляю альбом в закрытый чат…';
     const response=await fetch(DRAFT_ENDPOINT,{method:'POST',headers:{Authorization:'Bearer '+key},body:form,credentials:'omit',redirect:'error',signal:AbortSignal.timeout(120000)});

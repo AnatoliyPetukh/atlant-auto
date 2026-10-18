@@ -24,7 +24,7 @@ function aiInput(string $id,array $pdfIds,?array $selection=null,array $photoIds
  unset($vehicle['publication_facts']);
  $facts=$v['publication_facts']??[];
  foreach(['production_date','first_registration','fuel','transmission','hybrid','date']as$k)if(isset($facts[$k]))$vehicle[$k]=$facts[$k];
- $input=['vehicle'=>$vehicle,'condition'=>array_intersect_key($condition,array_flip(['damages','maintenance_entries','maintenance_count','maintenance_source','tyres','tires','tyres_source'])),'partslink'=>[],'files'=>[]];
+ $input=['vehicle'=>$vehicle,'condition'=>array_intersect_key($condition,array_flip(['damages','maintenance_entries','maintenance_count','maintenance_source','tyres','tires','tyres_source','auction_comments_source','previous_major_accident_damage','vendor_damage_description_source'])),'partslink'=>[],'files'=>[]];
  foreach(['partslink24','partslink24_pdf'] as $k){$p=$d['packet']['enrichment'][$k]??[];if(is_array($p))$input['partslink'][$k]=array_intersect_key($p,array_flip(['production_date','equipment','vehicle','identification','vin']));}
  if($selection!==null){
   if(!$selection['partslink']){$input['partslink']=[];unset($input['vehicle']['production_date'],$input['vehicle']['date']);}

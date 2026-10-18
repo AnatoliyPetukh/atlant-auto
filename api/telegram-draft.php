@@ -72,7 +72,7 @@ if (!preg_match('/^[A-HJ-NPR-Z0-9]{17}$/D', $vin) || !preg_match('/^[a-f0-9]{64}
 $charCount = preg_match_all('/./us', $caption);
 if ($caption === '' || $charCount === false || $charCount > 1024) reply(400, ['ok'=>false,'error'=>'Подпись длиннее 1024 знаков или пуста.']);
 // Enforce the private-source boundary even for old extensions or manually edited text.
-if (preg_match('/remktg\.arval\.com/i', $caption)) reply(400, ['ok'=>false,'error'=>'Закрытая ссылка Arval не должна попадать в пост. Удалите её из текста.']);
+if (preg_match('/(?:remktg\.arval\.com|(?:www\.)?bca\.com\/sales)/i', $caption)) reply(400, ['ok'=>false,'error'=>'Закрытая ссылка аукциона не должна попадать в пост. Удалите её из текста.']);
 if (!is_array($payload['photos'] ?? null)) reply(400, ['ok'=>false,'error'=>'Некорректный список фотографий.']);
 $count = count($payload['photos']);
 if ($count < 2 || $count > 10 || (!$erpMode&&count($_FILES) !== $count)) reply(400, ['ok'=>false,'error'=>'Нужно от 2 до 10 фотографий.']);

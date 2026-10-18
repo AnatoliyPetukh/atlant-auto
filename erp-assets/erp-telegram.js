@@ -1,5 +1,5 @@
 import {arrivalLabel} from './arrival-window.js?v=20261018-1';
-import {telegramCaption,hasPrivateAuctionLink} from './telegram.js';
+import {telegramCaption,hasPrivateAuctionLink} from './telegram.js?v=20261018-2';
 import {vehicleFacts} from './vehicle-facts.js';
 import {equipmentHighlights,selectedEquipmentHighlights} from './equipment-highlights.js';
 export function erpCaption(packet,record,includeMaintenance=true){
