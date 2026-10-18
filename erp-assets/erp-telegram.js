@@ -1,3 +1,4 @@
+import {arrivalLabel} from './arrival-window.js?v=20261018-1';
 import {telegramCaption,hasPrivateAuctionLink} from './telegram.js';
 import {vehicleFacts} from './vehicle-facts.js';
 import {equipmentHighlights,selectedEquipmentHighlights} from './equipment-highlights.js';
@@ -11,6 +12,7 @@ export function erpCaption(packet,record,includeMaintenance=true){
  if(record.availability==='reserved'&&record.state!=='sold')lines.splice(1,0,'Зарезервирован под клиента');
  const price=record.price_net??record.price_gross;
  if(price!=null&&record.state!=='sold')lines.push('',`💶 Готовый автомобиль в Варшаве: ${new Intl.NumberFormat('ru').format(price)} ${record.currency} · ${record.price_net!=null?'нетто':'брутто'}`);
+ const arrival=arrivalLabel(record,'ru-RU');if(arrival&&['in_transit','purchased'].includes(record.state))lines.push('',`🚚 Ожидаемое прибытие: ${arrival}`);
  lines.push('',record.state==='in_transit'?'📍 В пути в Варшаву':'📍 Варшава');
  return lines.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }

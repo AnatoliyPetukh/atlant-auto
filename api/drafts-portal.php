@@ -37,7 +37,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   elseif($action==='restore')productRestore($id,(int)($_POST['revision']??0),(int)($_POST['target_revision']??0),$actor);
   elseif($action==='unpublish')productUnpublish($id,$actor);
   elseif(in_array($action,['save','publish'],true)){
-   $changes=[];foreach(['title','description_pl','state','availability','price_net','price_gross','currency','eta','location_pl','delivery_eur']as$field)$changes[$field]=(string)($_POST[$field]??'');
+   $changes=[];foreach(['title','description_pl','state','availability','price_net','price_gross','currency','eta_from','eta_to','location_pl','delivery_eur']as$field)$changes[$field]=(string)($_POST[$field]??'');
    foreach(['keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'] as $field)if(array_key_exists($field,$_POST))$changes[$field]=(string)$_POST[$field];
    $changes['equipment_pl']=array_values(array_filter(array_map('trim',explode("\n",(string)($_POST['equipment_pl']??'')))));
    $changes['photo_ids']=$_POST['photo_ids']??[];$changes['document_ids']=$_POST['document_ids']??[];
