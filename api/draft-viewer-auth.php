@@ -13,12 +13,12 @@ ini_set('session.use_strict_mode','1');ini_set('session.use_only_cookies','1');i
 session_save_path($sessionDir);session_name('__Secure-atlant_drafts');
 session_set_cookie_params(['lifetime'=>0,'path'=>'/drafts/','secure'=>true,'httponly'=>true,'samesite'=>'Lax']);
 if (!session_start()) {http_response_code(503);exit('Не удалось открыть защищённую сессию.');}
-// Reuse the existing bcrypt hash. The plaintext password is never stored here.
-$viewerHash=null;$viewerName='presentation';
-foreach (file(dirname(__DIR__).'/presentation/.htpasswd',FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES)?:[] as $line) {
-    $entry=explode(':',$line,2);if(count($entry)===2 && $entry[0]===$viewerName)$viewerHash=$entry[1];
-}
-if (!$viewerHash || !str_starts_with($viewerHash,'$2')) {http_response_code(503);exit('Вход временно не настроен.');}
+// ERP credentials are separate from the presentation; only a password hash lives here.
+$viewerAuthPath=$viewerPrivate.'/erp-viewer-auth.json';
+$viewerAuth=is_file($viewerAuthPath)?json_decode((string)file_get_contents($viewerAuthPath),true):null;
+$viewerName=is_array($viewerAuth)?($viewerAuth['username']??null):null;
+$viewerHash=is_array($viewerAuth)?($viewerAuth['password_hash']??null):null;unset($viewerAuth);
+if (!is_string($viewerName)||!preg_match('/^[A-Za-z0-9._-]{3,100}$/D',$viewerName)||!is_string($viewerHash)||!str_starts_with($viewerHash,'$2')) {http_response_code(503);exit('Вход временно не настроен.');}
 $hashVersion=hash('sha256',$viewerHash);
 $viewerSignedIn=isset($_SESSION['viewer'],$_SESSION['last_seen'],$_SESSION['auth_at'],$_SESSION['hash_version'])
     && $_SESSION['viewer']===$viewerName && hash_equals($hashVersion,(string)$_SESSION['hash_version'])
