@@ -5,6 +5,8 @@ $root=sys_get_temp_dir().'/atlant-products-'.bin2hex(random_bytes(8));putenv('AT
 function expect(bool $ok,string $message):void{if(!$ok)throw new RuntimeException($message);}
 function rejected(callable $fn):bool{try{$fn();return false;}catch(InvalidArgumentException|DomainException $e){return true;}}
 try{
+ if(!is_dir($root))mkdir($root,0700,true);
+ $accounts=$root.'/accounts.json';file_put_contents($accounts,json_encode(['users'=>['publisher-test'=>['password_hash'=>password_hash('fixture',PASSWORD_BCRYPT),'role'=>'publisher','enabled'=>true]]]));putenv('ATLANT_ERP_ACCOUNTS='.$accounts);
  $packet=['vehicle'=>['vin'=>'WBA00000000000001','display_title'=>'BMW X2','make'=>'BMW','title'=>'Private source','mileage_km'=>12345,'fuel'=>'Petrol','transmission'=>'Automatic','publication_facts'=>['display_date'=>['kind'=>'production','value'=>'2022-05-10'],'first_registration'=>['value'=>'2022-06'],'engine'=>['label'=>'бензин']]],'source'=>['url'=>'https://remktg.arval.com/private','lot_id'=>'secret-lot','captured_at'=>'2026-10-17T10:00:00Z'],'auction'=>['price'=>['kind'=>'highest_bid','amount'=>9000,'currency'=>'EUR']],'website_seed'=>['equipment_ids'=>['cameraRear','heatedSeats']],'private'=>['client'=>'private-person@example.com']];
  $id=draftCapture($packet,'employee-2')['id'];$db=productDb();$photo=bin2hex(random_bytes(16));$damage=bin2hex(random_bytes(16));$private=bin2hex(random_bytes(16));$inspection=bin2hex(random_bytes(16));$yard=bin2hex(random_bytes(16));
  mkdir($root.'/objects/'.$id,0700,true);
@@ -15,7 +17,7 @@ try{
  $row=productSave($id,1,['state'=>'in_transit','availability'=>'reserved','price_net'=>'12500,50','description_pl'=>'Samochód w drodze do Warszawy.'],'employee-2');expect($row['record']['price_net']===12500.5,'Explicit ready price');expect(rejected(fn()=>productSave($id,1,[],'owner')),'Stale revision rejected');
  $changed=$packet;$changed['vehicle']['display_title']='New auction title';draftCapture($changed,'employee-2');expect(productGet($id)['record']['state']==='in_transit'&&productGet($id)['record']['title']==='BMW X2','Reimport preserves product edits');
  expect(rejected(fn()=>productSave($id,2,['photo_ids'=>[$damage]],'owner')),'Damage excluded from product photos');expect(rejected(fn()=>productSave($id,2,['document_ids'=>[$private]],'owner')),'Internal PDF cannot be shared');expect(rejected(fn()=>productSave($id,2,['state'=>'fake-state'],'owner')),'State allowlist');
- $row=productPublish($id,2,'owner');$public=productPublicList()[0];$json=json_encode($public);foreach(['WBA00000000000001','private-person','secret-lot','remktg','private.example','source_url','draft_id']as$secret)expect(!str_contains($json,$secret),'No private source leak: '.$secret);
+ $row=productPublish($id,2,'publisher-test');$public=productPublicList()[0];$json=json_encode($public);foreach(['WBA00000000000001','private-person','secret-lot','remktg','private.example','source_url','draft_id']as$secret)expect(!str_contains($json,$secret),'No private source leak: '.$secret);
  expect(!isset($public['auction_bid'])&&$public['price_net']===12500.5,'Purchased card uses ready price only');
  $row=productSave($id,2,['state'=>'on_site','availability'=>'free','document_ids'=>[$inspection],'photo_ids'=>[$yard]],'employee-2');expect(productPublicList()[0]['state']==='in_transit','Unpublished changes not public');
  productPublish($id,3,'owner');expect(productPublicList()[0]['photo_ids']===[$yard],'Yard gallery selected independently');expect(productPublicList()[0]['state']==='on_site'&&productPublicList()[0]['document_ids']===[$inspection],'Explicit update publishes selected document');
@@ -31,7 +33,8 @@ try{
  expect(productGet($id)['revision']===5&&productPublicList()[0]['state']==='auction','Rejected ERP change is atomic');
  expect(rejected(fn()=>productSave($id,5,['state'=>'on_site','photo_ids'=>[$photo],'price_net'=>'12000'],'owner',true)),'Cannot advertise auction photos as yard arrival');
  expect(productGet($id)['revision']===5,'Failed publication validation rolls back ERP revision');
- $erp=productSave($id,5,['state'=>'in_transit','price_net'=>'12000'],'owner',true);
+ $erp=productSave($id,5,['state'=>'in_transit','price_net'=>'12000'],'publisher-test',true);
+ expect(productVersions($id)[0]['actor']==='publisher-test','Publisher personal identity recorded in history');
  expect($erp['published_revision']===6&&productPublicList()[0]['state']==='in_transit','ERP state reaches website in same transaction');
  $again=$packet;$again['vehicle']['display_title']='Recaptured source';draftCapture($again,'employee-2');
  expect(productGet($id)['record']['state']==='in_transit'&&productPublicList()[0]['state']==='in_transit','Recapture cannot reset ERP or website state');

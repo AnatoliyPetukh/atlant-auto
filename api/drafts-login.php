@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             if (!viewerRate()) {http_response_code(429);header('Retry-After: 900');$error='Слишком много попыток входа. Повторите через 15 минут.';}
             else {
                 $password=$_POST['password']??'';$username=$_POST['username']??'';
-                $valid=is_string($password) && strlen($password)<=1024 && password_verify($password,$viewerHash);
-                if ($valid && is_string($username) && hash_equals($viewerName,$username)) {
+                $account=erpAccountAuthenticate($viewerAccounts,$username,$password);
+                if ($account!==null) {
                     viewerRate(false,true);session_regenerate_id(true);
-                    $_SESSION=['viewer'=>$viewerName,'last_seen'=>time(),'auth_at'=>time(),'hash_version'=>$hashVersion,'csrf'=>bin2hex(random_bytes(32))];
+                    $_SESSION=['viewer'=>$account['username'],'last_seen'=>time(),'auth_at'=>time(),'hash_version'=>erpAccountVersion($account),'csrf'=>bin2hex(random_bytes(32))];
                     session_write_close();header('Location: '.$next,true,303);exit;
                 }
                 viewerRate(true);http_response_code(200);$error='Неверный логин или пароль.';
