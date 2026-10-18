@@ -28,7 +28,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   }elseif($action==='undelete'){
    productUndelete($id,$actor);header('Location: ?id='.$id.'&restored=1',true,303);exit;
   }elseif($action==='generate'){
-   aiEnqueue($id,$_POST['ai_pdf_ids']??[],$actor,($_POST['ai_consent']??'')==='1');header('Location: ?id='.$id.'&section=generator&done=1',true,303);exit;
+   aiEnqueue($id,$_POST['ai_pdf_ids']??[],$actor,($_POST['ai_consent']??'')==='1',['partslink'=>($_POST['ai_use_partslink']??'')==='1','inspection'=>($_POST['ai_use_inspection']??'')==='1','photos'=>($_POST['ai_use_photos']??'')==='1'],$_POST['ai_photo_ids']??[]);header('Location: ?id='.$id.'&section=generator&done=1',true,303);exit;
   }elseif($action==='note'){
    erpAddNote($id,(string)($_POST['note_body']??''),$actor);header('Location: ?id='.$id.'&section=comments&done=1',true,303);exit;
   }elseif($action==='upload'){
