@@ -44,15 +44,16 @@ export function equipmentHighlights(packet,limit=5) {
   const page=packet.enrichment?.partslink24?.equipment||[];
   const pdf=packet.enrichment?.partslink24_pdf?.equipment||[];
   // Never fill a populated catalog list with possibly contradictory auction options.
-  const source=page.length||pdf.length?'PartsLink':'Arval';
-  const items=source==='PartsLink'?[...page.map(x=>({...x,origin:'partslink24'})),...pdf.map(x=>({...x,origin:'partslink24_pdf'}))]: (packet.equipment||[]).map(x=>({label:x.type,code:null,origin:'arval'}));
+  const source=page.length||pdf.length?'PartsLink':packet.source?.auction==='bca'?'BCA':'Arval';
+  const items=source==='PartsLink'?[...page.map(x=>({...x,origin:'partslink24'})),...pdf.map(x=>({...x,origin:'partslink24_pdf'}))]: (packet.equipment||[]).map(x=>({label:source==='BCA'?[x.type,x.specification].filter(Boolean).join(': '):x.type,code:null,origin:source==='BCA'?'bca':'arval'}));
   const candidates=[];
   for(const item of items){
     const label=clean(item.label);if(negative.test(label)||/подготовк\S* (?:для|под|к)|preparation for|pre[- ]?wiring for/i.test(label))continue;
     const category=clean(item.category);
     const code=clean(item.code).toUpperCase();const mapped=/^BMW$/i.test(clean(packet.vehicle?.make))?bmwCodes[code]:null;
     const explicitStellantis=category==='ЛАМПЫ ФАР'&&/СВЕТОДИОД/i.test(label)?'led':category==='КРУИЗ-КОНТРОЛЬ'&&/РЕГУЛЯТОР.*СКОРОСТИ/i.test(label)?'cruise':category==='СИСТЕМА КОНДИЦИОНИРОВАНИЯ ВОЗДУХА'&&/АВТОМАТИЧЕСКИЙ КОНДИЦИОНЕР/i.test(label)?'climate':null;
-    const matches=rules.filter(rule=>rule[0]===mapped||rule[0]===explicitStellantis||rule[4].test(label));
+    const bcaMapped=source==='BCA'?(/^Sunroof:\s*Yes$/i.test(label)?'sunroof':/^Seat covering:\s*Leather$/i.test(label)?'leather':/^Enhanced speaker system name:\s*FOCAL$/i.test(label)?'premiumAudio':null):null;
+    const matches=rules.filter(rule=>rule[0]===bcaMapped||rule[0]===mapped||rule[0]===explicitStellantis||rule[4].test(label));
     // Specific labels win over a generic code; contradictions are kept out.
     for(const rule of matches)candidates.push({id:rule[0],group:rule[1],priority:rule[2],label:rule[3],source:item.origin,source_code:code||null,source_label:label});
   }
