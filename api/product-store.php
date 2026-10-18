@@ -25,7 +25,7 @@ function productRegistrySource(array $row):string{
  return strtolower((string)parse_url((string)($row['source_url']??''),PHP_URL_HOST))==='remktg.arval.com'?'Arval':'—';
 }
 function productRegistryList(string $search='',string $state='',int $offset=0):array {
- $db=productDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.source_url,json_extract(d.packet_json,\'$.source.auction\') AS source_auction,d.created_at,d.updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id WHERE (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
+ $db=productDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.source_url,json_extract(d.packet_json,\'$.source.auction\') AS source_auction,d.created_at,d.updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id WHERE NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=d.id) AND (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
  $term='%'.mbSafeCut($search,150).'%';$args=[$term,$term,$term];
  if($state==='incoming')$sql.=' AND p.draft_id IS NULL';elseif(isset(productStates()[$state])){$sql.=" AND json_extract(p.record_json,'$.state')=?";$args[]=$state;}
  $sql.=' ORDER BY d.updated_at DESC,d.id LIMIT 50 OFFSET ?';$args[]=max(0,$offset);$q=$db->prepare($sql);$q->execute($args);return $q->fetchAll();
@@ -40,7 +40,7 @@ function productAssertPublishable(array $record,array $draft):void {
  }
 }
 function productEquipmentLabels():array{return ['areaView'=>'Kamery Area View','camera360'=>'Kamery 360°','adaptiveCruise'=>'Adaptacyjny tempomat','panorama'=>'Dach panoramiczny','awd'=>'Napęd na cztery koła','matrix'=>'Reflektory matrycowe','adaptiveLed'=>'Adaptacyjne reflektory LED','hud'=>'Wyświetlacz Head-Up','ventilation'=>'Wentylacja foteli','memory'=>'Elektryczny fotel z pamięcią','cameraRear'=>'Kamera cofania','heatedSeats'=>'Podgrzewane fotele','heatedWheel'=>'Podgrzewana kierownica','blindSpot'=>'Monitorowanie martwego pola','tailgate'=>'Elektryczna klapa bagażnika','led'=>'Reflektory LED','parking'=>'Czujniki parkowania z przodu i z tyłu','navigation'=>'Nawigacja','climate'=>'Klimatyzacja automatyczna','cruise'=>'Tempomat','aeb'=>'Automatyczne hamowanie awaryjne','laneAssist'=>'Asystent pasa ruchu','keyless'=>'Dostęp bezkluczykowy','carplay'=>'Apple CarPlay','androidAuto'=>'Android Auto','activeParking'=>'Aktywny asystent parkowania','parkingAssist'=>'Asystent parkowania','powerSeat'=>'Elektryczna regulacja fotela','sunroof'=>'Szyberdach','leather'=>'Skórzana tapicerka','foldingMirrors'=>'Elektrycznie składane lusterka','heatedWindscreen'=>'Podgrzewana przednia szyba','premiumAudio'=>'System audio premium','rainSensor'=>'Czujnik deszczu','autoLights'=>'Automatyczne włączanie świateł'];}
-function productGet(string $id):?array {$q=productDb()->prepare('SELECT * FROM vehicle_products WHERE draft_id=?');$q->execute([draftId($id)]);$row=$q->fetch();if(!$row)return null;$row['record']=json_decode($row['record_json'],true,512,JSON_THROW_ON_ERROR);unset($row['record_json']);return $row;}
+function productGet(string $id):?array {$q=productDb()->prepare('SELECT * FROM vehicle_products WHERE draft_id=? AND NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=vehicle_products.draft_id)');$q->execute([draftId($id)]);$row=$q->fetch();if(!$row)return null;$row['record']=json_decode($row['record_json'],true,512,JSON_THROW_ON_ERROR);unset($row['record_json']);return $row;}
 function productText(mixed $value,int $max):string{if(!is_string($value))throw new InvalidArgumentException('Нужен текст.');$value=trim($value);if(preg_match_all('/./us',$value)>$max||preg_match('/https?:\/\/|remktg\.arval|partslink24\.com|[\x00-\x08\x0b\x0c\x0e-\x1f]/iu',$value))throw new InvalidArgumentException('Текст слишком длинный или содержит ссылку/служебные символы.');return $value;}
 function productDate(mixed $value):?string {
  if($value===null||$value==='')return null;
@@ -132,5 +132,29 @@ function productPublish(string $id,int $revision,string $actor):array {
   draftEvent($db,$id,'product_published',$actor,['revision'=>$revision]);$db->exec('COMMIT');return productGet($id);
  }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}
 }
-function productUnpublish(string $id,string $actor):void{if(!erpCanPublish($actor))throw new InvalidArgumentException('Для этого действия нужны права публикации.');$db=productDb();$db->beginTransaction();try{$db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([draftId($id)]);draftEvent($db,$id,'product_unpublished',$actor,[]);$db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}}
-function productPublicList(?string $id=null):array{$sql='SELECT published_json FROM vehicle_products WHERE published_json IS NOT NULL';$args=[];if($id!==null){$sql.=' AND public_id=?';$args[] =draftId($id);}$sql.=' ORDER BY published_at DESC LIMIT 200';$q=productDb()->prepare($sql);$q->execute($args);return array_map(fn($json)=>json_decode($json,true,512,JSON_THROW_ON_ERROR),$q->fetchAll(PDO::FETCH_COLUMN));}
+function productUnpublish(string $id,string $actor):void{draftFind($id);if(!erpCanPublish($actor))throw new InvalidArgumentException('Для этого действия нужны права публикации.');$db=productDb();$db->beginTransaction();try{$db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([draftId($id)]);draftEvent($db,$id,'product_unpublished',$actor,[]);$db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}}
+function productPublicList(?string $id=null):array{$sql='SELECT published_json FROM vehicle_products WHERE published_json IS NOT NULL AND NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=vehicle_products.draft_id)';$args=[];if($id!==null){$sql.=' AND public_id=?';$args[] =draftId($id);}$sql.=' ORDER BY published_at DESC LIMIT 200';$q=productDb()->prepare($sql);$q->execute($args);return array_map(fn($json)=>json_decode($json,true,512,JSON_THROW_ON_ERROR),$q->fetchAll(PDO::FETCH_COLUMN));}
+
+function productTrashList(string $actor):array{
+ if(!erpCanDelete($actor))throw new InvalidArgumentException('Корзина доступна только владельцу.');
+ $q=productDb()->query('SELECT d.id,d.vin,d.title,x.deleted_at,x.actor FROM deleted_drafts x JOIN drafts d ON d.id=x.draft_id ORDER BY x.deleted_at DESC,x.draft_id LIMIT 200');return $q->fetchAll();
+}
+function productDelete(string $id,string $vin,string $actor):void{
+ if(!erpCanDelete($actor))throw new InvalidArgumentException('Удалять автомобили может только владелец.');
+ $db=productDb();$db->exec('BEGIN IMMEDIATE');try{
+  $draft=draftFind($id);if(!hash_equals($draft['vin'],trim($vin)))throw new InvalidArgumentException('Для удаления введите полный VIN автомобиля.');
+  $db->prepare('INSERT INTO deleted_drafts VALUES (?,?,?)')->execute([$id,gmdate('c'),$actor]);
+  $db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([$id]);
+  if($db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='generation_jobs'")->fetchColumn())$db->prepare("UPDATE generation_jobs SET state='error',error_code='vehicle_deleted',finished_at=? WHERE draft_id=? AND state='queued'")->execute([gmdate('c'),$id]);
+  draftEvent($db,$id,'vehicle_deleted',$actor,['vin'=>$vin]);$db->exec('COMMIT');
+ }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}
+}
+function productUndelete(string $id,string $actor):void{
+ if(!erpCanDelete($actor))throw new InvalidArgumentException('Восстанавливать автомобили может только владелец.');
+ $db=productDb();$db->exec('BEGIN IMMEDIATE');try{
+  $q=$db->prepare('DELETE FROM deleted_drafts WHERE draft_id=?');$q->execute([draftId($id)]);if(!$q->rowCount())throw new OutOfBoundsException('Автомобиль не найден в корзине.');
+  // Restoring an entity does not republish its former public snapshot.
+  $db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([$id]);
+  draftEvent($db,$id,'vehicle_restored',$actor,[]);$db->exec('COMMIT');
+ }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}
+}

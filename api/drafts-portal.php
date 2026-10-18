@@ -23,7 +23,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   session_write_close();
   $id=draftId((string)($_GET['id']??''));
   if(in_array($action,['publish','unpublish'],true)&&!erpCanPublish($actor))throw new InvalidArgumentException('Для публикации нужны права публикации.');
-  if($action==='generate'){
+  if($action==='delete'){
+   productDelete($id,(string)($_POST['confirm_vin']??''),$actor);header('Location: ?view=trash',true,303);exit;
+  }elseif($action==='undelete'){
+   productUndelete($id,$actor);header('Location: ?id='.$id.'&restored=1',true,303);exit;
+  }elseif($action==='generate'){
    aiEnqueue($id,$_POST['ai_pdf_ids']??[],$actor,($_POST['ai_consent']??'')==='1');header('Location: ?id='.$id.'&section=generator&done=1',true,303);exit;
   }elseif($action==='note'){
    erpAddNote($id,(string)($_POST['note_body']??''),$actor);header('Location: ?id='.$id.'&section=comments&done=1',true,303);exit;
@@ -54,11 +58,13 @@ try {
         }
         header('Content-Type: application/json; charset=utf-8');header('Content-Disposition: attachment; filename="vehicle-draft.json"');echo json_encode($data,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);exit;
     }
+    $isTrash=($_GET['view']??'')==='trash';if($isTrash&&!erpCanDelete($viewerEmployee)){http_response_code(403);exit('Корзина доступна только владельцу.');}
+    $trashRows=$isTrash?productTrashList($viewerEmployee):[];
     $detail=isset($_GET['id'])?draftDetail((string)$_GET['id']):null;$sections=['general'=>'Общее','documents'=>'Документы','media'=>'Медиа','comments'=>'Комментарии','telegram'=>'Telegram','website'=>'Сайт и состояние','generator'=>'Описание и переводы','history'=>'История'];$section=(string)($_GET['section']??'general');if(!isset($sections[$section]))$section='general';
     $offset=max(0,(int)($_GET['offset']??0));$search=(string)($_GET['q']??'');$stateFilter=(string)($_GET['state']??'');$rows=$detail?[]:productRegistryList($search,$stateFilter,$offset);
 }catch(Throwable $err){http_response_code($err instanceof OutOfBoundsException?404:400);echo 'Не удалось открыть черновик. Проверьте ссылку или вернитесь к списку.';exit;}
 $toolsActive=in_array($_GET['view']??'',['tools','title-corrections'],true);
-$pageLabel=$toolsActive?(($_GET['view']??'')==='title-corrections'?'Названия для робота':'Инструменты'):'Fleet Management';
+$pageLabel=($_GET['view']??'')==='trash'?'Корзина':($toolsActive?(($_GET['view']??'')==='title-corrections'?'Названия для робота':'Инструменты'):'Fleet Management');
 $accountRole=['owner'=>'Владелец','publisher'=>'Редактор с правом публикации','staff'=>'Сотрудник'][$viewerAccount['role']];
 ?><!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ATLANT AUTO · ERP по VIN</title>
 <style>
@@ -72,14 +78,19 @@ body{min-height:100vh;background:#f4f6f8}.erp-sidebar{position:fixed;inset:0 aut
 </head><body><aside class="erp-sidebar" aria-label="Боковая панель">
 <a class="erp-brand" href="./">ATLANT AUTO<small>INTERNAL ERP</small></a>
 <nav class="side-nav" aria-label="Основное меню">
-<a class="side-link" href="./" <?=!$toolsActive?'aria-current="page"':''?>><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Fleet Management</a>
+<a class="side-link" href="./" <?=!$toolsActive&&($_GET['view']??'')!=='trash'?'aria-current="page"':''?>><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Fleet Management</a>
+<?php if(erpCanDelete($viewerEmployee)):?><a class="side-link side-sub" href="?view=trash" <?=($_GET['view']??'')==='trash'?'aria-current="page"':''?>>Корзина</a><?php endif;?>
 <a class="side-link" href="?view=tools" <?=$toolsActive?'aria-current="'.(($_GET['view']??'')==='tools'?'page':'true').'"':''?>><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 7 3 3M3 21l7-7M14 3a6 6 0 0 0-7 8l-4 4a3 3 0 0 0 4 4l4-4a6 6 0 0 0 8-7l-4 4-3-3 4-4Z"/></svg>Инструменты</a>
 <?php if($toolsActive):?><a class="side-link side-sub" href="?view=title-corrections" <?=($_GET['view']??'')==='title-corrections'?'aria-current="page"':''?>>Названия для робота</a><?php endif;?>
 </nav>
 <div class="side-account" id="account-session"><div><b><?=e($viewerEmployee)?></b><small><?=e($accountRole)?></small></div><form action="/drafts/login.php" method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="action" value="logout"><button class="logout-button">Выйти</button></form></div>
 </aside><div class="erp-workspace"><header><b><?=e($pageLabel)?></b><small>Внутренняя ERP · Atlant Auto</small></header><main>
 <?php if($productError&&in_array($_POST['product_action']??'',['employee_connect','employee_disconnect'],true)):?><p class="panel" role="alert"><?=e($productError)?></p><?php endif;?>
-<?php if (($_GET['view']??'')==='tools'): ?>
+<?php if (($_GET['view']??'')==='trash'): ?>
+<h1>Удалённые автомобили</h1><p class="muted">Файлы и история сохранены. После восстановления автомобиль вернётся в ERP без публикации на сайте.</p>
+<?php if($productError):?><p class="panel" role="alert"><?=e($productError)?></p><?php endif;?>
+<section class="panel scroll"><table><thead><tr><th>VIN</th><th>Название</th><th>Удаление</th><th></th></tr></thead><tbody><?php foreach($trashRows as $trash):?><tr><td><code><?=e($trash['vin'])?></code></td><td><?=e($trash['title'])?></td><td><?=e(erpDate($trash['deleted_at']))?><br><small><?=e($trash['actor'])?></small></td><td><form method="post" action="?id=<?=e($trash['id'])?>"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><button name="product_action" value="undelete">Восстановить</button></form></td></tr><?php endforeach;?><?php if(!$trashRows):?><tr><td colspan="4">Корзина пуста.</td></tr><?php endif;?></tbody></table></section>
+<?php elseif (($_GET['view']??'')==='tools'): ?>
 <span class="tag">Инструменты</span><h1>Инструменты</h1><p class="muted">Внутренние инструменты для подготовки и проверки данных автомобилей.</p>
 <a class="tool-card" href="?view=title-corrections"><h2>Названия для робота</h2><p>Таблица исходных названий, автоматической очистки и ручных исправлений. Помогает уточнять правила подготовки названий автомобилей.</p><span>Открыть таблицу →</span></a>
 <?php elseif (($_GET['view']??'')==='title-corrections'): require dirname(__DIR__).'/internal-api/title-corrections-view.php'; elseif (!$detail): ?>
@@ -91,18 +102,22 @@ body{min-height:100vh;background:#f4f6f8}.erp-sidebar{position:fixed;inset:0 aut
 <?php if(!$rows):?><tr><td colspan="4" class="fleet-empty">Автомобили не найдены. Измените фильтры или загрузите автомобиль через расширение.</td></tr><?php endif;?>
 </tbody></table></div></section><div class="nav"><?php if($offset): ?><a href="?q=<?=e(urlencode($search))?>&amp;state=<?=e(urlencode($stateFilter))?>&amp;offset=<?=max(0,$offset-50)?>">← Назад</a><?php endif; ?><?php if(count($rows)===50): ?><a href="?q=<?=e(urlencode($search))?>&amp;state=<?=e(urlencode($stateFilter))?>&amp;offset=<?=$offset+50?>">Следующие 50 →</a><?php endif; ?></div>
 <?php else: $v=$detail['packet']['vehicle']??[]; $labels=['created'=>'Черновик создан','source_updated'=>'Обновлён источник','source_restored'=>'Восстановлен снимок источника','file_added'=>'Добавлен файл','telegram_sending'=>'Начата отправка в Telegram','telegram_sent'=>'Отправлено в Telegram','telegram_uncertain'=>'Telegram не подтвердил результат','telegram_rejected'=>'Telegram отклонил отправку']; $photoCount=count(array_filter($detail['assets'],fn($a)=>in_array($a['kind'],['vehicle','damage'],true) && str_starts_with($a['mime'],'image/'))); ?>
-<?php $labels+=['note_added'=>'Добавлен внутренний комментарий','erp_site_synced'=>'ERP обновила карточку на сайте','product_created'=>'Создана карточка сайта','product_saved'=>'Обновлена карточка сайта','product_published'=>'Карточка опубликована','product_unpublished'=>'Карточка снята с сайта','damage_requested'=>'Запрошены фото повреждений','telegram_materials_shared'=>'Подготовлены материалы для кнопок','file_reclassified'=>'Изменено назначение PDF','telegram_buttons_sent'=>'Кнопки отправлены','telegram_buttons_uncertain'=>'Доставка кнопок не подтверждена','telegram_buttons_rejected'=>'Telegram отклонил кнопки']; ?>
+<?php $labels+=['vehicle_deleted'=>'Автомобиль удалён из ERP','vehicle_restored'=>'Автомобиль восстановлен','note_added'=>'Добавлен внутренний комментарий','erp_site_synced'=>'ERP обновила карточку на сайте','product_created'=>'Создана карточка сайта','product_saved'=>'Обновлена карточка сайта','product_published'=>'Карточка опубликована','product_unpublished'=>'Карточка снята с сайта','damage_requested'=>'Запрошены фото повреждений','telegram_materials_shared'=>'Подготовлены материалы для кнопок','file_reclassified'=>'Изменено назначение PDF','telegram_buttons_sent'=>'Кнопки отправлены','telegram_buttons_uncertain'=>'Доставка кнопок не подтверждена','telegram_buttons_rejected'=>'Telegram отклонил кнопки']; ?>
 <?php $entityProduct=productGet($detail['id']);?><a href="./">← Реестр автомобилей</a><h1><code><?=e($detail['vin'])?></code></h1><p><?=e(productGet($detail['id'])['record']['title']??$detail['title'])?></p>
 <p><span class="tag"><?=e($entityProduct?(productErpStates()[$entityProduct['record']['state']]??productStates()[$entityProduct['record']['state']]):'Новая загрузка')?></span> · <?=empty($entityProduct['published_json'])?'Не опубликован на сайте':'Опубликован на сайте'?></p>
 <nav class="nav entity-nav" aria-label="Карточка автомобиля"><?php foreach($sections as $key=>$label):?><a <?= $section===$key?'aria-current="page"':''?> href="?id=<?=e($detail['id'])?>&amp;section=<?=e($key)?>"><?=e($label)?></a><?php endforeach;?></nav>
 <?php if($productError&&$section!=='website'):?><p class="panel" role="alert"><?=e($productError)?></p><?php endif;?>
 <?php if(isset($_GET['done'])):?><p class="tag" role="status">Сохранено в карточке автомобиля.</p><?php endif;?>
 <?php if($section==='general'):?>
+<?php if(isset($_GET['restored'])):?><p class="tag" role="status">Автомобиль восстановлен. Публикация на сайте выключена.</p><?php endif;?>
+
 <section class="panel"><dl><dt>Лот</dt><dd><?=e($detail['lot_id'])?></dd><dt>Площадка / событие</dt><dd><?=e($detail['packet']['source']['auction']??'')?> / <?=e($detail['packet']['source']['sales_event_id']??'')?></dd><dt>Пробег</dt><dd><?=e($v['mileage_km']??'—')?> км</dd><dt>Первая регистрация</dt><dd><?=e($v['first_registration_source']??'—')?></dd><dt>Двигатель / КПП</dt><dd><?=e($v['fuel']??'—')?> · <?=e($v['transmission']??'—')?></dd><dt>Местоположение</dt><dd><?=e($v['storage_location']??'—')?></dd><dt>Фотографии лота</dt><dd><?=$photoCount?> из <?=count($detail['packet']['photos']??[])?> в источнике</dd><dt>Всего файлов</dt><dd><?=count($detail['assets'])?> вместе с документами</dd></dl>
 <?php if (str_starts_with($detail['source_url'],'https://')): ?><a href="<?=e($detail['source_url'])?>" target="_blank" rel="noopener noreferrer">Открыть исходный лот ↗</a> · <?php endif; ?><a href="?json=<?=e($detail['id'])?>">Скачать данные JSON</a><p class="muted">Наличие черновика не означает, что автомобиль куплен. Полнота фото и документов проверяется по списку ниже. VIN в загруженных PDF автоматически не проверяется.</p></section>
 <section class="panel"><h2>Работа с автомобилем</h2><p>Документы, медиафайлы и комментарии относятся к этому VIN и остаются внутренними. Для внешней публикации выберите материалы отдельно.</p><p><a href="?id=<?=e($detail['id'])?>&amp;section=website">Состояние, цены и публикация на сайте →</a></p><p><a href="?id=<?=e($detail['id'])?>&amp;section=telegram">Подготовить сообщение в Telegram →</a></p></section>
 <?php $service=$detail['packet']['condition']??[];$serviceEntries=$service['maintenance_entries']??[];if($serviceEntries || !empty($service['maintenance_source'])): ?><h2>Сервисная история · Arval</h2><section class="panel scroll"><p class="muted">Записей в источнике: <?=e($service['maintenance_count']??'не определено')?>. Прочитано строк: <?=count($serviceEntries)?>. Описания сохранены на языке источника.</p><?php if($serviceEntries): ?><table><thead><tr><th>Дата</th><th>Пробег</th><th>Работы — исходное описание</th></tr></thead><tbody><?php foreach($serviceEntries as $entry): ?><tr><td><?=e($entry['date_source']??'')?></td><td><?=e($entry['mileage_km']??'')?> км</td><td><?=e($entry['description_source']??'')?></td></tr><?php endforeach; ?></tbody></table><?php else: ?><pre><?=e($service['maintenance_source'])?></pre><?php endif; ?></section><?php endif; ?>
 
+
+<?php if(erpCanDelete($viewerEmployee)):?><details class="panel"><summary style="color:#b33b3b">Удалить автомобиль из ERP</summary><p>Автомобиль исчезнет из рабочего списка и с сайта. Документы, фотографии и история сохранятся в корзине. Восстановить автомобиль сможет только владелец.</p><form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><label>Для подтверждения введите VIN <code><?=e($detail['vin'])?></code><input name="confirm_vin" required autocomplete="off" maxlength="17" style="display:block;margin-top:8px"></label><button name="product_action" value="delete" style="background:#b33b3b">Удалить автомобиль</button></form></details><?php endif;?>
 <?php elseif(in_array($section,['documents','media'],true)):require dirname(__DIR__).'/internal-api/erp-files.php'; ?>
 <?php elseif($section==='comments'):?>
 <section class="panel"><h2>Внутренние комментарии</h2><form method="post"><input type="hidden" name="csrf" value="<?=e($viewerCsrfToken)?>"><input type="hidden" name="product_action" value="note"><label>Комментарий<textarea name="note_body" rows="4" maxlength="4000" required></textarea></label><?php viewerEmployeeField();?><button>Добавить комментарий</button></form><p class="muted">Комментарии не включаются в карточку сайта или сообщение бота.</p></section>

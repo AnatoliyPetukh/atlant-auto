@@ -29,3 +29,8 @@ function erpCanPublish(string $actor):bool{
  if($actor==='owner')return true;
  try{$user=erpAccountsLoad()[$actor]??null;return $user&&$user['enabled']&&in_array($user['role'],['owner','publisher'],true);}catch(Throwable $e){return false;}
 }
+
+function erpCanDelete(string $actor):bool{
+ if($actor==='owner')return true;
+ try{$user=erpAccountsLoad()[$actor]??null;return $user&&$user['enabled']&&$user['role']==='owner';}catch(Throwable $e){return false;}
+}

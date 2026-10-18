@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if(!defined('ATLANT_DRAFT_VIEWER')||!isset($viewerSignedIn)||!$viewerSignedIn){http_response_code(404);exit;}
 // Historical snapshots are the source; this view never changes a car or its rules.
-$q=draftDb()->query('SELECT s.packet_json,s.actor,s.created_at,s.draft_id FROM snapshots s ORDER BY s.created_at DESC,s.id DESC LIMIT 5000');
+$q=draftDb()->query('SELECT s.packet_json,s.actor,s.created_at,s.draft_id FROM snapshots s WHERE NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=s.draft_id) ORDER BY s.created_at DESC,s.id DESC LIMIT 5000');
 $examples=[];$seen=[];
 while($r=$q->fetch(PDO::FETCH_ASSOC)){
  $p=json_decode($r['packet_json'],true);$v=$p['vehicle']??[];
