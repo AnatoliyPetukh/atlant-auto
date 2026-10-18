@@ -1,0 +1,66 @@
+/* Approved graphite / real-yard photo composition, scoped to the home pages. */
+.home-graphite .topbar {
+  background: linear-gradient(115deg, #222c35, #151e27 65%, #202b35);
+  border-bottom: 1px solid #53616d;
+  color: #f5f7fa;
+  min-height: 76px;
+}
+.home-graphite .topbar .brand { width: 230px; max-width: 100%; }
+.home-graphite .topbar .brand-wordmark img { max-height: 36px; }
+.home-graphite .topbar .nav { color: #edf0f3; }
+.home-graphite .topbar .nav a:hover { color: #e5c38d; background: transparent; }
+.home-graphite .topbar .language-nav a { color: #d2d9df; }
+.home-graphite .topbar .language-nav a[aria-current="page"] { color: #16202a; background: #f5f7fa; }
+.home-graphite .nav-toggle { color: #f5f7fa; border-color: #52606d; background: #25323e; }
+.home-graphite .hero {
+  display: block;
+  min-height: 0;
+  background: #152436;
+}
+.home-graphite .hero-bg {
+  position: relative;
+  inset: auto;
+  aspect-ratio: 1672 / 941;
+  background: url('/assets/site/hero-warsaw-20261018.jpg') center / cover no-repeat;
+  transform: none;
+}
+.home-graphite .hero-overlay {
+  pointer-events: none;
+  background: linear-gradient(110deg, rgba(8,22,38,.88), rgba(8,22,38,.40) 44%, transparent 72%);
+  height: 52%;
+  mask-image: linear-gradient(#000 75%, transparent);
+}
+.home-graphite .hero-content {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: clamp(22px, 3vw, 48px) 0 0;
+  width: min(1180px, calc(100% - 56px));
+}
+.home-graphite .hero h1 { max-width: 680px; font-size: clamp(32px, 3.45vw, 52px); line-height: 1.08; }
+.home-graphite .hero .lead { max-width: 680px; font-size: 17px; margin: 14px 0 0; }
+.home-graphite .hero-actions { margin-top: 22px; }
+.home-graphite .hero .button { padding: 12px 22px; }
+.home-graphite .hero .eyebrow { margin-bottom: 12px; }
+@media (max-width: 1100px) and (min-width: 761px) {
+  .home-graphite .hero-bg { aspect-ratio: 1.5; background-position: center bottom; }
+  .home-graphite .hero h1 { max-width: 560px; font-size: 36px; }
+  .home-graphite .hero .lead { max-width: 560px; font-size: 15px; }
+}
+@media (max-width: 960px) {
+  .home-graphite .topbar > .nav { background: #1b2732; border-color: #52606d; }
+}
+@media (max-width: 760px) {
+  .home-graphite .topbar { min-height: 64px; }
+  .home-graphite .topbar .brand { width: clamp(145px, 36vw, 210px); }
+  .home-graphite .hero { display: flex; flex-direction: column; }
+  .home-graphite .hero-content { position: relative; left: auto; transform: none; order: 0; padding: 32px 0 22px; width: calc(100% - 36px); }
+  .home-graphite .hero h1 { font-size: clamp(31px, 5.8vw, 42px); max-width: 620px; }
+  .home-graphite .hero .lead { font-size: 16px; }
+  .home-graphite .hero .eyebrow { font-size: 11px; }
+  .home-graphite .hero-actions { gap: 10px; flex-wrap: wrap; }
+  .home-graphite .hero .button { padding: 11px 14px; font-size: 14px; }
+  .home-graphite .hero-bg { order: 1; width: 100%; aspect-ratio: 1.55; background-size: cover; background-position: center bottom; }
+  .home-graphite .hero-overlay { display: none; }
+}
