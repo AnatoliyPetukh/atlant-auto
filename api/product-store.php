@@ -19,8 +19,13 @@ function productRestore(string $id,int $current,int $target,string $actor):array
 }
 function productStates():array{return ['auction'=>'Na aukcji','purchased'=>'Zakupiony','in_transit'=>'W drodze do Warszawy','on_site'=>'Na placu w Warszawie','sold'=>'Sprzedany','closed'=>'Aukcja zakończona — nie kupiony'];}
 function productErpStates():array{return ['auction'=>'На аукционе','in_transit'=>'В пути в Варшаву','on_site'=>'На площадке в Варшаве','sold'=>'Продано'];}
+function productRegistrySource(array $row):string{
+ $source=trim((string)($row['source_auction']??''));
+ if($source!=='')return ['arval'=>'Arval','bca'=>'BCA','autorola'=>'Autorola','openlane'=>'OPENLANE'][strtolower($source)]??mbSafeCut($source,80);
+ return strtolower((string)parse_url((string)($row['source_url']??''),PHP_URL_HOST))==='remktg.arval.com'?'Arval':'—';
+}
 function productRegistryList(string $search='',string $state='',int $offset=0):array {
- $db=productDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.created_at,d.updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id WHERE (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
+ $db=productDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.source_url,json_extract(d.packet_json,\'$.source.auction\') AS source_auction,d.created_at,d.updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id WHERE (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
  $term='%'.mbSafeCut($search,150).'%';$args=[$term,$term,$term];
  if($state==='incoming')$sql.=' AND p.draft_id IS NULL';elseif(isset(productStates()[$state])){$sql.=" AND json_extract(p.record_json,'$.state')=?";$args[]=$state;}
  $sql.=' ORDER BY d.updated_at DESC,d.id LIMIT 50 OFFSET ?';$args[]=max(0,$offset);$q=$db->prepare($sql);$q->execute($args);return $q->fetchAll();
