@@ -18,7 +18,7 @@ $product=productGet($detail['id']);
 <label>Цена готового автомобиля в Варшаве · нетто<input name="price_net" inputmode="decimal" value="<?=e($r['price_net']??'')?>" style="display:block;width:100%"></label>
 <label>Цена готового автомобиля в Варшаве · брутто<input name="price_gross" inputmode="decimal" value="<?=e($r['price_gross']??'')?>" style="display:block;width:100%"></label>
 <label>Валюта<select name="currency" style="display:block;font:inherit;padding:10px"><option <?=$r['currency']==='EUR'?'selected':''?>>EUR</option><option <?=$r['currency']==='PLN'?'selected':''?>>PLN</option></select></label>
-<fieldset class="arrival-fields" style="min-width:0"><legend>Ожидаемое прибытие · период</legend><label>С<input type="date" name="eta_from" value="<?=e($r['eta_from']??$r['eta']??'')?>" style="display:block;width:100%"></label><label>По<input type="date" name="eta_to" value="<?=e($r['eta_to']??'')?>" style="display:block;width:100%"></label><small class="muted">Например, 7–14 октября. Если день пока неизвестен, укажите ожидаемый интервал.</small><p id="arrival-summary" class="muted" role="status" style="font-size:13px"></p></fieldset>
+<div class="arrival-fields"><label for="arrival-week">Ожидаемое прибытие · неделя</label><input id="arrival-week" type="week" aria-describedby="arrival-summary" style="display:block;width:100%"><input type="hidden" name="eta_from" value="<?=e($r['eta_from']??$r['eta']??'')?>"><input type="hidden" name="eta_to" value="<?=e($r['eta_to']??'')?>"><p id="arrival-summary" class="muted" role="status" style="font-size:13px"></p><noscript>Для выбора недели включите JavaScript. Сохранённая дата останется без изменений.</noscript></div>
 <label>Местоположение · текст на польском<input name="location_pl" value="<?=e($r['location_pl'])?>" maxlength="160" style="display:block;width:100%"></label>
 <label>Доставка до Варшавы, EUR<input name="delivery_eur" inputmode="decimal" value="<?=e($r['delivery_eur']??'')?>" style="display:block;width:100%"></label></div>
 <p class="muted">В состоянии «На аукционе» показывается отдельно ставка из источника, а не цена покупки. Для купленного автомобиля укажите готовую цену в Варшаве. При изменении нетто брутто рассчитывается автоматически: нетто × 1,23 (НДС 23%), затем округление до ближайшей сотни. Для публикации автомобиля в пути или на площадке нужна хотя бы одна готовая цена. На площадке также нужны реальные фотографии.</p>
@@ -43,4 +43,4 @@ $product=productGet($detail['id']);
 
 <script type="module" src="/drafts/assets/product-prices.js?v=20261018-2"></script>
 
-<script type="module" src="/drafts/assets/product-arrival.js?v=20261018-1"></script>
+<script type="module" src="/drafts/assets/product-arrival.js?v=20261018-2"></script>
