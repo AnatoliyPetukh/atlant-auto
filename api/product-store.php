@@ -3,6 +3,7 @@ declare(strict_types=1);
 if(!defined('ATLANT_DRAFT_STORE')){http_response_code(404);exit;}
 require_once __DIR__.'/draft-store.php';
 require_once __DIR__.'/erp-accounts.php';
+require_once __DIR__.'/erp-purchases.php';
 function productDb():PDO {
  $db=draftDb();$db->exec('CREATE TABLE IF NOT EXISTS vehicle_products (draft_id TEXT PRIMARY KEY REFERENCES drafts(id), public_id TEXT UNIQUE NOT NULL, revision INTEGER NOT NULL, record_json TEXT NOT NULL, published_json TEXT, published_revision INTEGER, updated_at TEXT NOT NULL, published_at TEXT)');$db->exec('CREATE TABLE IF NOT EXISTS vehicle_product_versions (draft_id TEXT NOT NULL REFERENCES drafts(id), revision INTEGER NOT NULL, record_json TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(draft_id,revision))');return $db;
 }
@@ -25,7 +26,7 @@ function productRegistrySource(array $row):string{
  return strtolower((string)parse_url((string)($row['source_url']??''),PHP_URL_HOST))==='remktg.arval.com'?'Arval':'—';
 }
 function productRegistryList(string $search='',string $state='',int $offset=0):array {
- $db=productDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.source_url,json_extract(d.packet_json,\'$.source.auction\') AS source_auction,d.created_at,d.updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id WHERE NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=d.id) AND (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
+ $db=productDb();erpPurchaseDb();$sql='SELECT d.id,d.vin,d.title,d.lot_id,d.source_url,json_extract(d.packet_json,\'$.source.auction\') AS source_auction,d.created_at,d.updated_at,purchase.purchase_date,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d LEFT JOIN vehicle_products p ON p.draft_id=d.id LEFT JOIN vehicle_purchases purchase ON purchase.draft_id=d.id WHERE NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=d.id) AND (d.vin LIKE ? OR d.title LIKE ? OR d.lot_id LIKE ?)';
  $term='%'.mbSafeCut($search,150).'%';$args=[$term,$term,$term];
  if($state==='incoming')$sql.=' AND p.draft_id IS NULL';elseif(isset(productStates()[$state])){$sql.=" AND json_extract(p.record_json,'$.state')=?";$args[]=$state;}
  $sql.=' ORDER BY d.updated_at DESC,d.id LIMIT 50 OFFSET ?';$args[]=max(0,$offset);$q=$db->prepare($sql);$q->execute($args);return $q->fetchAll();
