@@ -16,6 +16,7 @@ export const site = {
 };
 
 export const locales = {
+  ru: { lang: "ru", home: "/ru/", label: "Русский", nav: ["Автомобили", "Как мы работаем", "Калькулятор", "О нас", "Контакты"], routes: ["/ru/avtomobili/", "/ru/kak-my-rabotaem/", "/ru/kalkulator/", "/ru/o-kompanii/", "/ru/kontakty/"], cta: "Обсудить подбор автомобиля", eyebrow: "Atlant Auto · Варшава", footer: "Подбор, проверка, покупка и доставка автомобилей из Европы.", breadcrumb: "Главная" },
   pl: {
     lang: "pl",
     home: "/pl/",
@@ -82,12 +83,14 @@ const en = [
   ["privacy", "/en/privacy/", "Privacy policy | Atlant Auto", "Information about personal data processing for visitors to the Atlant Auto website.", "Privacy policy", "Atlant Capital Sp. z o.o. is the data controller. Details shared by phone, email or messenger are used to answer enquiries and prepare an offer.", ["Data is used to answer enquiries", "Personal data is not sold", "Deletion requests can be sent by email"]]
 ];
 
+ru.find(p => p[0] === "cars")[6] = pl.find(p => p[0] === "cars")[6];
+
 const publicPage = (page) => page[0] !== "calculator";
-export const pages = { pl: pl.filter(publicPage), en: en.filter(publicPage) };
+export const pages = { ru: ru.filter(publicPage).map(p => [p[0], `/ru${p[1]}`, ...p.slice(2)]), pl: pl.filter(publicPage), en: en.filter(publicPage) };
 
 export const equivalents = Object.fromEntries(
   pages.pl.map((page) => {
     const english = pages.en.find((candidate) => candidate[0] === page[0]);
-    return [page[0], { pl: page[1], en: english[1] }];
+    return [page[0], { pl: page[1], en: english[1], ru: pages.ru.find(p => p[0] === page[0])[1] }];
   })
 );

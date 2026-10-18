@@ -26,12 +26,19 @@ The Atlant Auto draft can also be opened from:
 atlant-auto-draft/index.html
 ```
 
-## Temporary KYC publication profile
+## Public languages
 
-The public build currently includes only Polish and English pages. The root URL
+The public build includes Polish, English and Russian (`/ru/`) pages. The root URL
 redirects to Polish, and customs-calculator pages are excluded. Run
 `npm run generate:seo` before publishing; the build also removes obsolete
-Russian and calculator routes from the public folder.
+root-level Russian and calculator routes from the public folder.
+
+Russian catalogue UI translations live in `tools/catalog-ru.mjs`; reviewed
+translations of the current supplier descriptions are in
+`tools/catalog-descriptions-ru.json`. New or edited supplier copy needs a new
+reviewed translation; unmatched text remains in the original language rather
+than displaying a stale translation or inventing vehicle facts. Prices, statuses,
+photos and specifications continue to load from the live public API.
 
 ## Publishing
 

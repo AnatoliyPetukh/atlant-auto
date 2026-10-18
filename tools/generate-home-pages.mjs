@@ -10,13 +10,13 @@ const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
 const cars = context.window.ATLANT_CARS;
 const catalogueCounts = { available: 12, inTransit: 8, happyClients: 11, yearCars: 119 };
-const routes = { pl: "/pl/", en: "/en/" };
-const catalogue = { pl: "/pl/samochody/", en: "/en/cars/" };
-const process = { pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
-const contact = { pl: "/pl/kontakt/", en: "/en/contact/" };
-const about = { pl: "/pl/o-nas/", en: "/en/about/" };
-const faqRoute = { pl: "/pl/faq/", en: "/en/faq/" };
-const privacy = { pl: "/pl/polityka-prywatnosci/", en: "/en/privacy/" };
+const routes = { ru: "/ru/", pl: "/pl/", en: "/en/" };
+const catalogue = { ru: "/ru/avtomobili/", pl: "/pl/samochody/", en: "/en/cars/" };
+const process = { ru: "/ru/kak-my-rabotaem/", pl: "/pl/jak-dzialamy/", en: "/en/how-it-works/" };
+const contact = { ru: "/ru/kontakty/", pl: "/pl/kontakt/", en: "/en/contact/" };
+const about = { ru: "/ru/o-kompanii/", pl: "/pl/o-nas/", en: "/en/about/" };
+const faqRoute = { ru: "/ru/faq/", pl: "/pl/faq/", en: "/en/faq/" };
+const privacy = { ru: "/ru/privacy/", pl: "/pl/polityka-prywatnosci/", en: "/en/privacy/" };
 const platforms = [
   { name: "Athlon", logo: "athlon.svg", url: "https://www.athlon.com/", type: "direct" },
   { name: "Ayvens Carmarket", logo: "ayvens.png", url: "https://carmarket.ayvens.com/", type: "direct" },
@@ -25,9 +25,9 @@ const platforms = [
   { name: "OPENLANE Europe", logo: "openlane.svg", url: "https://www.openlane.eu/", type: "marketplace" },
   { name: "BCA", logo: "bca.svg", url: "https://www.bca.com/", type: "marketplace" }
 ];
-const carRoute = (locale, slug) => locale === "pl" ? `/pl/samochody/${slug}/` : `/en/cars/${slug}/`;
+const carRoute = (locale, slug) => locale === "ru" ? `/ru/avtomobili/${slug}/` : locale === "pl" ? `/pl/samochody/${slug}/` : `/en/cars/${slug}/`;
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
-const format = (value, locale) => new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB").format(value);
+const format = (value, locale) => new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB").format(value);
 const output = (locale) => path.join(root, locale, "index.html");
 
 function statusKey(car) {
@@ -51,7 +51,7 @@ function auctionSourceBadge(car, locale) {
 }
 
 function carCards(locale) {
-  if (!cars.length) return `<p style="grid-column:1/-1"><a class="button primary" href="/pl/oferty/">${locale==='pl'?'Zobacz aktualne oferty':'View current offers'}</a></p>`;
+  if (!cars.length) return `<p style="grid-column:1/-1"><a class="button primary" href="${locale === "ru" ? "/ru/oferty/" : "/pl/oferty/"}">${locale==='ru'?'Посмотреть актуальные предложения':locale==='pl'?'Zobacz aktualne oferty':'View current offers'}</a></p>`;
   const availabilityOrder = { "on-site": 0, "in-transit": 1, sold: 2 };
   return [...cars].sort((first, second) =>
     (availabilityOrder[first.availability] ?? 99) - (availabilityOrder[second.availability] ?? 99)
@@ -104,9 +104,9 @@ function html(locale) {
   <script type="application/ld+json">${JSON.stringify(companySchema).replaceAll("<","\\u003c")}</script>
 </head>
 <body class="home-graphite">
-  <header class="topbar"><a class="brand" href="${routes[locale]}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-chrome-20261018.png" alt="Atlant Auto" width="2146" height="270"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">Menu</span></button><nav class="nav" id="primary-navigation" aria-label="${t(locale, "navigation.primary.label")}"><a href="${catalogue[locale]}">${t(locale, "navigation.catalog")}</a><a href="#pricing">${t(locale, "navigation.services")}</a><a href="${process[locale]}">${t(locale, "navigation.process")}</a><a href="${about[locale]}">${t(locale, "navigation.about")}</a><a href="${contact[locale]}">${t(locale, "navigation.contact")}</a></nav><div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav}</div></header>
+  <header class="topbar"><a class="brand" href="${routes[locale]}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-chrome-20261018.png" alt="Atlant Auto" width="2146" height="270"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">${locale === "ru" ? "Меню" : "Menu"}</span></button><nav class="nav" id="primary-navigation" aria-label="${t(locale, "navigation.primary.label")}"><a href="${catalogue[locale]}">${t(locale, "navigation.catalog")}</a><a href="#pricing">${t(locale, "navigation.services")}</a><a href="${process[locale]}">${t(locale, "navigation.process")}</a><a href="${about[locale]}">${t(locale, "navigation.about")}</a><a href="${contact[locale]}">${t(locale, "navigation.contact")}</a></nav><div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav}</div></header>
   <main>
-    <section class="hero"><div class="hero-bg" role="img" aria-label="${locale === "pl" ? "Samochody Atlant Auto na placu — kompozycja ze zmienionym tłem Warszawy" : "Atlant Auto cars on the lot — composite with an edited Warsaw background"}"></div><div class="hero-overlay"></div><div class="hero-content"><p class="eyebrow">${t(locale, "home.hero.eyebrow")}</p><h1>${t(locale, "home.hero.title")}</h1><p class="lead">${locale === "pl" ? "Sprawdzone samochody. Przejrzyste koszty. Odbiór w Warszawie." : "Verified cars. Transparent costs. Collection in Warsaw."}</p><div class="hero-actions"><a class="button primary" href="#request">${t(locale, "home.hero.cta")}</a><a class="button ghost" href="#cars">${t(locale, "home.hero.secondaryCta")}</a></div></div></section>
+    <section class="hero"><div class="hero-bg" role="img" aria-label="${locale === "ru" ? "Автомобили Atlant Auto на нашей площадке — композиция с изменённым фоном Варшавы" : locale === "pl" ? "Samochody Atlant Auto na placu — kompozycja ze zmienionym tłem Warszawy" : "Atlant Auto cars on the lot — composite with an edited Warsaw background"}"></div><div class="hero-overlay"></div><div class="hero-content"><p class="eyebrow">${t(locale, "home.hero.eyebrow")}</p><h1>${t(locale, "home.hero.title")}</h1><p class="lead">${locale === "ru" ? "Проверенные автомобили. Прозрачные расходы. Получение в Варшаве." : locale === "pl" ? "Sprawdzone samochody. Przejrzyste koszty. Odbiór w Warszawie." : "Verified cars. Transparent costs. Collection in Warsaw."}</p><div class="hero-actions"><a class="button primary" href="#request">${t(locale, "home.hero.cta")}</a><a class="button ghost" href="#cars">${t(locale, "home.hero.secondaryCta")}</a></div></div></section>
     <section class="section trust-band"><div><strong>${t(locale, "home.trust.companyTitle")}</strong><span>${t(locale, "home.trust.companyText")}</span></div><div><strong>${t(locale, "home.trust.checkTitle")}</strong><span>${t(locale, "home.trust.checkText")}</span></div><div><strong>${t(locale, "home.trust.supportTitle")}</strong><span>${t(locale, "home.trust.supportText")}</span></div></section>
     <section class="section numbers-section" id="numbers"><header class="numbers-head"><p class="eyebrow">${t(locale, "home.numbers.eyebrow")}</p><h2>${t(locale, "home.numbers.title")}</h2></header><div class="numbers-grid">${numberCards}</div></section>
     <section class="section cars-section" id="cars"><div class="section-head"><div><p class="eyebrow">${t(locale, "home.catalog.eyebrow")}</p><h2>${t(locale, "home.catalog.title")}</h2></div><div class="filters" aria-label="${t(locale, "home.catalog.filterLabel")}"><button class="filter active" type="button" data-filter="all" aria-pressed="true">${t(locale, "home.catalog.filterAll")}</button><button class="filter" type="button" data-filter="on-site" aria-pressed="false">${t(locale, "home.catalog.filterAvailable")}</button><button class="filter" type="button" data-filter="in-transit" aria-pressed="false">${t(locale, "home.catalog.filterIncoming")}</button><button class="filter" type="button" data-filter="sold" aria-pressed="false">${t(locale, "home.catalog.filterSold")}</button></div></div><div class="cars-grid" id="carsGrid">${carCards(locale)}</div><p class="empty-state" data-empty-state hidden>${t(locale, "empty.cars")}</p></section>
@@ -125,10 +125,10 @@ function html(locale) {
 </body></html>`;
 }
 
-for (const locale of Object.keys(routes)) fs.writeFileSync(output(locale), html(locale), "utf8");
+for (const locale of Object.keys(routes)) { fs.mkdirSync(path.dirname(output(locale)), {recursive:true}); fs.writeFileSync(output(locale), html(locale), "utf8"); }
 fs.writeFileSync(path.join(root, "index.html"), `<!doctype html>
 <html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlant Auto — Warszawa</title><meta name="description" content="Atlant Auto — samochody dostępne w Warszawie.">
 <meta name="robots" content="noindex,follow"><link rel="canonical" href="${site.origin}/pl/"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/site/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/site/apple-touch-icon.png"><meta http-equiv="refresh" content="0; url=/pl/">
 </head><body><p><a href="/pl/">Przejdź do polskiej wersji Atlant Auto</a></p></body></html>`, "utf8");
-console.log("Generated Polish and English home pages plus Polish root redirect.");
+console.log("Generated Polish, English and Russian home pages plus Polish root redirect.");

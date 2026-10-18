@@ -10,12 +10,14 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atla
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "data/cars.js"), "utf8"), context);
 const cars = context.window.ATLANT_CARS;
-const localeCodes = ["pl", "en"];
+const localeCodes = ["pl", "en", "ru"];
 const localeMeta = {
+ ru: {lang:"ru",home:"/ru/",catalogue:"/ru/avtomobili/",about:"/ru/o-kompanii/",contact:"/ru/kontakty/"},
   pl: { lang: "pl", home: "/pl/", catalogue: "/pl/samochody/", about: "/pl/o-nas/", contact: "/pl/kontakt/" },
   en: { lang: "en", home: "/en/", catalogue: "/en/cars/", about: "/en/about/", contact: "/en/contact/" }
 };
 const carRoutes = {
+ ru: slug => `/ru/avtomobili/${slug}/`,
   pl: (slug) => `/pl/samochody/${slug}/`,
   en: (slug) => `/en/cars/${slug}/`
 };
@@ -25,11 +27,11 @@ const esc = (value) => String(value ?? "")
 const url = (route) => `${site.origin}${route}`;
 const publicPath = (source) => `/${String(source).replace(/^(\.\.\/)+/, "")}`;
 const carName = (car) => `${car.brand} ${car.model} ${car.version}`.trim();
-const number = (value, locale) => new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB").format(value);
+const number = (value, locale) => new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB").format(value);
 const date = (value, locale) => {
   const monthOnly = /^\d{4}-\d{2}$/.test(value);
   const options = monthOnly ? { month: "long", year: "numeric" } : undefined;
-  return new Intl.DateTimeFormat(locale === "pl" ? "pl-PL" : "en-GB", options)
+  return new Intl.DateTimeFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB", options)
     .format(new Date(`${value}${monthOnly ? "-01" : ""}T12:00:00Z`));
 };
 const targetFor = (route) => route.endsWith("/")
@@ -63,7 +65,7 @@ function auctionSourceBadge(car, locale) {
 
 function price(car, locale) {
   if (car.priceOnRequest || car.price == null) return t(locale, "common.priceOnRequest");
-  const formatted = new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-GB", {
+  const formatted = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "pl" ? "pl-PL" : "en-GB", {
     style: "currency", currency: car.currency, maximumFractionDigits: 0
   }).format(car.price);
   return formatted;
@@ -231,7 +233,7 @@ function html(car, locale) {
 <body class="car-page">
   <header class="topbar">
     <a class="brand" href="${meta.home}" aria-label="Atlant Auto"><span class="brand-wordmark"><img src="/assets/site/atlant-auto-wordmark.svg" alt="Atlant Auto" width="720" height="150"></span></a>
-    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">Menu</span></button>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation"><span class="nav-toggle-lines" aria-hidden="true"></span><span class="sr-only">${locale === "ru" ? "Меню" : "Menu"}</span></button>
     <nav class="nav" id="primary-navigation" aria-label="${t(locale, "navigation.primary.label")}"><a href="${meta.catalogue}">${t(locale, "navigation.catalog")}</a><a href="${meta.home}#pricing">${t(locale, "navigation.services")}</a><a href="${meta.about}">${t(locale, "navigation.about")}</a><a href="${meta.contact}">${t(locale, "navigation.contact")}</a></nav>
     <div class="language-nav" aria-label="${t(locale, "language.selector.label")}">${languageNav(car, locale)}</div>
   </header>

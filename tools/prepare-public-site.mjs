@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../atlant-auto-draft");
 
-// Temporary KYC publication profile: Polish and English only, without the
-// customs calculator. The source translations remain in Git for easy restore.
+// Retire legacy root-level routes and keep the customs calculator unpublished.
+// Russian pages now live under /ru/.
 const obsoletePublicPaths = [
   "avto-iz-evropy",
   "avto-s-aukciona",
@@ -35,7 +35,7 @@ for (const relative of obsoletePublicPaths) {
   fs.rmSync(path.join(root, relative), { recursive: true, force: true });
 }
 
-console.log("Prepared Polish/English public site without customs calculator routes.");
+console.log("Prepared multilingual public site without customs calculator routes.");
 
 // Product details now come from the reviewed server catalogue. Retire stale legacy routes.
 for (const folder of ['pl/samochody','en/cars']) {
