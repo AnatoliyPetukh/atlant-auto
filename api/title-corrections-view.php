@@ -15,7 +15,7 @@ while($r=$q->fetch(PDO::FETCH_ASSOC)){
 ?>
 <span class="tag">Внутренняя работа</span><h1>Названия для робота</h1>
 <p class="muted">Примеры ваших правок: исходное название аукциона → автоматическая очистка → исправленный вариант. Новые примеры появляются после сохранения автомобиля из расширения на сервер. Эти правки помогают уточнять правила; сами правила автоматически не меняются.</p>
-<p><a href="./">← Реестр автомобилей</a></p>
+<p><a href="?view=tools">← Инструменты</a></p>
 <section class="panel scroll"><table><thead><tr><th>Автомобиль / VIN</th><th>Исходное название</th><th>После автоматической очистки</th><th>После ручной правки</th><th>Сохранение</th></tr></thead><tbody>
 <?php foreach($examples as $example):?><tr><td><a href="?id=<?=e($example['id'])?>"><code><?=e($example['vin'])?></code></a></td><td><?=e($example['source'])?></td><td><?=e($example['before'])?><br><small class="muted"><?=e($example['strategy'])?></small></td><td><b><?=e($example['after'])?></b></td><td><small><?=e(erpDate($example['date']))?><br><?=e($example['actor'])?></small></td></tr><?php endforeach;?>
 <?php if(!$examples):?><tr><td colspan="5">Пока нет сохранённых ручных исправлений названия. Исправьте название в расширении и сохраните автомобиль в ERP.</td></tr><?php endif;?>
