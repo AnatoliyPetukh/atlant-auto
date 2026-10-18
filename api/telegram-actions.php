@@ -16,7 +16,7 @@ function actionInspectionUrl(string $url): ?string {
 }
 function actionOffer(string $vin,string $requestId,array $options): array {
     $db=actionDb();$q=$db->prepare('SELECT * FROM telegram_offers WHERE request_id=?');$q->execute([$requestId]);
-    if ($row=$q->fetch()) return $row;
+    if ($row=$q->fetch()) {draftFind($row['draft_id']);return $row;}
     $q=$db->prepare('SELECT id FROM drafts WHERE vin=?');$q->execute([$vin]);$id=$q->fetchColumn();
     if (!$id)throw new OutOfBoundsException('Save draft before posting');
     $draft=draftDetail($id);$p=$draft['packet'];
@@ -286,7 +286,7 @@ function actionHandle(array $update,array $config,callable $call): string {
             if (preg_match('/^\/start(?:@[A-Za-z0-9_]+)?$/D',$text))$send('Откройте нужные материалы кнопкой под объявлением автомобиля.');
             $status='ignored';
         }else{
-            $q=$db->prepare('SELECT * FROM telegram_offers WHERE token=?');$q->execute([$m[2]]);$offer=$q->fetch();
+            $q=$db->prepare('SELECT * FROM telegram_offers WHERE token=? AND NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=telegram_offers.draft_id)');$q->execute([$m[2]]);$offer=$q->fetch();
             if (!$offer) {$send('Ссылка не найдена. Запросите актуальное объявление у менеджера.');$status='not_found';}
             else {
                 $r=json_decode($offer['resources_json'],true,512,JSON_THROW_ON_ERROR);$title=$r['title'];$kind=$m[1];

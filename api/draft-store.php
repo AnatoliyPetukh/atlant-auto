@@ -18,7 +18,8 @@ function draftDb(): PDO {
       CREATE TABLE IF NOT EXISTS snapshots (id TEXT PRIMARY KEY, draft_id TEXT NOT NULL REFERENCES drafts(id), digest TEXT NOT NULL, packet_json TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(draft_id,digest));
       CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, draft_id TEXT NOT NULL REFERENCES drafts(id), digest TEXT NOT NULL, name TEXT NOT NULL, mime TEXT NOT NULL, bytes INTEGER NOT NULL, kind TEXT NOT NULL, source_url TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(draft_id,digest));
       CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY AUTOINCREMENT, draft_id TEXT NOT NULL REFERENCES drafts(id), type TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL, details_json TEXT NOT NULL);
-      CREATE INDEX IF NOT EXISTS events_draft ON events(draft_id,id);');
+      CREATE INDEX IF NOT EXISTS events_draft ON events(draft_id,id);
+      CREATE TABLE IF NOT EXISTS deleted_drafts (draft_id TEXT PRIMARY KEY REFERENCES drafts(id), deleted_at TEXT NOT NULL, actor TEXT NOT NULL);');
     chmod(draftRoot().'/drafts.sqlite',0600);
     return $db;
 }
@@ -47,6 +48,7 @@ function draftCapture(array $packet,string $actor): array {
     $db=draftDb(); $db->exec('BEGIN IMMEDIATE');
     try {
         $q=$db->prepare('SELECT id,packet_json FROM drafts WHERE vin=?');$q->execute([$vin]);$previous=$q->fetch();$id=$previous['id']??null;
+        $deleted=$db->prepare('SELECT 1 FROM deleted_drafts WHERE draft_id=?');$deleted->execute([$id]);if($id&&$deleted->fetchColumn())throw new InvalidArgumentException('Автомобиль удалён из ERP. Владелец может восстановить его из корзины перед повторной загрузкой.');
         $created=!$id; $id=$id?:bin2hex(random_bytes(16));$now=gmdate('c');
         if ($created) {
             if ((int)$db->query('SELECT COUNT(*) FROM drafts')->fetchColumn()>=10000) throw new RuntimeException('Draft quota reached');
@@ -69,11 +71,11 @@ function mbSafeCut(string $value,int $length): string {
     return function_exists('mb_substr')?mb_substr($value,0,$length):substr($value,0,$length);
 }
 function draftFind(string $id): array {
-    $q=draftDb()->prepare('SELECT * FROM drafts WHERE id=?');$q->execute([draftId($id)]);$row=$q->fetch();
+    $q=draftDb()->prepare('SELECT * FROM drafts WHERE id=? AND NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=drafts.id)');$q->execute([draftId($id)]);$row=$q->fetch();
     if (!$row) throw new OutOfBoundsException('Черновик не найден.');return $row;
 }
 function draftList(string $search='',int $offset=0): array {
-    $search=mbSafeCut($search,150);$q=draftDb()->prepare('SELECT id,vin,title,lot_id,created_at,updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d WHERE vin LIKE ? OR title LIKE ? OR lot_id LIKE ? ORDER BY updated_at DESC,id LIMIT 50 OFFSET ?');
+    $search=mbSafeCut($search,150);$q=draftDb()->prepare('SELECT id,vin,title,lot_id,created_at,updated_at,(SELECT COUNT(*) FROM assets WHERE draft_id=d.id) AS asset_count FROM drafts d WHERE NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=d.id) AND (vin LIKE ? OR title LIKE ? OR lot_id LIKE ?) ORDER BY updated_at DESC,id LIMIT 50 OFFSET ?');
     $term='%'.strtr($search,['%'=>'','_'=>'']).'%';
     $q->bindValue(1,$term);$q->bindValue(2,$term);$q->bindValue(3,$term);$q->bindValue(4,max(0,$offset),PDO::PARAM_INT);$q->execute();return $q->fetchAll();
 }
@@ -129,7 +131,7 @@ function draftUpload(string $id,array $file,string $kind,string $source,string $
     }catch(Throwable $e){$db->exec('ROLLBACK');if($path && is_file($path))unlink($path);throw $e;}
 }
 function draftServeAsset(string $asset): never {
-    $q=draftDb()->prepare('SELECT * FROM assets WHERE id=?');$q->execute([draftId($asset)]);$row=$q->fetch();
+    $q=draftDb()->prepare('SELECT * FROM assets WHERE id=? AND NOT EXISTS (SELECT 1 FROM deleted_drafts x WHERE x.draft_id=assets.draft_id)');$q->execute([draftId($asset)]);$row=$q->fetch();
     if (!$row) {http_response_code(404);exit;}
     $path=draftRoot().'/objects/'.$row['draft_id'].'/'.$row['id'];
     if (!is_file($path)) {http_response_code(404);exit;}
