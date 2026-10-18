@@ -110,7 +110,7 @@ function productSave(string $id,int $revision,array $changes,string $actor,bool 
   if(array_key_exists('price_net',$changes)){
    $net=productMoney($changes['price_net']);$before=productMoney($row['record']['price_net']??null);
    if($net!==null&&($net!==$before||!isset($changes['price_gross'])||$changes['price_gross']==='')){
-    $cents=(int)round($net*100);$changes['price_gross']=number_format(intdiv($cents*123+50,100)/100,2,'.','');
+    $cents=(int)round($net*100);$changes['price_gross']=(string)(intdiv($cents*123+500000,1000000)*100);
    }
   }
   $allowed=['title','description_pl','state','availability','price_net','price_gross','currency','eta','location_pl','delivery_eur','equipment_pl','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'];$r=$row['record'];foreach($allowed as $key)if(array_key_exists($key,$changes))$r[$key]=$changes[$key];
