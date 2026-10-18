@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Atlant Auto · Auction Capture",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Загрузка автомобиля по VIN в ERP Atlant Auto и подготовка поста для Telegram.",
   "permissions": [
     "activeTab",
@@ -10,7 +10,8 @@
   ],
   "optional_host_permissions": [
     "https://serwer2454127.home.pl/*",
-    "https://www.bcaimage.com/*"
+    "https://www.bcaimage.com/*",
+    "https://bcamediaprod.blob.core.windows.net/*"
   ],
   "action": {
     "default_title": "Сохранить лот в Atlant Auto"

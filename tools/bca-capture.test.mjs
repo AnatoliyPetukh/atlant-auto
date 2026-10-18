@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {collectBcaLot} from './arval-capture/bca-collector.js';
+import {collectBcaLot,isBcaPhotoResponse} from './arval-capture/bca-collector.js';
 import {vehicleFacts} from './arval-capture/vehicle-facts.js';
 import {telegramCaption,hasPrivateAuctionLink} from './arval-capture/telegram.js';
 import {equipmentHighlights} from './arval-capture/equipment-highlights.js';
@@ -16,4 +16,10 @@ test('BCA tolerates absent optional sections and preserves zero keys',()=>{
 });
 test('BCA rejects unsafe photos and foreign page hosts',()=>{
  const s=snapshot();s.photos=[{url:'https://password@www.bcaimage.com/Document?DocType=VehicleImage&docId=123'},{url:'https://www.bcaimage.com/Document?DocType=Invoice&docId=123'}];assert.equal(collectBcaLot(s).photos.length,0);s.url='https://bca.com.evil.invalid/sales/#LotDetails/';assert.throws(()=>collectBcaLot(s),/BCA/);
+});
+
+test('BCA image delivery accepts only the observed provider and exact Azure account',()=>{
+ assert(isBcaPhotoResponse('https://bcamediaprod.blob.core.windows.net/example/photo.jpg'));
+ assert(isBcaPhotoResponse('https://www.bcaimage.com/Document?DocType=VehicleImage&docId=123'));
+ for(const url of ['https://evil.blob.core.windows.net/photo.jpg','https://bcamediaprod.blob.core.windows.net.evil.invalid/photo.jpg','http://bcamediaprod.blob.core.windows.net/photo.jpg','https://secret@bcamediaprod.blob.core.windows.net/photo.jpg'])assert.equal(isBcaPhotoResponse(url),false);
 });

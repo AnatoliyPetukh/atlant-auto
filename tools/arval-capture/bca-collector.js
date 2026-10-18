@@ -62,3 +62,7 @@ export function validateBcaPhoto(url,vin){
  const u=new URL(url);if(u.protocol!=='https:'||u.username||u.password||u.hostname!=='www.bcaimage.com'||u.pathname!=='/Document'||u.searchParams.get('DocType')!=='VehicleImage'||!/^\d+$/.test(u.searchParams.get('docId')||''))throw Error('Недопустимый адрес фотографии BCA.');
  if(![...document.querySelectorAll('#tabs-1 .details-img-gal img[src]')].some(e=>e.src===u.href))throw Error('Фотография не найдена в текущей галерее BCA.');return u.href;
 }
+
+export function isBcaPhotoResponse(value){
+ try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&((u.hostname==='www.bcaimage.com'&&u.pathname==='/Document'&&u.searchParams.get('DocType')==='VehicleImage'&&/^\d+$/.test(u.searchParams.get('docId')||''))||u.hostname==='bcamediaprod.blob.core.windows.net');}catch{return false;}
+}
