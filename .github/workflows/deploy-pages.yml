@@ -46,6 +46,7 @@ jobs:
           php tools/erp-entity.test.php "$PWD/api/erp-store.php"
           php tools/ai-generator.test.php "$PWD/api/ai-store.php"
           php tools/employee-session.test.php "$PWD/api/employee-session.php"
+          php tools/erp-accounts.test.php "$PWD/api/erp-accounts.php"
           php tools/telegram-actions.test.php "$PWD/api/telegram-actions.php"
 
       - name: Prepare deployment artifact

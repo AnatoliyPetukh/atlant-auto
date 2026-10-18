@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if(!defined('ATLANT_DRAFT_STORE')){http_response_code(404);exit;}
 require_once __DIR__.'/draft-store.php';
+require_once __DIR__.'/erp-accounts.php';
 function productDb():PDO {
  $db=draftDb();$db->exec('CREATE TABLE IF NOT EXISTS vehicle_products (draft_id TEXT PRIMARY KEY REFERENCES drafts(id), public_id TEXT UNIQUE NOT NULL, revision INTEGER NOT NULL, record_json TEXT NOT NULL, published_json TEXT, published_revision INTEGER, updated_at TEXT NOT NULL, published_at TEXT)');$db->exec('CREATE TABLE IF NOT EXISTS vehicle_product_versions (draft_id TEXT NOT NULL REFERENCES drafts(id), revision INTEGER NOT NULL, record_json TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(draft_id,revision))');return $db;
 }
@@ -99,7 +100,7 @@ function productSave(string $id,int $revision,array $changes,string $actor,bool 
  $db=productDb();$db->exec('BEGIN IMMEDIATE');try{
   $row=productGet($id);if(!$row)throw new OutOfBoundsException('Сначала создайте карточку.');if($row['revision']!==$revision)throw new DomainException('Карточка изменилась. Обновите страницу.');
   $sync=$syncPublished&&!empty($row['published_json']);
-  if($sync&&$actor!=='owner')throw new InvalidArgumentException('Изменять опубликованный автомобиль в ERP может владелец.');
+  if($sync&&!erpCanPublish($actor))throw new InvalidArgumentException('Для изменения опубликованного автомобиля нужны права публикации.');
   $allowed=['title','description_pl','state','availability','price_net','price_gross','currency','eta','location_pl','delivery_eur','equipment_pl','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'];$r=$row['record'];foreach($allowed as $key)if(array_key_exists($key,$changes))$r[$key]=$changes[$key];
   productRemember($db,$id,$revision,$row['record'],'existing',$row['updated_at']);
   $r=productValidated($r,draftDetail($id));$q=$db->prepare('UPDATE vehicle_products SET revision=revision+1,record_json=?,updated_at=? WHERE draft_id=?');$q->execute([json_encode($r,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),gmdate('c'),$id]);
@@ -119,12 +120,12 @@ function productPublicSnapshot(array $row):array {
  $public['state_label']=productStates()[$r['state']];return $public;
 }
 function productPublish(string $id,int $revision,string $actor):array {
- if($actor!=='owner')throw new InvalidArgumentException('Публикация доступна владельцу.');$db=productDb();$db->exec('BEGIN IMMEDIATE');try{
+ if(!erpCanPublish($actor))throw new InvalidArgumentException('Для публикации нужны права публикации.');$db=productDb();$db->exec('BEGIN IMMEDIATE');try{
   $row=productGet($id);if(!$row)throw new OutOfBoundsException();if($row['revision']!==$revision)throw new DomainException('Сначала сохраните изменения и обновите страницу.');
   $r=productValidated($row['record'],draftDetail($id));productAssertPublishable($r,draftDetail($id));
   $public=productPublicSnapshot($row);$at=gmdate('c');$db->prepare('UPDATE vehicle_products SET published_json=?,published_revision=?,published_at=? WHERE draft_id=?')->execute([json_encode($public,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),$revision,$at,$id]);
   draftEvent($db,$id,'product_published',$actor,['revision'=>$revision]);$db->exec('COMMIT');return productGet($id);
  }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}
 }
-function productUnpublish(string $id,string $actor):void{if($actor!=='owner')throw new InvalidArgumentException('Действие доступно владельцу.');$db=productDb();$db->beginTransaction();try{$db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([draftId($id)]);draftEvent($db,$id,'product_unpublished',$actor,[]);$db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}}
+function productUnpublish(string $id,string $actor):void{if(!erpCanPublish($actor))throw new InvalidArgumentException('Для этого действия нужны права публикации.');$db=productDb();$db->beginTransaction();try{$db->prepare('UPDATE vehicle_products SET published_json=NULL,published_revision=NULL,published_at=NULL WHERE draft_id=?')->execute([draftId($id)]);draftEvent($db,$id,'product_unpublished',$actor,[]);$db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}}
 function productPublicList(?string $id=null):array{$sql='SELECT published_json FROM vehicle_products WHERE published_json IS NOT NULL';$args=[];if($id!==null){$sql.=' AND public_id=?';$args[] =draftId($id);}$sql.=' ORDER BY published_at DESC LIMIT 200';$q=productDb()->prepare($sql);$q->execute($args);return array_map(fn($json)=>json_decode($json,true,512,JSON_THROW_ON_ERROR),$q->fetchAll(PDO::FETCH_COLUMN));}
