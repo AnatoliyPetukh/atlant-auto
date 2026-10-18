@@ -106,6 +106,12 @@ function productSave(string $id,int $revision,array $changes,string $actor,bool 
   $row=productGet($id);if(!$row)throw new OutOfBoundsException('Сначала создайте карточку.');if($row['revision']!==$revision)throw new DomainException('Карточка изменилась. Обновите страницу.');
   $sync=$syncPublished&&!empty($row['published_json']);
   if($sync&&!erpCanPublish($actor))throw new InvalidArgumentException('Для изменения опубликованного автомобиля нужны права публикации.');
+  if(array_key_exists('price_net',$changes)){
+   $net=productMoney($changes['price_net']);$before=productMoney($row['record']['price_net']??null);
+   if($net!==null&&($net!==$before||!isset($changes['price_gross'])||$changes['price_gross']==='')){
+    $cents=(int)round($net*100);$changes['price_gross']=number_format(intdiv($cents*123+50,100)/100,2,'.','');
+   }
+  }
   $allowed=['title','description_pl','state','availability','price_net','price_gross','currency','eta','location_pl','delivery_eur','equipment_pl','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'];$r=$row['record'];foreach($allowed as $key)if(array_key_exists($key,$changes))$r[$key]=$changes[$key];
   productRemember($db,$id,$revision,$row['record'],'existing',$row['updated_at']);
   $r=productValidated($r,draftDetail($id));$q=$db->prepare('UPDATE vehicle_products SET revision=revision+1,record_json=?,updated_at=? WHERE draft_id=?');$q->execute([json_encode($r,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),gmdate('c'),$id]);
