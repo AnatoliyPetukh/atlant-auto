@@ -44,3 +44,5 @@ $product=productGet($detail['id']);
 <script type="module" src="/drafts/assets/product-prices.js?v=20261018-2"></script>
 
 <script type="module" src="/drafts/assets/product-arrival.js?v=20261018-2"></script>
+
+<script type="module" src="/drafts/assets/product-power.js?v=20261018-1"></script>
