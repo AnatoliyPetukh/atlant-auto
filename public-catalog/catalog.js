@@ -60,8 +60,8 @@ function detail(car){
  if(car.document_ids.length){info.append(el('h2','Dokumenty'));const docs=el('div',null,'docs');car.document_ids.forEach((id,i)=>{const a=el('a','Dokument '+(i+1)+' (PDF)');a.href=asset(car,id);a.target='_blank';a.rel='noopener';docs.append(a);});info.append(docs);}host.append(info);
  document.title=car.title+' | Atlant Auto';updateClocks();
 }
-for(const b of document.querySelectorAll('[data-state]'))b.addEventListener('click',()=>{state=b.dataset.state;for(const x of document.querySelectorAll('[data-state]'))x.classList.toggle('active',x===b);cards();});
-for(const b of document.querySelectorAll('[data-tax]'))b.addEventListener('click',()=>{tax=b.dataset.tax;for(const x of document.querySelectorAll('[data-tax]'))x.classList.toggle('active',x===b);cards();});
+for(const b of document.querySelectorAll('[data-state]'))b.addEventListener('click',()=>{if(!$('detail').hidden)return;state=b.dataset.state;for(const x of document.querySelectorAll('[data-state]'))x.classList.toggle('active',x===b);cards();});
+for(const b of document.querySelectorAll('[data-tax]'))b.addEventListener('click',()=>{if(!$('detail').hidden)return;tax=b.dataset.tax;for(const x of document.querySelectorAll('[data-tax]'))x.classList.toggle('active',x===b);cards();});
 try{
  const id=new URLSearchParams(location.search).get('id');if(id&&!validId(id))throw Error('Nieprawidłowy adres oferty.');
  const response=await fetch(API+'?format=json'+(id?'&id='+id:''),{credentials:'omit',cache:'no-store'});if(!response.ok)throw Error('Katalog jest chwilowo niedostępny. Spróbuj ponownie lub skontaktuj się z nami.');
