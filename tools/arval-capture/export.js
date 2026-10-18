@@ -1,4 +1,4 @@
-import {collectBcaLot,validateBcaPhoto} from './bca-collector.js';
+import {collectBcaLot,validateBcaPhoto,isBcaPhotoResponse} from './bca-collector.js';
 import {parseDeliveryAmount,deliveryLabel} from './delivery.js';
 import {collectArvalLot} from './collector.js';
 import {collectPartslink,attachPartslink} from './partslink.js';
@@ -143,7 +143,7 @@ async function photoBlob(photo){
   if(packet.source.auction==='bca'){
     const [checked]=await chrome.scripting.executeScript({target:{tabId},func:validateBcaPhoto,args:[photo.url,packet.vehicle.vin]});
     if(checked?.result!==photo.url)throw Error('BCA: фотография не подтверждена текущей карточкой.');
-    const response=await fetch(photo.url,{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('BCA не отдал фотографию.');
+    const response=await fetch(photo.url,{credentials:'omit',referrerPolicy:'no-referrer',redirect:'follow',signal:AbortSignal.timeout(30000)});if(!isBcaPhotoResponse(response.url))throw Error('BCA перенаправил фотографию на неподдерживаемый сервер.');if(!response.ok)throw Error('BCA не отдал фотографию.');
     const blob=await response.blob();if(!['image/jpeg','image/png','image/webp'].includes(blob.type)||!blob.size||blob.size>8*1024*1024)throw Error('Неподдерживаемая фотография BCA или размер больше 8 МБ.');
     photoCache.set(cacheKey,blob);return blob;
   }
@@ -166,7 +166,7 @@ async function saveSourceForErp(){
  try{
   ensurePartslinkRead();ensureDeliveryValid();const key=$('employee-key').value.trim();if(!key)throw Error('Сначала подключите ключ сотрудника.');
   for(const{file}of pendingPdfs())if(file.size<=0||file.size>20*1024*1024||(!/\.pdf$/i.test(file.name)&&file.type!=='application/pdf'))throw Error('Проверьте документы: нужны PDF до 20 МБ каждый.');
-  if(!await chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*']:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
+  if(!await chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*','https://bcamediaprod.blob.core.windows.net/*']:['https://serwer2454127.home.pl/*']}))throw Error('Нет разрешения на доступ к серверу.');
   for(const[button]of locked)button.disabled=true;$('progress').hidden=false;
   const saved=await saveServerPhotos(key,packet.photos,message=>result.textContent=message);
   if(saved.failed)throw Error('Черновик сохранён частично: не все фотографии загрузились. Повторите сохранение перед работой в ERP.');
@@ -286,7 +286,7 @@ $('save-key').addEventListener('click',async()=>{
     button.disabled=true;$('employee-key').value=key;
     status.textContent='Сохраняю ключ на этом компьютере…';
     // Start the optional permission request inside the click gesture, before await.
-    const permission=chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*']:['https://serwer2454127.home.pl/*']}).catch(()=>false);
+    const permission=chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*','https://bcamediaprod.blob.core.windows.net/*']:['https://serwer2454127.home.pl/*']}).catch(()=>false);
     await chrome.storage.local.set({telegram_employee_key:key});
     const check=await chrome.storage.local.get('telegram_employee_key');
     if(check.telegram_employee_key!==key)throw Error('Chrome не подтвердил сохранение ключа. Закройте вкладку расширения и откройте его заново с аукциона.');
@@ -319,7 +319,7 @@ $('send-draft').addEventListener('click',async()=>{
     if(!key)throw Error('Сначала создайте бота и подключите сервер. Здесь нужен отдельный ключ сотрудника, не токен бота.');
     if(caption.length>1024||!caption)throw Error('Подпись должна содержать от 1 до 1024 знаков.');
     if(selected.length<2||selected.length>10)throw Error('Выберите от 2 до 10 фотографий.');
-    const granted=await chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*']:['https://serwer2454127.home.pl/*']});
+    const granted=await chrome.permissions.request({origins:packet?.source?.auction==='bca'?['https://serwer2454127.home.pl/*','https://www.bcaimage.com/*','https://bcamediaprod.blob.core.windows.net/*']:['https://serwer2454127.home.pl/*']});
     if(!granted)throw Error('Нет разрешения на отправку в сервер Atlant Auto.');
     $('send-draft').disabled=true;
     $('retry').disabled=true;$('server-save').disabled=true;$('import-partslink').disabled=true;
