@@ -70,7 +70,7 @@ function productSeed(array $draft):array {
  $newFacts=['keys'=>is_int($v['keys']??null)?$v['keys']:null,'power_kw'=>is_numeric($v['power_kw']??null)?(float)$v['power_kw']:null,'power_hp'=>is_numeric($v['power_hp']??null)?(float)$v['power_hp']:null,'color_pl'=>$colorMap[strtolower(trim($v['color']??''))]??'','registration_country_pl'=>$countryMap[strtolower(trim($v['registration_country_source']??''))]??'','awd'=>is_bool($v['awd']??null)?$v['awd']:null,'vat_deductible'=>is_bool($v['vat_deductible']??null)?$v['vat_deductible']:null,'tyres_pl'=>''];
  $title=productText($draft['title'],250);$mileage=is_int($v['mileage_km']??null)?$v['mileage_km']:null;
  $description=$title.'. '.($mileage!==null?'Przebieg: '.number_format($mileage,0,',',' ').' km. ':'').implode(', ',array_filter([$fuel,$trans])).'.';
- return $newFacts+['title'=>$title,'description_pl'=>trim($description),'state'=>'auction','availability'=>'free','production_date'=>($date['kind']??'')==='production'?($date['value']??null):null,'first_registration'=>($facts['first_registration']['value']??null),'mileage_km'=>$mileage,'fuel_pl'=>$fuel,'transmission_pl'=>$trans,'engine_cm3'=>is_int($v['engine_cm3']??null)?$v['engine_cm3']:null,'equipment_pl'=>array_values(array_unique($equipment)),'damage_count'=>count($service['damages']??[]),'service_count'=>is_int($service['maintenance_count']??null)?$service['maintenance_count']:count($entries),'service_last_date'=>$last['date_month']??null,'service_last_mileage'=>$last['mileage_km']??null,'auction_end_estimate'=>$auctionEnd,'auction_bid'=>$amount,'auction_currency'=>in_array($price['currency']??'', ['EUR','PLN'],true)?$price['currency']:'EUR','auction_observed_at'=>$price['observed_at']??$p['source']['captured_at']??null,'price_net'=>null,'price_gross'=>null,'currency'=>'EUR','eta'=>null,'location_pl'=>'Samochód na aukcji europejskiej','delivery_eur'=>is_int($p['logistics']['delivery_to_warsaw']['amount_minor']??null)?$p['logistics']['delivery_to_warsaw']['amount_minor']/100:null,'photo_ids'=>array_slice($photos,0,30),'document_ids'=>[]];
+ return $newFacts+['title'=>$title,'description_pl'=>trim($description),'state'=>'auction','availability'=>'free','production_date'=>($date['kind']??'')==='production'?($date['value']??null):null,'first_registration'=>($facts['first_registration']['value']??null),'mileage_km'=>$mileage,'fuel_pl'=>$fuel,'transmission_pl'=>$trans,'engine_cm3'=>is_int($v['engine_cm3']??null)?$v['engine_cm3']:null,'equipment_pl'=>array_values(array_unique($equipment)),'damage_count'=>count($service['damages']??[]),'service_count'=>is_int($service['maintenance_count']??null)?$service['maintenance_count']:count($entries),'service_last_date'=>$last['date_month']??null,'service_last_mileage'=>$last['mileage_km']??null,'auction_end_estimate'=>$auctionEnd,'auction_bid'=>$amount,'auction_currency'=>in_array($price['currency']??'', ['EUR','PLN'],true)?$price['currency']:'EUR','auction_observed_at'=>$price['observed_at']??$p['source']['captured_at']??null,'price_net'=>null,'price_gross'=>null,'currency'=>'EUR','eta'=>null,'eta_from'=>null,'eta_to'=>null,'location_pl'=>'Samochód na aukcji europejskiej','delivery_eur'=>is_int($p['logistics']['delivery_to_warsaw']['amount_minor']??null)?$p['logistics']['delivery_to_warsaw']['amount_minor']/100:null,'photo_ids'=>array_slice($photos,0,30),'document_ids'=>[]];
 }
 function productCreate(string $id,string $actor):array {
  $draft=draftDetail($id);$db=productDb();$db->exec('BEGIN IMMEDIATE');try{
@@ -87,7 +87,11 @@ function productValidated(array $record,array $draft):array {
  if(!isset(productStates()[$record['state']??''])||!in_array($record['availability']??'', ['free','reserved'],true))throw new InvalidArgumentException('Проверьте состояние и резерв.');
  foreach(['price_net','price_gross','delivery_eur'] as $key)$record[$key]=productMoney($record[$key]??null);
  if(!in_array($record['currency']??'', ['EUR','PLN'],true))throw new InvalidArgumentException('Неизвестная валюта.');
- if(!empty($record['eta'])&&(!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$record['eta'])||date('Y-m-d',strtotime($record['eta']))!==$record['eta']))throw new InvalidArgumentException('Проверьте дату прибытия.');
+ $from=$record['eta_from']??$record['eta']??null;$to=$record['eta_to']??null;
+ foreach([$from,$to] as $day)if($day!==null&&$day!==''){$parsed=DateTimeImmutable::createFromFormat('!Y-m-d',(string)$day);if(!$parsed||$parsed->format('Y-m-d')!==$day)throw new InvalidArgumentException('Проверьте даты ожидаемого прибытия.');}
+ $from=$from?:null;$to=$to?:null;if($to&&(!$from||$to<$from))throw new InvalidArgumentException('Конец периода прибытия должен быть не раньше начала.');
+ $record['eta_from']=$from;$record['eta_to']=$to;$record['eta']=$from;
+
  foreach(['production_date','first_registration'] as $key)$record[$key]=productDate($record[$key]??null);
  foreach(['keys'=>20,'mileage_km'=>3000000,'engine_cm3'=>20000] as $key=>$max)$record[$key]=productNumber($record[$key]??null,$max);
  foreach(['power_kw','power_hp'] as $key)$record[$key]=productNumber($record[$key]??null,5000,false);
@@ -113,7 +117,9 @@ function productSave(string $id,int $revision,array $changes,string $actor,bool 
     $cents=(int)round($net*100);$changes['price_gross']=(string)(intdiv($cents*123+500000,1000000)*100);
    }
   }
-  $allowed=['title','description_pl','state','availability','price_net','price_gross','currency','eta','location_pl','delivery_eur','equipment_pl','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'];$r=$row['record'];foreach($allowed as $key)if(array_key_exists($key,$changes))$r[$key]=$changes[$key];
+  if(array_key_exists('eta_from',$changes))$changes['eta']=$changes['eta_from'];
+  elseif(array_key_exists('eta',$changes)){$changes['eta_from']=$changes['eta'];$changes['eta_to']=null;}
+  $allowed=['title','description_pl','state','availability','price_net','price_gross','currency','eta','eta_from','eta_to','location_pl','delivery_eur','equipment_pl','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl','production_date','first_registration','mileage_km','engine_cm3','fuel_pl','transmission_pl'];$r=$row['record'];foreach($allowed as $key)if(array_key_exists($key,$changes))$r[$key]=$changes[$key];
   productRemember($db,$id,$revision,$row['record'],'existing',$row['updated_at']);
   $r=productValidated($r,draftDetail($id));$q=$db->prepare('UPDATE vehicle_products SET revision=revision+1,record_json=?,updated_at=? WHERE draft_id=?');$q->execute([json_encode($r,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),gmdate('c'),$id]);
   productRemember($db,$id,$revision+1,$r,$actor,gmdate('c'));
@@ -127,7 +133,7 @@ function productSave(string $id,int $revision,array $changes,string $actor,bool 
 }
 function productPublicSnapshot(array $row):array {
  $r=$row['record'];$public=['id'=>$row['public_id']];
- foreach(['title','description_pl','state','availability','production_date','first_registration','mileage_km','fuel_pl','transmission_pl','engine_cm3','equipment_pl','damage_count','service_count','service_last_date','service_last_mileage','price_net','price_gross','currency','eta','location_pl','delivery_eur','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl'] as $key)$public[$key]=$r[$key]??null;
+ foreach(['title','description_pl','state','availability','production_date','first_registration','mileage_km','fuel_pl','transmission_pl','engine_cm3','equipment_pl','damage_count','service_count','service_last_date','service_last_mileage','price_net','price_gross','currency','eta','eta_from','eta_to','location_pl','delivery_eur','photo_ids','document_ids','keys','power_kw','power_hp','color_pl','registration_country_pl','awd','vat_deductible','tyres_pl'] as $key)$public[$key]=$r[$key]??null;
  if($r['state']==='auction'){foreach(['auction_bid','auction_currency','auction_observed_at','auction_end_estimate'] as $key)$public[$key]=$r[$key]??null;}
  $public['state_label']=productStates()[$r['state']];return $public;
 }

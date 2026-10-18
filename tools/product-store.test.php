@@ -43,6 +43,11 @@ try{
  $erp=productSave($id,6,['state'=>'on_site','photo_ids'=>[$yard]],'owner',true);expect(productPublicList()[0]['state']==='on_site','Yard arrival sync with real photos');
  $erp=productSave($id,7,['state'=>'sold'],'owner',true);expect(productPublicList()[0]['state']==='sold','Sold state sync');
  productUnpublish($id,'owner');productSave($id,8,['state'=>'auction'],'employee-2',true);expect(productPublicList()===[],'Hidden vehicle never auto-publishes');
+ $arrival=productSave($id,9,['eta_from'=>'2026-10-07','eta_to'=>'2026-10-14'],'employee-2');expect($arrival['record']['eta_from']==='2026-10-07'&&$arrival['record']['eta_to']==='2026-10-14','Arrival window retained');
+ expect(rejected(fn()=>productSave($id,10,['eta_to'=>'2026-10-06'],'employee-2')),'Reversed arrival window rejected');
+ expect(rejected(fn()=>productSave($id,10,['eta_to'=>'2026-02-30'],'employee-2')),'Invalid arrival day rejected');
+ $window=productPublicSnapshot($arrival);expect($window['eta_from']==='2026-10-07'&&$window['eta_to']==='2026-10-14','Public projection contains complete window');
+ $legacy=productSave($id,10,['eta'=>'2026-11-02'],'employee-2');expect($legacy['record']['eta_from']==='2026-11-02'&&$legacy['record']['eta_to']===null,'Legacy single-date update does not retain stale range end');
  $newPacket=$packet;$newPacket['vehicle']['vin']='WBA00000000000002';$new=draftCapture($newPacket,'employee-2');
  expect(count(productRegistryList('WBA00000000000002','incoming'))===1&&productGet($new['id'])===null,'Extension upload appears in ERP without creating a public product');
  expect($db->query('PRAGMA integrity_check')->fetchColumn()==='ok','Database integrity');
